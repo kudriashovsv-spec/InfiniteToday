@@ -1,0 +1,1587 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#05030c" />
+    <title>Infinite Today — Music Laboratory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300;400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="stage" id="stage">
+      <!-- Уровень 1 — Вход: чёрная дыра = интерактивная зона -->
+      <section
+        class="screen screen--enter is-active"
+        id="screen-enter"
+        aria-label="Infinite Today — вход"
+      >
+        <div class="scene">
+          <div
+            class="scene__img"
+            style="background-image: url('assets/images/MainPageLvl1.png')"
+          ></div>
+
+          <!-- центр чёрной дыры на изображении ≈ 49.5% / 46.2% -->
+          <button
+            class="hotspot hotspot--hole"
+            id="hole"
+            type="button"
+            aria-label="Войти во вселенную — нажать на чёрную дыру"
+          ></button>
+        </div>
+
+        <div class="screen__veil"></div>
+
+        <div class="enter">
+          <p class="enter__kicker">Music Laboratory</p>
+          <h1 class="enter__title">
+            <span class="enter__title-line">Infinite</span>
+            <span class="enter__title-line enter__title-line--accent">Today</span>
+          </h1>
+          <p class="enter__hint">Вход</p>
+        </div>
+
+        <div class="library" id="library">
+          <p class="library__current">
+            <span id="library-current-title">Антисага</span><span class="library__current-genre" id="library-current-genre">Electronic</span>
+          </p>
+          <div class="player" id="library-player" data-player data-src="assets/music/All music/Антисага Electronic.mp3">
+            <button
+              class="player__toggle"
+              type="button"
+              aria-label="Воспроизвести"
+              aria-pressed="false"
+            ></button>
+            <div
+              class="player__bar"
+              role="slider"
+              aria-label="Позиция трека"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+              tabindex="0"
+            >
+              <span class="player__fill"></span>
+            </div>
+            <span class="player__time">0:00 / 0:00</span>
+            <div class="player__volume">
+              <button
+                class="player__volume-button"
+                type="button"
+                aria-label="Громкость"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                  <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                  <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                  <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                </svg>
+              </button>
+              <div class="player__volume-popover" aria-hidden="true">
+                <button
+                  class="player__mute"
+                  type="button"
+                  aria-label="Выключить звук"
+                  aria-pressed="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <input
+                  class="player__volume-range"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value="1"
+                  aria-label="Громкость"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="library__list" id="library-list">
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Антисага Electronic.mp3"
+              data-title="Антисага"
+              data-genre="Electronic"
+            >
+              <span class="lib-track__num">1</span>
+              <span class="lib-track__name">Антисага</span>
+              <span class="lib-track__genre">Electronic</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Бешеная Electropop.mp3"
+              data-title="Бешеная"
+              data-genre="Electropop"
+            >
+              <span class="lib-track__num">2</span>
+              <span class="lib-track__name">Бешеная</span>
+              <span class="lib-track__genre">Electropop</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Братья Aggressive DnB.mp3"
+              data-title="Братья"
+              data-genre="Aggressive DnB"
+            >
+              <span class="lib-track__num">3</span>
+              <span class="lib-track__name">Братья</span>
+              <span class="lib-track__genre">Aggressive DnB</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Братья Indietronica.mp3"
+              data-title="Братья"
+              data-genre="Indietronica"
+            >
+              <span class="lib-track__num">4</span>
+              <span class="lib-track__name">Братья</span>
+              <span class="lib-track__genre">Indietronica</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Броня Trap.mp3"
+              data-title="Броня"
+              data-genre="Trap"
+            >
+              <span class="lib-track__num">5</span>
+              <span class="lib-track__name">Броня</span>
+              <span class="lib-track__genre">Trap</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Время не торопи Alternative Rock.mp3"
+              data-title="Время не торопи"
+              data-genre="Alternative Rock"
+            >
+              <span class="lib-track__num">6</span>
+              <span class="lib-track__name">Время не торопи</span>
+              <span class="lib-track__genre">Alternative Rock</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Время не торопи Lofi.mp3"
+              data-title="Время не торопи"
+              data-genre="Lofi"
+            >
+              <span class="lib-track__num">7</span>
+              <span class="lib-track__name">Время не торопи</span>
+              <span class="lib-track__genre">Lofi</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Всё впереди Electropop.mp3"
+              data-title="Всё впереди"
+              data-genre="Electropop"
+            >
+              <span class="lib-track__num">8</span>
+              <span class="lib-track__name">Всё впереди</span>
+              <span class="lib-track__genre">Electropop</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Дар Alternative Rock.mp3"
+              data-title="Дар"
+              data-genre="Alternative Rock"
+            >
+              <span class="lib-track__num">9</span>
+              <span class="lib-track__name">Дар</span>
+              <span class="lib-track__genre">Alternative Rock</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Дар Lofi.mp3"
+              data-title="Дар"
+              data-genre="Lofi"
+            >
+              <span class="lib-track__num">10</span>
+              <span class="lib-track__name">Дар</span>
+              <span class="lib-track__genre">Lofi</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Дети Солнц Indietronica.mp3"
+              data-title="Дети Солнц"
+              data-genre="Indietronica"
+            >
+              <span class="lib-track__num">11</span>
+              <span class="lib-track__name">Дети Солнц</span>
+              <span class="lib-track__genre">Indietronica</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Дети Солнц Psychill.mp3"
+              data-title="Дети Солнц"
+              data-genre="Psychill"
+            >
+              <span class="lib-track__num">12</span>
+              <span class="lib-track__name">Дети Солнц</span>
+              <span class="lib-track__genre">Psychill</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Дота виновата BreakBeat.mp3"
+              data-title="Дота виновата"
+              data-genre="BreakBeat"
+            >
+              <span class="lib-track__num">13</span>
+              <span class="lib-track__name">Дота виновата</span>
+              <span class="lib-track__genre">BreakBeat</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/ЖЗЛ Lofi.mp3"
+              data-title="ЖЗЛ"
+              data-genre="Lofi"
+            >
+              <span class="lib-track__num">14</span>
+              <span class="lib-track__name">ЖЗЛ</span>
+              <span class="lib-track__genre">Lofi</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/ЖЗЛ Post-punk.mp3"
+              data-title="ЖЗЛ"
+              data-genre="Post-punk"
+            >
+              <span class="lib-track__num">15</span>
+              <span class="lib-track__name">ЖЗЛ</span>
+              <span class="lib-track__genre">Post-punk</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Здравствуй в первый раз Downtempo.mp3"
+              data-title="Здравствуй в первый раз"
+              data-genre="Downtempo"
+            >
+              <span class="lib-track__num">16</span>
+              <span class="lib-track__name">Здравствуй в первый раз</span>
+              <span class="lib-track__genre">Downtempo</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Здравствуй в первый раз Ethno-hop.mp3"
+              data-title="Здравствуй в первый раз"
+              data-genre="Ethno-hop"
+            >
+              <span class="lib-track__num">17</span>
+              <span class="lib-track__name">Здравствуй в первый раз</span>
+              <span class="lib-track__genre">Ethno-hop</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Игра Rock-infused Electropop.mp3"
+              data-title="Игра"
+              data-genre="Rock-infused Electropop"
+            >
+              <span class="lib-track__num">18</span>
+              <span class="lib-track__name">Игра</span>
+              <span class="lib-track__genre">Rock-infused Electropop</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Лучшее за бесплатно DnB.mp3"
+              data-title="Лучшее за бесплатно"
+              data-genre="DnB"
+            >
+              <span class="lib-track__num">19</span>
+              <span class="lib-track__name">Лучшее за бесплатно</span>
+              <span class="lib-track__genre">DnB</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Лучшее за бесплатно Metalcore.mp3"
+              data-title="Лучшее за бесплатно"
+              data-genre="Metalcore"
+            >
+              <span class="lib-track__num">20</span>
+              <span class="lib-track__name">Лучшее за бесплатно</span>
+              <span class="lib-track__genre">Metalcore</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Мечтай DnB Deathcore.mp3"
+              data-title="Мечтай"
+              data-genre="DnB Deathcore"
+            >
+              <span class="lib-track__num">21</span>
+              <span class="lib-track__name">Мечтай</span>
+              <span class="lib-track__genre">DnB Deathcore</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Оправданная надежда Downtempo.mp3"
+              data-title="Оправданная надежда"
+              data-genre="Downtempo"
+            >
+              <span class="lib-track__num">22</span>
+              <span class="lib-track__name">Оправданная надежда</span>
+              <span class="lib-track__genre">Downtempo</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Оправданная надежда Neurofunk.mp3"
+              data-title="Оправданная надежда"
+              data-genre="Neurofunk"
+            >
+              <span class="lib-track__num">23</span>
+              <span class="lib-track__name">Оправданная надежда</span>
+              <span class="lib-track__genre">Neurofunk</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Парабола DnB.mp3"
+              data-title="Парабола"
+              data-genre="DnB"
+            >
+              <span class="lib-track__num">24</span>
+              <span class="lib-track__name">Парабола</span>
+              <span class="lib-track__genre">DnB</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Парабола Indietronica.mp3"
+              data-title="Парабола"
+              data-genre="Indietronica"
+            >
+              <span class="lib-track__num">25</span>
+              <span class="lib-track__name">Парабола</span>
+              <span class="lib-track__genre">Indietronica</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Поворот туда DnB.mp3"
+              data-title="Поворот туда"
+              data-genre="DnB"
+            >
+              <span class="lib-track__num">26</span>
+              <span class="lib-track__name">Поворот туда</span>
+              <span class="lib-track__genre">DnB</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Поворот туда Metalcore.mp3"
+              data-title="Поворот туда"
+              data-genre="Metalcore"
+            >
+              <span class="lib-track__num">27</span>
+              <span class="lib-track__name">Поворот туда</span>
+              <span class="lib-track__genre">Metalcore</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Поиск Alternative Electronic.mp3"
+              data-title="Поиск"
+              data-genre="Alternative Electronic"
+            >
+              <span class="lib-track__num">28</span>
+              <span class="lib-track__name">Поиск</span>
+              <span class="lib-track__genre">Alternative Electronic</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Поиск Alternative Rock.mp3"
+              data-title="Поиск"
+              data-genre="Alternative Rock"
+            >
+              <span class="lib-track__num">29</span>
+              <span class="lib-track__name">Поиск</span>
+              <span class="lib-track__genre">Alternative Rock</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Поиск Psychedelic Electronic.mp3"
+              data-title="Поиск"
+              data-genre="Psychedelic Electronic"
+            >
+              <span class="lib-track__num">30</span>
+              <span class="lib-track__name">Поиск</span>
+              <span class="lib-track__genre">Psychedelic Electronic</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Половинки DnB.mp3"
+              data-title="Половинки"
+              data-genre="DnB"
+            >
+              <span class="lib-track__num">31</span>
+              <span class="lib-track__name">Половинки</span>
+              <span class="lib-track__genre">DnB</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Половинки Punk Rock.mp3"
+              data-title="Половинки"
+              data-genre="Punk Rock"
+            >
+              <span class="lib-track__num">32</span>
+              <span class="lib-track__name">Половинки</span>
+              <span class="lib-track__genre">Punk Rock</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Потерять себя Indietronica.mp3"
+              data-title="Потерять себя"
+              data-genre="Indietronica"
+            >
+              <span class="lib-track__num">33</span>
+              <span class="lib-track__name">Потерять себя</span>
+              <span class="lib-track__genre">Indietronica</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Потерять себя Rock-infused DnB.mp3"
+              data-title="Потерять себя"
+              data-genre="Rock-infused DnB"
+            >
+              <span class="lib-track__num">34</span>
+              <span class="lib-track__name">Потерять себя</span>
+              <span class="lib-track__genre">Rock-infused DnB</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Спуск Dark Psybient.mp3"
+              data-title="Спуск"
+              data-genre="Dark Psybient"
+            >
+              <span class="lib-track__num">35</span>
+              <span class="lib-track__name">Спуск</span>
+              <span class="lib-track__genre">Dark Psybient</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Теория всего Trip-Hop.mp3"
+              data-title="Теория всего"
+              data-genre="Trip-Hop"
+            >
+              <span class="lib-track__num">36</span>
+              <span class="lib-track__name">Теория всего</span>
+              <span class="lib-track__genre">Trip-Hop</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Юность Alternative Rock.mp3"
+              data-title="Юность"
+              data-genre="Alternative Rock"
+            >
+              <span class="lib-track__num">37</span>
+              <span class="lib-track__name">Юность</span>
+              <span class="lib-track__genre">Alternative Rock</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Юность DnB.mp3"
+              data-title="Юность"
+              data-genre="DnB"
+            >
+              <span class="lib-track__num">38</span>
+              <span class="lib-track__name">Юность</span>
+              <span class="lib-track__genre">DnB</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Юность Indietronica.mp3"
+              data-title="Юность"
+              data-genre="Indietronica"
+            >
+              <span class="lib-track__num">39</span>
+              <span class="lib-track__name">Юность</span>
+              <span class="lib-track__genre">Indietronica</span>
+            </button>
+            <button
+              class="lib-track"
+              type="button"
+              data-src="assets/music/All music/Я герой нашего времени Trap.mp3"
+              data-title="Я герой нашего времени"
+              data-genre="Trap"
+            >
+              <span class="lib-track__num">40</span>
+              <span class="lib-track__name">Я герой нашего времени</span>
+              <span class="lib-track__genre">Trap</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="social">
+          <a
+            class="social__link"
+            href="https://www.youtube.com/@InfiniteToday_music"
+            target="_blank"
+            rel="noopener noreferrer"
+          >YouTube</a>
+          <a
+            class="social__link"
+            href="https://t.me/parabola_music"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Telegram</a>
+        </div>
+      </section>
+
+      <!-- Уровень 2 — Космос: голубое созвездие = вход в песню «Поиск» -->
+      <section
+        class="screen screen--space"
+        id="screen-space"
+        aria-label="Космос"
+        aria-hidden="true"
+      >
+        <div class="scene">
+          <div
+            class="scene__img"
+            style="background-image: url('assets/images/PaigLvl2.png')"
+          ></div>
+
+          <!-- голубое созвездие на изображении ≈ 56.1% / 65.8% -->
+          <button
+            class="hotspot hotspot--star"
+            id="constellation"
+            type="button"
+            aria-label="Открыть мир песни «Поиск»"
+          >
+            <span class="hotspot__label">Поиск</span>
+          </button>
+
+          <!-- второй вход в том же созвездии, чуть ниже и правее: песня «Мечтай» -->
+          <button
+            class="hotspot hotspot--star hotspot--star-dream"
+            id="constellation-dream"
+            type="button"
+            aria-label="Открыть мир песни «Мечтай»"
+          >
+            <span class="hotspot__label">Мечтай</span>
+          </button>
+
+          <!-- галактика в верхней левой части изображения ≈ 16% / 21.5% -->
+          <button
+            class="hotspot hotspot--star hotspot--suns"
+            id="constellation-suns"
+            type="button"
+            aria-label="Открыть мир песни «Дети Солнц»"
+          >
+            <span class="hotspot__label">Дети Солнц</span>
+          </button>
+
+          <!-- туманность над «Поиск» ≈ 60% / 36% -->
+          <button
+            class="hotspot hotspot--star hotspot--hope"
+            id="constellation-hope"
+            type="button"
+            aria-label="Открыть мир песни «Оправданная надежда»"
+          >
+            <span class="hotspot__label">Оправданная надежда</span>
+          </button>
+        </div>
+
+        <div class="screen__veil"></div>
+
+        <button
+          class="back"
+          type="button"
+          data-back="enter"
+          aria-label="Вернуться на уровень входа"
+        >
+          ← Назад
+        </button>
+      </section>
+
+      <!-- Уровень 3 — Мир песни «Поиск» (пока только изображение) -->
+      <section
+        class="screen screen--song"
+        id="screen-song"
+        aria-label="Мир песни «Поиск»"
+        aria-hidden="true"
+      >
+        <div class="scene">
+          <div
+            class="scene__img"
+            style="background-image: url('assets/images/PosikSongPageLvl3.png')"
+          ></div>
+        </div>
+        <div class="screen__veil"></div>
+
+        <button
+          class="back"
+          type="button"
+          data-back="space"
+          aria-label="Вернуться в космос"
+        >
+          ← Назад
+        </button>
+
+        <h1 class="song-title">Поиск</h1>
+
+        <div class="song-panel">
+          <div class="track">
+            <p class="track__genre">Psychedelic Electronic</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/Поиск Psychedelic Electronic.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="track">
+            <p class="track__genre">Alternative Electronic</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/Поиск Alternative Electronic.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="track">
+            <p class="track__genre">Alternative Rock</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/Поиск Alternative Rock.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="lyrics-toggle"
+            id="posik-lyrics-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="posik-lyrics"
+          >
+            <span>Текст песни</span>
+            <span class="lyrics-toggle__chevron" aria-hidden="true"></span>
+          </button>
+
+          <div class="lyrics-panel" id="posik-lyrics" aria-hidden="true">
+            <pre class="lyrics-panel__text">1 куплет
+Вот новый день и строить планы
+Пора на день на ночь на год
+Свою дыру прикрыв карманом
+Забот хлопот не в проворот
+
+Зеленый тон не замечая
+Происходящего вокруг
+Кто в пятницу со мною в баре
+Наверное тот лучший друг
+
+И словно все идёт как надо
+Всё как у всех желудок рад
+И мозг не видит тут обмана
+Своих страстей я был фанат
+
+На все есть время даже чтобы
+Свои ошибки совершать
+В груди все чаще полыхает
+Желание все поменять
+
+
+Припев
+Что такое настоящий
+Правда где сменяет ложь
+Что потом хотя бы завтра
+Что вопрос то острый нож
+
+Искать себя не зная мира
+Искать людей не знав себя
+Какая смелая сатира
+Гадать над смыслом бытия
+
+И в космосе черные дыры
+Как много общего у нас
+Пыль захламленной вхлам квартиры
+Её настанет звездный час
+
+Тебя лишь за руку возьму я
+И тогда придёт ответ
+Есть ли кто-то в отражении
+Есть конечно это свет
+
+2 Куплет
+Так сильно въелась не содрать
+Заменив собою кожу
+Когда один иду в кровать 
+Даже тогда несу я ношу
+
+Мимо зеркал прикрыв глаза
+На ощупь подпираю стены
+Не думать и не замечать
+Смех в мыслях огненной гиены
+
+Сон странный словно на яву
+Двор старый ржавые качели
+И стая птиц летит на юг
+Забыв о чем мы летом пели
+
+В нем машешь мне рукою тонкой
+Приглашая с ними в путь
+Но у меня другие планы
+Построив плот не утонуть</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Уровень 3 — Мир песни «Мечтай» (пока только изображение) -->
+      <section
+        class="screen screen--song"
+        id="screen-dream"
+        aria-label="Мир песни «Мечтай»"
+        aria-hidden="true"
+      >
+        <div class="scene">
+          <div
+            class="scene__img"
+            style="background-image: url('assets/images/DreamSongPageLvl3.png')"
+          ></div>
+        </div>
+        <div class="screen__veil"></div>
+
+        <button
+          class="back"
+          type="button"
+          data-back="space"
+          aria-label="Вернуться в космос"
+        >
+          ← Назад
+        </button>
+
+        <h1 class="song-title">Мечтай</h1>
+
+        <div class="song-panel">
+          <div class="track">
+            <p class="track__genre">DnB Deathcore</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/Мечтай DnB Deathcore.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="lyrics-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="dream-lyrics"
+          >
+            <span>Текст песни</span>
+            <span class="lyrics-toggle__chevron" aria-hidden="true"></span>
+          </button>
+
+          <div class="lyrics-panel" id="dream-lyrics" aria-hidden="true">
+            <pre class="lyrics-panel__text" id="dream-lyrics-text">1 куплет
+По лужам босиком под теплый летний дождь
+Бегу почти лечу взмывая в облака 
+По взлетной полосе набрал мой самолёт 
+Разгон и позади просторов берега 
+
+Те годы не ценил когда можно мечтать
+Воображение когда бурлит рекой 
+Когда я каждый день по много много раз
+Взмывал вверх над землёй как сказочный герой 
+
+Вперёд пошли года мне их не обогнать 
+И самолёт я свой закрыл на ключ в амбар 
+И больше не могу я просто помечтать 
+Как будто позабыл я свой врождённый дар 
+
+И серым мир мой стал бетонная стена 
+Внутри ржавеет сталь пружины моих чувств 
+Молчу молчу о всём как будто не при чём  
+Нормально говорю через зубной свой хруст 
+
+Припев
+Мечтай!
+Твой огонь не погас!
+Твори!
+В стены долбит злой бас!
+
+Взлетай!
+Я знаю слышишь меня!
+Борись!
+Дух это пламя огня!
+
+Искра!
+Скоро вспыхнет пожар!
+Держи!
+Тренируй свой удар!
+
+Не спать!
+Скоро будет жара!
+Газуй!
+Не жди зари до утра!
+
+2 куплет
+Лишь вспомню колыбель забытых ныне грёз
+Себя надеждой тешу что всё не позади 
+Что день этот уйдёт за ним придёт другой 
+Но времени забег меня опередит 
+
+И суета сует налево взад вперёд
+Работа дом опять какие то дела 
+Побыть наедине с собою нет уж сил
+Себя в себе терпеть не может голова 
+
+Так будет не всегда и сточится педаль 
+И закипит котёл который на плите 
+Обиды боль и страсть гнев радость стыд вина
+Прорвутся как вулкан на неба высоте 
+
+И только мне решать куда забьёт фонтан
+Творить и разрушать дано ему с лихвой
+Поэтому возьму я ветхую тетрадь 
+И вспомню свой амбар и улечу стрелой</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Уровень 3 — Мир песни «Дети Солнц» -->
+      <section
+        class="screen screen--song"
+        id="screen-suns"
+        aria-label="Мир песни «Дети Солнц»"
+        aria-hidden="true"
+      >
+        <div class="scene">
+          <div
+            class="scene__img"
+            style="background-image: url('assets/images/ChildrenOfTheSunsPageLvl3.png')"
+          ></div>
+        </div>
+        <div class="screen__veil"></div>
+
+        <button
+          class="back"
+          type="button"
+          data-back="space"
+          aria-label="Вернуться в космос"
+        >
+          ← Назад
+        </button>
+
+        <h1 class="song-title">Дети Солнц</h1>
+
+        <div class="song-panel">
+          <div class="track">
+            <p class="track__genre">Psychill</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/Дети Солнц Psychill.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="track">
+            <p class="track__genre">Indietronica</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/Дети Солнц Indietronica.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="lyrics-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="suns-lyrics"
+          >
+            <span>Текст песни</span>
+            <span class="lyrics-toggle__chevron" aria-hidden="true"></span>
+          </button>
+
+          <div class="lyrics-panel" id="suns-lyrics" aria-hidden="true">
+            <pre class="lyrics-panel__text" id="suns-lyrics-text">1 Куплет
+Начало нового дня лучами лица согревает
+Температура добра имеет характерный цвет
+Звёзды светом своим наши лица созерцают
+Заставляя улыбаться жителей разных планет
+
+Колыбели вулкан потушен мудростью времен 
+И впервые до края полна кислородом грудь
+Так легки мои ноги что чуть чуть и полечу
+Наконец то свобода с волей радостнее путь
+
+В миллионах световых лет измеряем расстоянье
+Но пространство это только категория ума
+Для сердец наших преград нет ведь живо обещание
+И идея вечная для всех для нас всегда одна
+
+Припев
+Очевидное чудо 
+Сквозь слепое пятно 
+Что на части разбито
+Снова станет одно
+
+В общем сознании фракталы
+Расцветают наших чувств 
+Создавая контрасты
+В глубине их растворюсь
+
+По частицам по каплям
+Нарастает волна
+Это наше притяженье
+Сила силою полна
+
+Дети звёзд дети солнца
+Дети света огня
+Знаю слышите зов
+Знаю слышите меня
+
+2 куплет
+Расскажите что вы видели что ждет нас впереди
+Неужели так красиво словом и не описать
+То что ждет нас всех и каждого оставив позади
+Ощутив по настоящему момента благодать
+
+Если рожден значит свободен нужно это лишь понять
+Мир наполнен только жизнью в океан течет река
+Даже горы постареют по дороге к небосводу
+Так и мы же растворимся словно в небе облака
+
+Геометрия полей заполняет пространство
+Проявляя в пустоте узоры разной красоты
+Вихри звездной пыли к жизни руки смело свои тянут
+Чтобы стало меньше места для кромешной темноты
+
+В каждой частице есть и ты</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Уровень 3 — Мир песни «Оправданная надежда» -->
+      <section
+        class="screen screen--song"
+        id="screen-hope"
+        aria-label="Мир песни «Оправданная надежда»"
+        aria-hidden="true"
+      >
+        <div class="scene">
+          <div
+            class="scene__img"
+            style="background-image: url('assets/images/HopePageLvl3.png')"
+          ></div>
+        </div>
+        <div class="screen__veil"></div>
+
+        <button
+          class="back"
+          type="button"
+          data-back="space"
+          aria-label="Вернуться в космос"
+        >
+          ← Назад
+        </button>
+
+        <h1 class="song-title">Оправданная надежда</h1>
+
+        <div class="song-panel song-panel--hope">
+          <div class="track">
+            <p class="track__genre">Neurofunk</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/Оправданная надежда Neurofunk.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="track">
+            <p class="track__genre">Downtempo</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/Оправданная надежда Downtempo.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="lyrics-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="hope-lyrics"
+          >
+            <span>Текст песни</span>
+            <span class="lyrics-toggle__chevron" aria-hidden="true"></span>
+          </button>
+
+          <div class="lyrics-panel" id="hope-lyrics" aria-hidden="true">
+            <pre class="lyrics-panel__text" id="hope-lyrics-text">1 куплет
+Стая птиц за окном зазывает своих
+Навевает печаль что копилась в веках
+Улетает туда где стоят алтари
+Наших дней убежавших от нас впопыхах
+
+И попутчики реже заходят на свет
+И сверчки разрывают в дали тишину
+И всё реже звучит в моей комнате смех
+И не так я отчаянно жажду весну
+
+Механизм превращает движение тел
+Что бегут без оглядки по лужам спеша
+Ведь понятно у каждого так много дел
+Разглядеть что за каждым есть телом душа
+
+Скульптор лепит последний кривой барельеф
+Кривизну надаряя цветов красотой
+Даже мрамора вечность не вечна хотя
+Так и я лишь надеюсь на вечный покой
+
+
+Припев
+Туманом скроет корабли
+Маяк не разглядеть в дали
+За край известной нам земли
+Меня ты позови... 
+
+Что было ты прошу прости
+И помоги мне обрести
+Дыхание, и улететь
+Тебе в тиши пропеть...
+
+Туманом скроет корабли
+Маяк не разглядеть в дали
+За край известной нам земли
+Меня ты позови... 
+
+Что было ты прошу прости
+И помоги мне обрести
+Дыхание, и улететь
+Тебе в тиши пропеть...
+
+
+2 куплет
+Утро день вечер ночь непреложный закон
+Бдит незримо за тем как кружИт колесо
+Компас точно на север покажет нам путь
+Отправляет в дорогу магнит полюсов
+
+А те спицы что тоньше становятся в такт
+Переплавит кузнец наших судеб простых
+Жаль так часто приходится их заменять
+Жаль волос наших в прошлом янтарных густых
+
+Запылились романов страницы былых
+Что на полках стоят и уже не блестят
+Больше незачем роль мне чужую играть
+Лавры пусть забирают те кто их хотят
+
+Несерьеёзных порой ожиданий конец
+Предвещает начало нового дня 
+Чуть хмурного но просто побольше колец
+На том дереве что посадил в детстве я
+
+
+Надежду не скроешь под тенью ветвей
+Надежду не смоет наплывом волна
+Надежду что вместе пройдём этот путь
+Надежду с тобой обретаем сполна</pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
