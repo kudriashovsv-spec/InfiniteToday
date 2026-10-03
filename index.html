@@ -24,7 +24,7 @@
         <div class="scene">
           <div
             class="scene__img"
-            style="background-image: url('assets/images/MainPageLvl1.png')"
+            style="background-image: url('assets/images/MainPageLvl1.webp')"
           ></div>
 
           <!-- центр чёрной дыры на изображении ≈ 49.5% / 46.2% -->
@@ -579,7 +579,7 @@
         <div class="scene">
           <div
             class="scene__img"
-            style="background-image: url('assets/images/PaigLvl2.png')"
+            style="background-image: url('assets/images/PaigLvl2.webp')"
           ></div>
 
           <!-- голубое созвездие на изображении ≈ 56.1% / 65.8% -->
@@ -621,9 +621,115 @@
           >
             <span class="hotspot__label">Оправданная надежда</span>
           </button>
+
+          <!-- вход «Время не торопи»: звезда у правого края ≈ 90% / 50% -->
+          <button
+            class="hotspot hotspot--star hotspot--time"
+            id="constellation-time"
+            type="button"
+            aria-label="Открыть мир песни «Время не торопи»"
+          >
+            <span class="hotspot__label">Время не торопи</span>
+          </button>
         </div>
 
         <div class="screen__veil"></div>
+
+        <!-- Lvl2 на телефоне: вертикальный список миров вместо космической карты.
+             Показывается только при ширине <= 640px (см. .mobile-worlds в styles.css).
+             Изображения пока временные и одинаковые, но у каждого мира — свой
+             отдельный путь, чтобы позже заменить их по одному. -->
+        <div class="mobile-worlds" aria-label="Миры песен">
+          <button
+            class="world-card"
+            type="button"
+            data-world="posik"
+            aria-label="Открыть мир песни «Поиск»"
+          >
+            <span class="world-card__media">
+              <img
+                class="world-card__img"
+                src="assets/images/Mobile/ChildrenOfTheSunsMobile.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <span class="world-card__title">Поиск</span>
+          </button>
+
+          <button
+            class="world-card"
+            type="button"
+            data-world="dream"
+            aria-label="Открыть мир песни «Мечтай»"
+          >
+            <span class="world-card__media">
+              <img
+                class="world-card__img"
+                src="assets/images/Mobile/ChildrenOfTheSunsMobile.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <span class="world-card__title">Мечтай</span>
+          </button>
+
+          <button
+            class="world-card"
+            type="button"
+            data-world="suns"
+            aria-label="Открыть мир песни «Дети Солнц»"
+          >
+            <span class="world-card__media">
+              <img
+                class="world-card__img"
+                src="assets/images/Mobile/ChildrenOfTheSunsMobile.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <span class="world-card__title">Дети Солнц</span>
+          </button>
+
+          <button
+            class="world-card"
+            type="button"
+            data-world="hope"
+            aria-label="Открыть мир песни «Оправданная надежда»"
+          >
+            <span class="world-card__media">
+              <img
+                class="world-card__img"
+                src="assets/images/Mobile/ChildrenOfTheSunsMobile.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <span class="world-card__title">Оправданная надежда</span>
+          </button>
+
+          <button
+            class="world-card"
+            type="button"
+            data-world="time"
+            aria-label="Открыть мир песни «Время не торопи»"
+          >
+            <span class="world-card__media">
+              <img
+                class="world-card__img"
+                src="assets/images/Mobile/ChildrenOfTheSunsMobile.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <span class="world-card__title">Время не торопи</span>
+          </button>
+        </div>
 
         <button
           class="back"
@@ -645,7 +751,7 @@
         <div class="scene">
           <div
             class="scene__img"
-            style="background-image: url('assets/images/PosikSongPageLvl3.png')"
+            style="background-image: url('assets/images/PosikSongPageLvl3.webp')"
           ></div>
         </div>
         <div class="screen__veil"></div>
@@ -949,7 +1055,7 @@
         <div class="scene">
           <div
             class="scene__img"
-            style="background-image: url('assets/images/DreamSongPageLvl3.png')"
+            style="background-image: url('assets/images/DreamSongPageLvl3.webp')"
           ></div>
         </div>
         <div class="screen__veil"></div>
@@ -1119,7 +1225,7 @@
         <div class="scene">
           <div
             class="scene__img"
-            style="background-image: url('assets/images/ChildrenOfTheSunsPageLvl3.png')"
+            style="background-image: url('assets/images/ChildrenOfTheSunsPageLvl3.webp')"
           ></div>
         </div>
         <div class="screen__veil"></div>
@@ -1347,7 +1453,7 @@
         <div class="scene">
           <div
             class="scene__img"
-            style="background-image: url('assets/images/HopePageLvl3.png')"
+            style="background-image: url('assets/images/HopePageLvl3.webp')"
           ></div>
         </div>
         <div class="screen__veil"></div>
@@ -1580,6 +1686,241 @@
           </div>
         </div>
       </section>
+      <!-- Уровень 3 — Мир песни «Время не торопи» -->
+      <section
+        class="screen screen--song"
+        id="screen-time"
+        aria-label="Мир песни «Время не торопи»"
+        aria-hidden="true"
+      >
+        <div class="scene">
+          <div
+            class="scene__img"
+            style="background-image: url('assets/images/TimePageLvl3.webp')"
+          ></div>
+        </div>
+        <div class="screen__veil"></div>
+
+        <button
+          class="back"
+          type="button"
+          data-back="space"
+          aria-label="Вернуться в космос"
+        >
+          ← Назад
+        </button>
+
+        <h1 class="song-title">Время не торопи</h1>
+
+        <div class="song-panel">
+          <div class="track">
+            <p class="track__genre">Lofi</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/Время не торопи Lofi.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="track">
+            <p class="track__genre">Alternative Rock</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/Время не торопи Alternative Rock.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="lyrics-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="time-lyrics"
+          >
+            <span>Текст песни</span>
+            <span class="lyrics-toggle__chevron" aria-hidden="true"></span>
+          </button>
+
+          <div class="lyrics-panel" id="time-lyrics" aria-hidden="true">
+            <pre class="lyrics-panel__text" id="time-lyrics-text">1 куплет
+Время не торопи 
+Как ты летишь мгновенно 
+Ведь ты в конце бесценно
+Постой и оглянись
+
+Время не торопи 
+Звёзды тебе подскажут 
+Струн мои тонких пряжу 
+И небосвода высь 
+
+Время не торопи 
+Не сбился я дорогой 
+Дай оглядеть немного 
+Родной простор Земли 
+
+Время не торопи 
+Рекой течешь ты быстрой 
+Неведомой но чистой 
+Толкая корабли 
+
+Время не торопи… 
+
+
+Припев 
+А сколько пролито прожито
+Старался не расплескать
+Родное время ты времечко 
+Ну поверни же ты вспять 
+
+А дел немало закончено
+Не вспомнить не сосчитать 
+Жалеть мне нечего По ветру
+Лишь песня будет гулять
+Лишь песня будет гулять… 
+
+
+2 куплет 
+Время не торопи
+Вспомним всех кто был рядом
+Теплы следы и взгляды 
+Друзей моих внутри 
+
+Время не торопи 
+Судьбы крутой изгибы 
+Как заплели красиво 
+С тобой мы посмотри
+
+Время не торопи 
+Дай мне воды напиться
+Вспомнить родные лица
+Объятия мамы рук 
+
+Время не торопи
+Семьи родной источник 
+Ты сбереги извозчик 
+Сердец пусть бьется стук 
+
+
+Время не торопи… 
+Покрепче за руку держи…</pre>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <script src="app.js"></script>

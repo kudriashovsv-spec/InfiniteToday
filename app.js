@@ -15,6 +15,7 @@
     dream: document.getElementById("screen-dream"),
     suns: document.getElementById("screen-suns"),
     hope: document.getElementById("screen-hope"),
+    time: document.getElementById("screen-time"),
   };
 
   const hole = document.getElementById("hole");
@@ -22,6 +23,7 @@
   const constellationDream = document.getElementById("constellation-dream");
   const constellationSuns = document.getElementById("constellation-suns");
   const constellationHope = document.getElementById("constellation-hope");
+  const constellationTime = document.getElementById("constellation-time");
 
   if (
     !screens.enter ||
@@ -30,11 +32,13 @@
     !screens.dream ||
     !screens.suns ||
     !screens.hope ||
+    !screens.time ||
     !hole ||
     !constellationPosik ||
     !constellationDream ||
     !constellationSuns ||
-    !constellationHope
+    !constellationHope ||
+    !constellationTime
   ) {
     return;
   }
@@ -63,14 +67,31 @@
   }
 
   hole.addEventListener("click", () => go(screens.space));
+
+  // На мобильном подпись «Вход» стоит отдельно от чёрной дыры, поэтому
+  // она сама работает как точка входа (на десктопе это ничего не меняет).
+  const enterHint = document.querySelector(".enter__hint");
+  if (enterHint) {
+    enterHint.addEventListener("click", () => go(screens.space));
+  }
   constellationPosik.addEventListener("click", () => go(screens.posik));
   constellationDream.addEventListener("click", () => go(screens.dream));
   constellationSuns.addEventListener("click", () => go(screens.suns));
   constellationHope.addEventListener("click", () => go(screens.hope));
+  constellationTime.addEventListener("click", () => go(screens.time));
 
   document.querySelectorAll("[data-back]").forEach((button) => {
     button.addEventListener("click", () => {
       const target = screens[button.dataset.back];
+      if (target) go(target);
+    });
+  });
+
+  // Мобильный Lvl2: карточки миров ведут в соответствующий Lvl3
+  // (data-world = ключ экрана: posik / dream / suns / hope / time).
+  document.querySelectorAll("[data-world]").forEach((card) => {
+    card.addEventListener("click", () => {
+      const target = screens[card.dataset.world];
       if (target) go(target);
     });
   });
@@ -290,6 +311,22 @@
 
     libraryTracks.forEach((track, index) => {
       track.addEventListener("click", () => selectLibraryTrack(index, true));
+    });
+
+    // Текущий индекс определяется по выделенному треку — так автопереход
+    // работает и после ручного выбора любого трека.
+    const currentLibraryIndex = () =>
+      libraryTracks.findIndex((item) => item.classList.contains("is-current"));
+
+    // Автопереход по окончании трека (только естественное событие ended).
+    // Следующий трек берётся по существующему порядку списка.
+    // На последнем (40-м) треке ничего не запускаем: play/pause уже
+    // приведён в остановленное состояние обработчиком ended в setupPlayer.
+    libraryApi.audio.addEventListener("ended", () => {
+      const nextIndex = currentLibraryIndex() + 1;
+      if (nextIndex < libraryTracks.length) {
+        selectLibraryTrack(nextIndex, true);
+      }
     });
 
     selectLibraryTrack(0, false);
