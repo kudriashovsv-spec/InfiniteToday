@@ -53,11 +53,29 @@
           </p>
           <div class="player" id="library-player" data-player data-src="assets/music/All music/Антисага Electronic.mp3">
             <button
+              class="player__skip player__prev"
+              type="button"
+              aria-label="Предыдущий трек"
+            >
+              <svg class="player__skip-icon" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M9.5 3.5 5.5 8l4 4.5"></path>
+              </svg>
+            </button>
+            <button
               class="player__toggle"
               type="button"
               aria-label="Воспроизвести"
               aria-pressed="false"
             ></button>
+            <button
+              class="player__skip player__next"
+              type="button"
+              aria-label="Следующий трек"
+            >
+              <svg class="player__skip-icon" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M6.5 3.5 10.5 8l-4 4.5"></path>
+              </svg>
+            </button>
             <div
               class="player__bar"
               role="slider"
@@ -637,8 +655,7 @@
 
         <!-- Lvl2 на телефоне: вертикальный список миров вместо космической карты.
              Показывается только при ширине <= 640px (см. .mobile-worlds в styles.css).
-             Изображения пока временные и одинаковые, но у каждого мира — свой
-             отдельный путь, чтобы позже заменить их по одному. -->
+             Мобильные изображения Lvl2: у каждого мира свой отдельный WebP. -->
         <div class="mobile-worlds" aria-label="Миры песен">
           <button
             class="world-card"
@@ -649,7 +666,7 @@
             <span class="world-card__media">
               <img
                 class="world-card__img"
-                src="assets/images/Mobile/ChildrenOfTheSunsMobile.webp"
+                src="assets/images/Mobile/PosikSongMobile.webp"
                 alt=""
                 loading="lazy"
                 decoding="async"
@@ -667,7 +684,7 @@
             <span class="world-card__media">
               <img
                 class="world-card__img"
-                src="assets/images/Mobile/ChildrenOfTheSunsMobile.webp"
+                src="assets/images/Mobile/DreamSongMobile.webp"
                 alt=""
                 loading="lazy"
                 decoding="async"
@@ -703,7 +720,7 @@
             <span class="world-card__media">
               <img
                 class="world-card__img"
-                src="assets/images/Mobile/ChildrenOfTheSunsMobile.webp"
+                src="assets/images/Mobile/HopeMobile.webp"
                 alt=""
                 loading="lazy"
                 decoding="async"
@@ -721,7 +738,7 @@
             <span class="world-card__media">
               <img
                 class="world-card__img"
-                src="assets/images/Mobile/ChildrenOfTheSunsMobile.webp"
+                src="assets/images/Mobile/TimeMobile.webp"
                 alt=""
                 loading="lazy"
                 decoding="async"
@@ -751,7 +768,7 @@
         <div class="scene">
           <div
             class="scene__img"
-            style="background-image: url('assets/images/PosikSongPageLvl3.webp')"
+            style="--scene-desktop: url('assets/images/PosikSongPageLvl3.webp'); --scene-mobile: url('assets/images/Mobile/PosikSongMobile.webp')"
           ></div>
         </div>
         <div class="screen__veil"></div>
@@ -1055,7 +1072,7 @@
         <div class="scene">
           <div
             class="scene__img"
-            style="background-image: url('assets/images/DreamSongPageLvl3.webp')"
+            style="--scene-desktop: url('assets/images/DreamSongPageLvl3.webp'); --scene-mobile: url('assets/images/Mobile/DreamSongMobile.webp')"
           ></div>
         </div>
         <div class="screen__veil"></div>
@@ -1225,7 +1242,7 @@
         <div class="scene">
           <div
             class="scene__img"
-            style="background-image: url('assets/images/ChildrenOfTheSunsPageLvl3.webp')"
+            style="--scene-desktop: url('assets/images/ChildrenOfTheSunsPageLvl3.webp'); --scene-mobile: url('assets/images/Mobile/ChildrenOfTheSunsMobile.webp')"
           ></div>
         </div>
         <div class="screen__veil"></div>
@@ -1453,7 +1470,7 @@
         <div class="scene">
           <div
             class="scene__img"
-            style="background-image: url('assets/images/HopePageLvl3.webp')"
+            style="--scene-desktop: url('assets/images/HopePageLvl3.webp'); --scene-mobile: url('assets/images/Mobile/HopeMobile.webp')"
           ></div>
         </div>
         <div class="screen__veil"></div>
@@ -1696,7 +1713,7 @@
         <div class="scene">
           <div
             class="scene__img"
-            style="background-image: url('assets/images/TimePageLvl3.webp')"
+            style="--scene-desktop: url('assets/images/TimePageLvl3.webp'); --scene-mobile: url('assets/images/Mobile/TimeMobile.webp')"
           ></div>
         </div>
         <div class="screen__veil"></div>

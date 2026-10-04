@@ -318,6 +318,24 @@
     const currentLibraryIndex = () =>
       libraryTracks.findIndex((item) => item.classList.contains("is-current"));
 
+    // Ручное переключение треков кнопками ← / → относится только к этому
+    // плееру Lvl1. Границы списка замыкаются по кругу: с первого «назад»
+    // уходит на последний, с последнего «вперёд» — на первый. Естественное
+    // окончание трека (ended) этим не затрагивается и по-прежнему
+    // останавливается на 40-м.
+    const stepLibraryTrack = (delta) => {
+      const count = libraryTracks.length;
+      if (!count) return;
+      const current = currentLibraryIndex();
+      const base = current === -1 ? 0 : current;
+      selectLibraryTrack((base + delta + count) % count, true);
+    };
+
+    const libraryPrev = libraryPlayer.querySelector(".player__prev");
+    const libraryNext = libraryPlayer.querySelector(".player__next");
+    if (libraryPrev) libraryPrev.addEventListener("click", () => stepLibraryTrack(-1));
+    if (libraryNext) libraryNext.addEventListener("click", () => stepLibraryTrack(1));
+
     // Автопереход по окончании трека (только естественное событие ended).
     // Следующий трек берётся по существующему порядку списка.
     // На последнем (40-м) треке ничего не запускаем: play/pause уже

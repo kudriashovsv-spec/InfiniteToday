@@ -77,6 +77,7 @@ body {
 .scene__img {
   position: absolute;
   inset: 0;
+  background-image: var(--scene-desktop);
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -565,6 +566,48 @@ body {
 
 .player.is-playing .player__toggle::after {
   display: block;
+}
+
+/* --- Переключение треков библиотеки (только глобальный плеер Lvl1) --- */
+.player__skip {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(244, 240, 255, 0.8);
+  cursor: pointer;
+  transition: background 300ms var(--ease-soft), color 300ms var(--ease-soft);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.player__skip:hover,
+.player__skip:focus-visible {
+  background: rgba(180, 165, 255, 0.28);
+  color: #f4f0ff;
+}
+
+.player__skip:focus {
+  outline: none;
+}
+
+.player__skip:focus-visible {
+  outline: 1px solid rgba(216, 198, 255, 0.7);
+  outline-offset: 2px;
+}
+
+.player__skip-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .player__bar {
@@ -1202,6 +1245,16 @@ body {
 
   .player.is-volume-open .player__volume-popover {
     transform: translate(0, -50%);
+  }
+
+  /* --- Lvl3 mobile: сцена 3:4 под мобильные изображения, без искажения --- */
+  .screen--song .scene {
+    aspect-ratio: 3 / 4;
+  }
+
+  .screen--song .scene__img {
+    background-image: var(--scene-mobile, var(--scene-desktop));
+    background-size: cover;
   }
 
   /* --- Lvl2 mobile: вертикальный список миров вместо космической карты --- */
