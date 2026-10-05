@@ -1,0 +1,3490 @@
+{
+  "schema": "gallery-v1",
+  "generated_at": "2026-10-05T17:26:28.739Z",
+  "partial": false,
+  "base": "assets/gallery/",
+  "build": {
+    "tool": "dev/build/build-gallery.mjs",
+    "format": "webp",
+    "compression_level": 5,
+    "variants": [
+      {
+        "size": "lg",
+        "cap": 1920,
+        "quality": 84
+      },
+      {
+        "size": "md",
+        "cap": 1024,
+        "quality": 80
+      },
+      {
+        "size": "sm",
+        "cap": 512,
+        "quality": 76
+      }
+    ]
+  },
+  "stats": {
+    "categories": 11,
+    "images": 99,
+    "files": 291,
+    "bytes": 24848778,
+    "by_variant": {
+      "lg": {
+        "files": 99,
+        "bytes": 15601646
+      },
+      "md": {
+        "files": 93,
+        "bytes": 6903152
+      },
+      "sm": {
+        "files": 99,
+        "bytes": 2343980
+      }
+    }
+  },
+  "categories": [
+    {
+      "slug": "personazhi",
+      "title": "Персонажи",
+      "kind": "theme",
+      "count": 49
+    },
+    {
+      "slug": "poisk",
+      "title": "Поиск",
+      "kind": "song",
+      "count": 10
+    },
+    {
+      "slug": "mechtay",
+      "title": "Мечтай",
+      "kind": "song",
+      "count": 3
+    },
+    {
+      "slug": "deti-solnc",
+      "title": "Дети Солнц",
+      "kind": "song",
+      "count": 7
+    },
+    {
+      "slug": "yunost",
+      "title": "Юность",
+      "kind": "song",
+      "count": 8
+    },
+    {
+      "slug": "teoriya-vsego",
+      "title": "Теория всего",
+      "kind": "song",
+      "count": 6
+    },
+    {
+      "slug": "bronya",
+      "title": "Броня",
+      "kind": "song",
+      "count": 5
+    },
+    {
+      "slug": "igra",
+      "title": "Игра",
+      "kind": "song",
+      "count": 4
+    },
+    {
+      "slug": "vremya-ne-toropi",
+      "title": "Время не торопи",
+      "kind": "song",
+      "count": 1
+    },
+    {
+      "slug": "opravdannaya-nadezhda",
+      "title": "Оправданная надежда",
+      "kind": "song",
+      "count": 1
+    },
+    {
+      "slug": "nesortirovannye",
+      "title": "Другие",
+      "kind": "theme",
+      "count": 5
+    }
+  ],
+  "images": [
+    {
+      "id": "bronya-01",
+      "category": "bronya",
+      "title": "1 кадр",
+      "w": 768,
+      "h": 1344,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "bronya/bronya-01-lg.webp",
+          "w": 768,
+          "h": 1344,
+          "bytes": 82910,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "bronya/bronya-01-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 48616,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "bronya/bronya-01-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 17784,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "bronya-02",
+      "category": "bronya",
+      "title": "1 Конь в пальто АП",
+      "w": 1536,
+      "h": 2688,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "bronya/bronya-02-lg.webp",
+          "w": 1098,
+          "h": 1920,
+          "bytes": 184962,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "bronya/bronya-02-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 64472,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "bronya/bronya-02-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 19510,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "bronya-03",
+      "category": "bronya",
+      "title": "3 кадр чел из под пальто",
+      "w": 768,
+      "h": 1344,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "bronya/bronya-03-lg.webp",
+          "w": 768,
+          "h": 1344,
+          "bytes": 65854,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "bronya/bronya-03-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 38616,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "bronya/bronya-03-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 14504,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "bronya-04",
+      "category": "bronya",
+      "title": "4 кадр чел в кинотеатре",
+      "w": 768,
+      "h": 1344,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "bronya/bronya-04-lg.webp",
+          "w": 768,
+          "h": 1344,
+          "bytes": 102540,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "bronya/bronya-04-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 60962,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "bronya/bronya-04-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 21072,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "bronya-05",
+      "category": "bronya",
+      "title": "Телек бургер",
+      "w": 768,
+      "h": 1344,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "bronya/bronya-05-lg.webp",
+          "w": 768,
+          "h": 1344,
+          "bytes": 87498,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "bronya/bronya-05-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 50640,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "bronya/bronya-05-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 18142,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "vremya-ne-toropi-01",
+      "category": "vremya-ne-toropi",
+      "title": "TimePageLvl3",
+      "w": 1671,
+      "h": 941,
+      "ratio": 1.7758,
+      "files": {
+        "lg": {
+          "path": "vremya-ne-toropi/vremya-ne-toropi-01-lg.webp",
+          "w": 1671,
+          "h": 942,
+          "bytes": 445120,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "vremya-ne-toropi/vremya-ne-toropi-01-md.webp",
+          "w": 1024,
+          "h": 576,
+          "bytes": 186474,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "vremya-ne-toropi/vremya-ne-toropi-01-sm.webp",
+          "w": 512,
+          "h": 288,
+          "bytes": 46204,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "deti-solnc-01",
+      "category": "deti-solnc",
+      "title": "1 кадр",
+      "w": 940,
+      "h": 1672,
+      "ratio": 0.5622,
+      "files": {
+        "lg": {
+          "path": "deti-solnc/deti-solnc-01-lg.webp",
+          "w": 940,
+          "h": 1672,
+          "bytes": 431944,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "deti-solnc/deti-solnc-01-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 170140,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "deti-solnc/deti-solnc-01-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 45414,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "deti-solnc-02",
+      "category": "deti-solnc",
+      "title": "2 кадр",
+      "w": 940,
+      "h": 1672,
+      "ratio": 0.5622,
+      "files": {
+        "lg": {
+          "path": "deti-solnc/deti-solnc-02-lg.webp",
+          "w": 940,
+          "h": 1672,
+          "bytes": 532962,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "deti-solnc/deti-solnc-02-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 222582,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "deti-solnc/deti-solnc-02-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 59680,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "deti-solnc-03",
+      "category": "deti-solnc",
+      "title": "3 кадр",
+      "w": 940,
+      "h": 1672,
+      "ratio": 0.5622,
+      "files": {
+        "lg": {
+          "path": "deti-solnc/deti-solnc-03-lg.webp",
+          "w": 940,
+          "h": 1672,
+          "bytes": 477642,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "deti-solnc/deti-solnc-03-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 198414,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "deti-solnc/deti-solnc-03-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 55112,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "deti-solnc-04",
+      "category": "deti-solnc",
+      "title": "4 кадр",
+      "w": 941,
+      "h": 1672,
+      "ratio": 0.5628,
+      "files": {
+        "lg": {
+          "path": "deti-solnc/deti-solnc-04-lg.webp",
+          "w": 942,
+          "h": 1672,
+          "bytes": 471940,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "deti-solnc/deti-solnc-04-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 192366,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "deti-solnc/deti-solnc-04-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 50028,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "deti-solnc-05",
+      "category": "deti-solnc",
+      "title": "Промо 16-9",
+      "w": 1672,
+      "h": 941,
+      "ratio": 1.7768,
+      "files": {
+        "lg": {
+          "path": "deti-solnc/deti-solnc-05-lg.webp",
+          "w": 1672,
+          "h": 942,
+          "bytes": 387768,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "deti-solnc/deti-solnc-05-md.webp",
+          "w": 1024,
+          "h": 576,
+          "bytes": 172876,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "deti-solnc/deti-solnc-05-sm.webp",
+          "w": 512,
+          "h": 288,
+          "bytes": 49072,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "deti-solnc-06",
+      "category": "deti-solnc",
+      "title": "Промо Дети Солнц",
+      "w": 1280,
+      "h": 720,
+      "ratio": 1.7778,
+      "files": {
+        "lg": {
+          "path": "deti-solnc/deti-solnc-06-lg.webp",
+          "w": 1280,
+          "h": 720,
+          "bytes": 248454,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "deti-solnc/deti-solnc-06-md.webp",
+          "w": 1024,
+          "h": 576,
+          "bytes": 157160,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "deti-solnc/deti-solnc-06-sm.webp",
+          "w": 512,
+          "h": 288,
+          "bytes": 47224,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "deti-solnc-07",
+      "category": "deti-solnc",
+      "title": "ChildrenOfTheSunsPageLvl3",
+      "w": 1672,
+      "h": 941,
+      "ratio": 1.7768,
+      "files": {
+        "lg": {
+          "path": "deti-solnc/deti-solnc-07-lg.webp",
+          "w": 1672,
+          "h": 942,
+          "bytes": 435794,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "deti-solnc/deti-solnc-07-md.webp",
+          "w": 1024,
+          "h": 576,
+          "bytes": 185532,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "deti-solnc/deti-solnc-07-sm.webp",
+          "w": 512,
+          "h": 288,
+          "bytes": 47870,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "igra-01",
+      "category": "igra",
+      "title": "1 кадр АП",
+      "w": 1536,
+      "h": 2688,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "igra/igra-01-lg.webp",
+          "w": 1098,
+          "h": 1920,
+          "bytes": 108120,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "igra/igra-01-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 38758,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "igra/igra-01-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 12468,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "igra-02",
+      "category": "igra",
+      "title": "2 кадр АП",
+      "w": 1536,
+      "h": 2688,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "igra/igra-02-lg.webp",
+          "w": 1098,
+          "h": 1920,
+          "bytes": 89654,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "igra/igra-02-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 31116,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "igra/igra-02-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 9656,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "igra-03",
+      "category": "igra",
+      "title": "3 кадр АП",
+      "w": 1536,
+      "h": 2688,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "igra/igra-03-lg.webp",
+          "w": 1098,
+          "h": 1920,
+          "bytes": 87130,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "igra/igra-03-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 32754,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "igra/igra-03-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 10372,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "igra-04",
+      "category": "igra",
+      "title": "4 кадр АП",
+      "w": 1536,
+      "h": 2688,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "igra/igra-04-lg.webp",
+          "w": 1098,
+          "h": 1920,
+          "bytes": 128604,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "igra/igra-04-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 46904,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "igra/igra-04-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 15054,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "mechtay-01",
+      "category": "mechtay",
+      "title": "Мечтай Промо полный ролик",
+      "w": 1672,
+      "h": 941,
+      "ratio": 1.7768,
+      "files": {
+        "lg": {
+          "path": "mechtay/mechtay-01-lg.webp",
+          "w": 1672,
+          "h": 942,
+          "bytes": 382676,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "mechtay/mechtay-01-md.webp",
+          "w": 1024,
+          "h": 576,
+          "bytes": 157628,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "mechtay/mechtay-01-sm.webp",
+          "w": 512,
+          "h": 288,
+          "bytes": 42436,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "mechtay-02",
+      "category": "mechtay",
+      "title": "Мечтай Shorts",
+      "w": 941,
+      "h": 1672,
+      "ratio": 0.5628,
+      "files": {
+        "lg": {
+          "path": "mechtay/mechtay-02-lg.webp",
+          "w": 942,
+          "h": 1672,
+          "bytes": 339468,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "mechtay/mechtay-02-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 134174,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "mechtay/mechtay-02-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 36822,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "mechtay-03",
+      "category": "mechtay",
+      "title": "DreamSongPageLvl3",
+      "w": 1672,
+      "h": 941,
+      "ratio": 1.7768,
+      "files": {
+        "lg": {
+          "path": "mechtay/mechtay-03-lg.webp",
+          "w": 1672,
+          "h": 942,
+          "bytes": 376244,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "mechtay/mechtay-03-md.webp",
+          "w": 1024,
+          "h": 576,
+          "bytes": 162180,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "mechtay/mechtay-03-sm.webp",
+          "w": 512,
+          "h": 288,
+          "bytes": 41958,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "nesortirovannye-01",
+      "category": "nesortirovannye",
+      "title": "1 Альбом",
+      "w": 1024,
+      "h": 1024,
+      "ratio": 1,
+      "files": {
+        "lg": {
+          "path": "nesortirovannye/nesortirovannye-01-lg.webp",
+          "w": 1024,
+          "h": 1024,
+          "bytes": 193196,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "nesortirovannye/nesortirovannye-01-lg.webp",
+          "w": 1024,
+          "h": 1024,
+          "bytes": 193196,
+          "cap": 1920,
+          "quality": 84,
+          "shared": true
+        },
+        "sm": {
+          "path": "nesortirovannye/nesortirovannye-01-sm.webp",
+          "w": 512,
+          "h": 512,
+          "bytes": 40226,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "nesortirovannye-02",
+      "category": "nesortirovannye",
+      "title": "Фокус тест 1",
+      "w": 768,
+      "h": 1344,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "nesortirovannye/nesortirovannye-02-lg.webp",
+          "w": 768,
+          "h": 1344,
+          "bytes": 52578,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "nesortirovannye/nesortirovannye-02-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 27852,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "nesortirovannye/nesortirovannye-02-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 8294,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "nesortirovannye-03",
+      "category": "nesortirovannye",
+      "title": "Generated Image March 12, 2026 - 11_05PM",
+      "w": 1215,
+      "h": 768,
+      "ratio": 1.582,
+      "files": {
+        "lg": {
+          "path": "nesortirovannye/nesortirovannye-03-lg.webp",
+          "w": 1215,
+          "h": 768,
+          "bytes": 63840,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "nesortirovannye/nesortirovannye-03-md.webp",
+          "w": 1024,
+          "h": 648,
+          "bytes": 19426,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "nesortirovannye/nesortirovannye-03-sm.webp",
+          "w": 512,
+          "h": 324,
+          "bytes": 4748,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "nesortirovannye-04",
+      "category": "nesortirovannye",
+      "title": "Generated Image March 12, 2026 - 11_06PM",
+      "w": 1261,
+      "h": 768,
+      "ratio": 1.6419,
+      "files": {
+        "lg": {
+          "path": "nesortirovannye/nesortirovannye-04-lg.webp",
+          "w": 1261,
+          "h": 768,
+          "bytes": 44424,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "nesortirovannye/nesortirovannye-04-md.webp",
+          "w": 1024,
+          "h": 624,
+          "bytes": 16204,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "nesortirovannye/nesortirovannye-04-sm.webp",
+          "w": 512,
+          "h": 312,
+          "bytes": 4958,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "nesortirovannye-05",
+      "category": "nesortirovannye",
+      "title": "Generated Image March 17, 2026 - 4_50PM",
+      "w": 768,
+      "h": 1344,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "nesortirovannye/nesortirovannye-05-lg.webp",
+          "w": 768,
+          "h": 1344,
+          "bytes": 187442,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "nesortirovannye/nesortirovannye-05-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 87116,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "nesortirovannye/nesortirovannye-05-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 20760,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "opravdannaya-nadezhda-01",
+      "category": "opravdannaya-nadezhda",
+      "title": "HopePageLvl3",
+      "w": 1672,
+      "h": 941,
+      "ratio": 1.7768,
+      "files": {
+        "lg": {
+          "path": "opravdannaya-nadezhda/opravdannaya-nadezhda-01-lg.webp",
+          "w": 1672,
+          "h": 942,
+          "bytes": 388526,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "opravdannaya-nadezhda/opravdannaya-nadezhda-01-md.webp",
+          "w": 1024,
+          "h": 576,
+          "bytes": 162066,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "opravdannaya-nadezhda/opravdannaya-nadezhda-01-sm.webp",
+          "w": 512,
+          "h": 288,
+          "bytes": 40806,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-01",
+      "category": "personazhi",
+      "title": "Дизайн без названия (10)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-01-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 115190,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-01-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 63532,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-01-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 21828,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-02",
+      "category": "personazhi",
+      "title": "Дизайн без названия (11)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-02-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 131648,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-02-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 73106,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-02-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 24746,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-03",
+      "category": "personazhi",
+      "title": "Дизайн без названия (12)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-03-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 103236,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-03-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 56976,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-03-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 19128,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-04",
+      "category": "personazhi",
+      "title": "Дизайн без названия (13)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-04-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 154894,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-04-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 89420,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-04-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 31140,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-05",
+      "category": "personazhi",
+      "title": "Дизайн без названия (14)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-05-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 130582,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-05-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 74730,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-05-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 25710,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-06",
+      "category": "personazhi",
+      "title": "Дизайн без названия (15)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-06-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 115554,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-06-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 68012,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-06-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 24654,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-07",
+      "category": "personazhi",
+      "title": "Дизайн без названия (16)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-07-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 102570,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-07-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 60830,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-07-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 24066,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-08",
+      "category": "personazhi",
+      "title": "Дизайн без названия (17)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-08-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 97338,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-08-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 55062,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-08-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 20734,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-09",
+      "category": "personazhi",
+      "title": "Дизайн без названия (18)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-09-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 119936,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-09-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 69178,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-09-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 25702,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-10",
+      "category": "personazhi",
+      "title": "Дизайн без названия (19)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-10-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 125604,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-10-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 76826,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-10-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 29802,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-11",
+      "category": "personazhi",
+      "title": "Дизайн без названия (20)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-11-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 250750,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-11-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 151496,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-11-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 56208,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-12",
+      "category": "personazhi",
+      "title": "Дизайн без названия (21)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-12-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 108426,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-12-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 60268,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-12-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 21226,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-13",
+      "category": "personazhi",
+      "title": "Дизайн без названия (22)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-13-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 99100,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-13-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 58404,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-13-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 21006,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-14",
+      "category": "personazhi",
+      "title": "Дизайн без названия (23)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-14-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 129216,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-14-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 74848,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-14-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 26704,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-15",
+      "category": "personazhi",
+      "title": "Дизайн без названия (24)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-15-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 115268,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-15-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 66424,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-15-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 24396,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-16",
+      "category": "personazhi",
+      "title": "Дизайн без названия (25)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-16-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 122780,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-16-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 70344,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-16-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 24430,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-17",
+      "category": "personazhi",
+      "title": "Дизайн без названия (26)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-17-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 149680,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-17-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 86620,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-17-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 30506,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-18",
+      "category": "personazhi",
+      "title": "Дизайн без названия (31)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-18-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 84350,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-18-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 46998,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-18-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 15786,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-19",
+      "category": "personazhi",
+      "title": "Дизайн без названия (32)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-19-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 80880,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-19-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 46080,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-19-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 16530,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-20",
+      "category": "personazhi",
+      "title": "Дизайн без названия (33)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-20-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 73278,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-20-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 41836,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-20-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 15316,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-21",
+      "category": "personazhi",
+      "title": "Дизайн без названия (34)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-21-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 114940,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-21-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 64342,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-21-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 21446,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-22",
+      "category": "personazhi",
+      "title": "Дизайн без названия (35)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-22-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 129442,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-22-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 69032,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-22-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 20366,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-23",
+      "category": "personazhi",
+      "title": "Дизайн без названия (36)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-23-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 119466,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-23-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 61862,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-23-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 17496,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-24",
+      "category": "personazhi",
+      "title": "Дизайн без названия (37)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-24-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 109330,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-24-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 62020,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-24-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 21098,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-25",
+      "category": "personazhi",
+      "title": "Дизайн без названия (38)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-25-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 132136,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-25-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 77338,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-25-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 26802,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-26",
+      "category": "personazhi",
+      "title": "Дизайн без названия (39)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-26-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 122288,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-26-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 72756,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-26-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 27404,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-27",
+      "category": "personazhi",
+      "title": "Дизайн без названия (40)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-27-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 138128,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-27-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 80834,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-27-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 27366,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-28",
+      "category": "personazhi",
+      "title": "Дизайн без названия (41)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-28-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 112072,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-28-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 61594,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-28-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 20662,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-29",
+      "category": "personazhi",
+      "title": "Дизайн без названия (42)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-29-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 134124,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-29-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 73900,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-29-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 24796,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-30",
+      "category": "personazhi",
+      "title": "Дизайн без названия (43)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-30-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 128550,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-30-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 75134,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-30-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 26840,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-31",
+      "category": "personazhi",
+      "title": "Дизайн без названия (44)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-31-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 156760,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-31-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 92706,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-31-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 33218,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-32",
+      "category": "personazhi",
+      "title": "Дизайн без названия (45)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-32-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 111358,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-32-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 64912,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-32-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 23328,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-33",
+      "category": "personazhi",
+      "title": "Дизайн без названия (46)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-33-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 149816,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-33-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 86494,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-33-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 29092,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-34",
+      "category": "personazhi",
+      "title": "Дизайн без названия (47)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-34-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 101990,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-34-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 60152,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-34-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 22412,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-35",
+      "category": "personazhi",
+      "title": "Дизайн без названия (6)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-35-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 164478,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-35-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 95774,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-35-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 33460,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-36",
+      "category": "personazhi",
+      "title": "Дизайн без названия (7)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-36-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 205606,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-36-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 117030,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-36-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 40918,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-37",
+      "category": "personazhi",
+      "title": "Дизайн без названия (8)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-37-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 166080,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-37-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 89680,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-37-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 29832,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-38",
+      "category": "personazhi",
+      "title": "Дизайн без названия (9)",
+      "w": 1400,
+      "h": 1000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-38-lg.webp",
+          "w": 1400,
+          "h": 1000,
+          "bytes": 80344,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-38-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 45414,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-38-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 15938,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-39",
+      "category": "personazhi",
+      "title": "f279edcf-d605-48ba-b183-f772c3c9656a",
+      "w": 1257,
+      "h": 768,
+      "ratio": 1.6367,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-39-lg.webp",
+          "w": 1257,
+          "h": 768,
+          "bytes": 60758,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-39-md.webp",
+          "w": 1024,
+          "h": 626,
+          "bytes": 36200,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-39-sm.webp",
+          "w": 512,
+          "h": 312,
+          "bytes": 11150,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-40",
+      "category": "personazhi",
+      "title": "Generated Image March 05, 2026 - 2_08PM",
+      "w": 1024,
+      "h": 1024,
+      "ratio": 1,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-40-lg.webp",
+          "w": 1024,
+          "h": 1024,
+          "bytes": 106022,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-40-lg.webp",
+          "w": 1024,
+          "h": 1024,
+          "bytes": 106022,
+          "cap": 1920,
+          "quality": 84,
+          "shared": true
+        },
+        "sm": {
+          "path": "personazhi/personazhi-40-sm.webp",
+          "w": 512,
+          "h": 512,
+          "bytes": 27746,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-41",
+      "category": "personazhi",
+      "title": "Generated Image March 05, 2026 - 2_14PM",
+      "w": 1024,
+      "h": 1024,
+      "ratio": 1,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-41-lg.webp",
+          "w": 1024,
+          "h": 1024,
+          "bytes": 215016,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-41-lg.webp",
+          "w": 1024,
+          "h": 1024,
+          "bytes": 215016,
+          "cap": 1920,
+          "quality": 84,
+          "shared": true
+        },
+        "sm": {
+          "path": "personazhi/personazhi-41-sm.webp",
+          "w": 512,
+          "h": 512,
+          "bytes": 42900,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-42",
+      "category": "personazhi",
+      "title": "Generated Image March 06, 2026 - 11_15AM",
+      "w": 1229,
+      "h": 768,
+      "ratio": 1.6003,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-42-lg.webp",
+          "w": 1229,
+          "h": 768,
+          "bytes": 134494,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-42-md.webp",
+          "w": 1024,
+          "h": 640,
+          "bytes": 79962,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-42-sm.webp",
+          "w": 512,
+          "h": 320,
+          "bytes": 21014,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-43",
+      "category": "personazhi",
+      "title": "Generated Image March 06, 2026 - 11_48PM (1)",
+      "w": 1203,
+      "h": 768,
+      "ratio": 1.5664,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-43-lg.webp",
+          "w": 1203,
+          "h": 768,
+          "bytes": 98778,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-43-md.webp",
+          "w": 1024,
+          "h": 654,
+          "bytes": 58344,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-43-sm.webp",
+          "w": 512,
+          "h": 326,
+          "bytes": 14374,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-44",
+      "category": "personazhi",
+      "title": "Generated Image March 07, 2026 - 6_59PM",
+      "w": 1344,
+      "h": 768,
+      "ratio": 1.75,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-44-lg.webp",
+          "w": 1344,
+          "h": 768,
+          "bytes": 36708,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-44-md.webp",
+          "w": 1024,
+          "h": 586,
+          "bytes": 20076,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-44-sm.webp",
+          "w": 512,
+          "h": 292,
+          "bytes": 5456,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-45",
+      "category": "personazhi",
+      "title": "Generated Image March 07, 2026 - 7_00PM",
+      "w": 1248,
+      "h": 768,
+      "ratio": 1.625,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-45-lg.webp",
+          "w": 1248,
+          "h": 768,
+          "bytes": 158748,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-45-md.webp",
+          "w": 1024,
+          "h": 630,
+          "bytes": 89912,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-45-sm.webp",
+          "w": 512,
+          "h": 316,
+          "bytes": 23710,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-46",
+      "category": "personazhi",
+      "title": "Generated Image March 07, 2026 - 7_01PM",
+      "w": 1344,
+      "h": 768,
+      "ratio": 1.75,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-46-lg.webp",
+          "w": 1344,
+          "h": 768,
+          "bytes": 146718,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-46-md.webp",
+          "w": 1024,
+          "h": 586,
+          "bytes": 79346,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-46-sm.webp",
+          "w": 512,
+          "h": 292,
+          "bytes": 24642,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-47",
+      "category": "personazhi",
+      "title": "Generated Image March 09, 2026 - 10_51PM",
+      "w": 1024,
+      "h": 1024,
+      "ratio": 1,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-47-lg.webp",
+          "w": 1024,
+          "h": 1024,
+          "bytes": 189540,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-47-lg.webp",
+          "w": 1024,
+          "h": 1024,
+          "bytes": 189540,
+          "cap": 1920,
+          "quality": 84,
+          "shared": true
+        },
+        "sm": {
+          "path": "personazhi/personazhi-47-sm.webp",
+          "w": 512,
+          "h": 512,
+          "bytes": 43860,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-48",
+      "category": "personazhi",
+      "title": "Generated Image March 17, 2026 - 4_49PM",
+      "w": 768,
+      "h": 1344,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-48-lg.webp",
+          "w": 768,
+          "h": 1344,
+          "bytes": 117672,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-48-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 63486,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-48-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 18832,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "personazhi-49",
+      "category": "personazhi",
+      "title": "upscalemedia-transformed",
+      "w": 2800,
+      "h": 2000,
+      "ratio": 1.4,
+      "files": {
+        "lg": {
+          "path": "personazhi/personazhi-49-lg.webp",
+          "w": 1920,
+          "h": 1372,
+          "bytes": 121640,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "personazhi/personazhi-49-md.webp",
+          "w": 1024,
+          "h": 732,
+          "bytes": 49648,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "personazhi/personazhi-49-sm.webp",
+          "w": 512,
+          "h": 366,
+          "bytes": 17026,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "poisk-01",
+      "category": "poisk",
+      "title": "1 Сцена маска у девочки",
+      "w": 1536,
+      "h": 2752,
+      "ratio": 0.5581,
+      "files": {
+        "lg": {
+          "path": "poisk/poisk-01-lg.webp",
+          "w": 1072,
+          "h": 1920,
+          "bytes": 136360,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "poisk/poisk-01-md.webp",
+          "w": 572,
+          "h": 1024,
+          "bytes": 39942,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "poisk/poisk-01-sm.webp",
+          "w": 286,
+          "h": 512,
+          "bytes": 10778,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "poisk-02",
+      "category": "poisk",
+      "title": "Девочка в толпе 1",
+      "w": 1080,
+      "h": 1920,
+      "ratio": 0.5625,
+      "files": {
+        "lg": {
+          "path": "poisk/poisk-02-lg.webp",
+          "w": 1080,
+          "h": 1920,
+          "bytes": 71124,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "poisk/poisk-02-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 27656,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "poisk/poisk-02-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 9742,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "poisk-03",
+      "category": "poisk",
+      "title": "Девочка в толпе 2",
+      "w": 768,
+      "h": 1344,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "poisk/poisk-03-lg.webp",
+          "w": 768,
+          "h": 1344,
+          "bytes": 54454,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "poisk/poisk-03-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 31788,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "poisk/poisk-03-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 10934,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "poisk-04",
+      "category": "poisk",
+      "title": "Девочка в толпе 3",
+      "w": 1536,
+      "h": 2752,
+      "ratio": 0.5581,
+      "files": {
+        "lg": {
+          "path": "poisk/poisk-04-lg.webp",
+          "w": 1072,
+          "h": 1920,
+          "bytes": 192468,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "poisk/poisk-04-md.webp",
+          "w": 572,
+          "h": 1024,
+          "bytes": 56290,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "poisk/poisk-04-sm.webp",
+          "w": 286,
+          "h": 512,
+          "bytes": 14438,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "poisk-05",
+      "category": "poisk",
+      "title": "Девочка перед зеркалом 1",
+      "w": 1536,
+      "h": 2752,
+      "ratio": 0.5581,
+      "files": {
+        "lg": {
+          "path": "poisk/poisk-05-lg.webp",
+          "w": 1072,
+          "h": 1920,
+          "bytes": 221954,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "poisk/poisk-05-md.webp",
+          "w": 572,
+          "h": 1024,
+          "bytes": 63670,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "poisk/poisk-05-sm.webp",
+          "w": 286,
+          "h": 512,
+          "bytes": 16470,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "poisk-06",
+      "category": "poisk",
+      "title": "Поиск",
+      "w": 1280,
+      "h": 720,
+      "ratio": 1.7778,
+      "files": {
+        "lg": {
+          "path": "poisk/poisk-06-lg.webp",
+          "w": 1280,
+          "h": 720,
+          "bytes": 32474,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "poisk/poisk-06-md.webp",
+          "w": 1024,
+          "h": 576,
+          "bytes": 18350,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "poisk/poisk-06-sm.webp",
+          "w": 512,
+          "h": 288,
+          "bytes": 5778,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "poisk-07",
+      "category": "poisk",
+      "title": "Промо",
+      "w": 1280,
+      "h": 720,
+      "ratio": 1.7778,
+      "files": {
+        "lg": {
+          "path": "poisk/poisk-07-lg.webp",
+          "w": 1280,
+          "h": 720,
+          "bytes": 33350,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "poisk/poisk-07-md.webp",
+          "w": 1024,
+          "h": 576,
+          "bytes": 20594,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "poisk/poisk-07-sm.webp",
+          "w": 512,
+          "h": 288,
+          "bytes": 7590,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "poisk-08",
+      "category": "poisk",
+      "title": "Рободевочка",
+      "w": 767,
+      "h": 1024,
+      "ratio": 0.749,
+      "files": {
+        "lg": {
+          "path": "poisk/poisk-08-lg.webp",
+          "w": 768,
+          "h": 1024,
+          "bytes": 155890,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "poisk/poisk-08-lg.webp",
+          "w": 768,
+          "h": 1024,
+          "bytes": 155890,
+          "cap": 1920,
+          "quality": 84,
+          "shared": true
+        },
+        "sm": {
+          "path": "poisk/poisk-08-sm.webp",
+          "w": 384,
+          "h": 512,
+          "bytes": 35150,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "poisk-09",
+      "category": "poisk",
+      "title": "Черная дыра",
+      "w": 767,
+      "h": 1024,
+      "ratio": 0.749,
+      "files": {
+        "lg": {
+          "path": "poisk/poisk-09-lg.webp",
+          "w": 768,
+          "h": 1024,
+          "bytes": 110010,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "poisk/poisk-09-lg.webp",
+          "w": 768,
+          "h": 1024,
+          "bytes": 110010,
+          "cap": 1920,
+          "quality": 84,
+          "shared": true
+        },
+        "sm": {
+          "path": "poisk/poisk-09-sm.webp",
+          "w": 384,
+          "h": 512,
+          "bytes": 25310,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "poisk-10",
+      "category": "poisk",
+      "title": "PosikSongPageLvl3",
+      "w": 1672,
+      "h": 941,
+      "ratio": 1.7768,
+      "files": {
+        "lg": {
+          "path": "poisk/poisk-10-lg.webp",
+          "w": 1672,
+          "h": 942,
+          "bytes": 319476,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "poisk/poisk-10-md.webp",
+          "w": 1024,
+          "h": 576,
+          "bytes": 132014,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "poisk/poisk-10-sm.webp",
+          "w": 512,
+          "h": 288,
+          "bytes": 32056,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "teoriya-vsego-01",
+      "category": "teoriya-vsego",
+      "title": "1",
+      "w": 1080,
+      "h": 1920,
+      "ratio": 0.5625,
+      "files": {
+        "lg": {
+          "path": "teoriya-vsego/teoriya-vsego-01-lg.webp",
+          "w": 1080,
+          "h": 1920,
+          "bytes": 115276,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "teoriya-vsego/teoriya-vsego-01-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 35522,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "teoriya-vsego/teoriya-vsego-01-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 9926,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "teoriya-vsego-02",
+      "category": "teoriya-vsego",
+      "title": "2",
+      "w": 1080,
+      "h": 1920,
+      "ratio": 0.5625,
+      "files": {
+        "lg": {
+          "path": "teoriya-vsego/teoriya-vsego-02-lg.webp",
+          "w": 1080,
+          "h": 1920,
+          "bytes": 164850,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "teoriya-vsego/teoriya-vsego-02-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 42900,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "teoriya-vsego/teoriya-vsego-02-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 10698,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "teoriya-vsego-03",
+      "category": "teoriya-vsego",
+      "title": "3",
+      "w": 1080,
+      "h": 1920,
+      "ratio": 0.5625,
+      "files": {
+        "lg": {
+          "path": "teoriya-vsego/teoriya-vsego-03-lg.webp",
+          "w": 1080,
+          "h": 1920,
+          "bytes": 186716,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "teoriya-vsego/teoriya-vsego-03-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 53142,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "teoriya-vsego/teoriya-vsego-03-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 13766,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "teoriya-vsego-04",
+      "category": "teoriya-vsego",
+      "title": "4",
+      "w": 1080,
+      "h": 1920,
+      "ratio": 0.5625,
+      "files": {
+        "lg": {
+          "path": "teoriya-vsego/teoriya-vsego-04-lg.webp",
+          "w": 1080,
+          "h": 1920,
+          "bytes": 137244,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "teoriya-vsego/teoriya-vsego-04-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 50764,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "teoriya-vsego/teoriya-vsego-04-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 14586,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "teoriya-vsego-05",
+      "category": "teoriya-vsego",
+      "title": "5",
+      "w": 1080,
+      "h": 1920,
+      "ratio": 0.5625,
+      "files": {
+        "lg": {
+          "path": "teoriya-vsego/teoriya-vsego-05-lg.webp",
+          "w": 1080,
+          "h": 1920,
+          "bytes": 119294,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "teoriya-vsego/teoriya-vsego-05-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 36172,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "teoriya-vsego/teoriya-vsego-05-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 10182,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "teoriya-vsego-06",
+      "category": "teoriya-vsego",
+      "title": "6",
+      "w": 1080,
+      "h": 1920,
+      "ratio": 0.5625,
+      "files": {
+        "lg": {
+          "path": "teoriya-vsego/teoriya-vsego-06-lg.webp",
+          "w": 1080,
+          "h": 1920,
+          "bytes": 135014,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "teoriya-vsego/teoriya-vsego-06-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 41020,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "teoriya-vsego/teoriya-vsego-06-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 11148,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "yunost-01",
+      "category": "yunost",
+      "title": "1 кадр Flux",
+      "w": 768,
+      "h": 1344,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "yunost/yunost-01-lg.webp",
+          "w": 768,
+          "h": 1344,
+          "bytes": 57338,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "yunost/yunost-01-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 31784,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "yunost/yunost-01-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 8924,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "yunost-02",
+      "category": "yunost",
+      "title": "1 кадр GPT",
+      "w": 941,
+      "h": 1672,
+      "ratio": 0.5628,
+      "files": {
+        "lg": {
+          "path": "yunost/yunost-02-lg.webp",
+          "w": 942,
+          "h": 1672,
+          "bytes": 155992,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "yunost/yunost-02-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 68680,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "yunost/yunost-02-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 20032,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "yunost-03",
+      "category": "yunost",
+      "title": "1 кадр Qwen",
+      "w": 1536,
+      "h": 2688,
+      "ratio": 0.5714,
+      "files": {
+        "lg": {
+          "path": "yunost/yunost-03-lg.webp",
+          "w": 1098,
+          "h": 1920,
+          "bytes": 169148,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "yunost/yunost-03-md.webp",
+          "w": 586,
+          "h": 1024,
+          "bytes": 64572,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "yunost/yunost-03-sm.webp",
+          "w": 292,
+          "h": 512,
+          "bytes": 22742,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "yunost-04",
+      "category": "yunost",
+      "title": "2 кадр GPT",
+      "w": 941,
+      "h": 1672,
+      "ratio": 0.5628,
+      "files": {
+        "lg": {
+          "path": "yunost/yunost-04-lg.webp",
+          "w": 942,
+          "h": 1672,
+          "bytes": 156006,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "yunost/yunost-04-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 68142,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "yunost/yunost-04-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 20594,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "yunost-05",
+      "category": "yunost",
+      "title": "3 кадр GPT",
+      "w": 941,
+      "h": 1672,
+      "ratio": 0.5628,
+      "files": {
+        "lg": {
+          "path": "yunost/yunost-05-lg.webp",
+          "w": 942,
+          "h": 1672,
+          "bytes": 108874,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "yunost/yunost-05-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 41354,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "yunost/yunost-05-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 10346,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "yunost-06",
+      "category": "yunost",
+      "title": "4 кадр GPT",
+      "w": 941,
+      "h": 1672,
+      "ratio": 0.5628,
+      "files": {
+        "lg": {
+          "path": "yunost/yunost-06-lg.webp",
+          "w": 942,
+          "h": 1672,
+          "bytes": 143222,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "yunost/yunost-06-md.webp",
+          "w": 576,
+          "h": 1024,
+          "bytes": 60572,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "yunost/yunost-06-sm.webp",
+          "w": 288,
+          "h": 512,
+          "bytes": 17520,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "yunost-07",
+      "category": "yunost",
+      "title": "Обложка",
+      "w": 1280,
+      "h": 720,
+      "ratio": 1.7778,
+      "files": {
+        "lg": {
+          "path": "yunost/yunost-07-lg.webp",
+          "w": 1280,
+          "h": 720,
+          "bytes": 25424,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "yunost/yunost-07-md.webp",
+          "w": 1024,
+          "h": 576,
+          "bytes": 15746,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "yunost/yunost-07-sm.webp",
+          "w": 512,
+          "h": 288,
+          "bytes": 5314,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    },
+    {
+      "id": "yunost-08",
+      "category": "yunost",
+      "title": "Юность Промо",
+      "w": 1280,
+      "h": 720,
+      "ratio": 1.7778,
+      "files": {
+        "lg": {
+          "path": "yunost/yunost-08-lg.webp",
+          "w": 1280,
+          "h": 720,
+          "bytes": 29116,
+          "cap": 1920,
+          "quality": 84
+        },
+        "md": {
+          "path": "yunost/yunost-08-md.webp",
+          "w": 1024,
+          "h": 576,
+          "bytes": 18512,
+          "cap": 1024,
+          "quality": 80
+        },
+        "sm": {
+          "path": "yunost/yunost-08-sm.webp",
+          "w": 512,
+          "h": 288,
+          "bytes": 6980,
+          "cap": 512,
+          "quality": 76
+        }
+      }
+    }
+  ]
+}

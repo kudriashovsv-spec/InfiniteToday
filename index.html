@@ -585,6 +585,16 @@
             rel="noopener noreferrer"
           >Telegram</a>
         </div>
+
+        <!-- Вход в галерею — отдельный элемент Lvl1, не часть блока соцсетей:
+             desktop — левый низ, mobile — левый верх (см. .gallery-entry).
+             Ссылка ведёт на хеш уровня #gallery, переход перехватывает app.js
+             и делает его внутренним (без перезагрузки страницы). -->
+        <a
+          class="gallery-entry"
+          href="#gallery"
+          data-gallery-link
+        >Галерея</a>
       </section>
 
       <!-- Уровень 2 — Космос: голубое созвездие = вход в песню «Поиск» -->
@@ -597,7 +607,7 @@
         <div class="scene">
           <div
             class="scene__img"
-            style="background-image: url('assets/images/PaigLvl2.webp')"
+            data-bg="assets/images/PaigLvl2.webp"
           ></div>
 
           <!-- голубое созвездие на изображении ≈ 56.1% / 65.8% -->
@@ -766,10 +776,10 @@
         aria-hidden="true"
       >
         <div class="scene">
-          <div
-            class="scene__img"
-            style="--scene-desktop: url('assets/images/PosikSongPageLvl3.webp'); --scene-mobile: url('assets/images/Mobile/PosikSongMobile.webp')"
-          ></div>
+          <!-- Фон мира не используется: визуальную сцену рисует визуализатор
+               (Butterchurn, canvas.audio-dna). Статичное изображение мира
+               удалено вместе с data-bg-desktop / data-bg-mobile. -->
+          <div class="scene__img"></div>
         </div>
         <div class="screen__veil"></div>
 
@@ -790,7 +800,7 @@
             <div
               class="player"
               data-player
-              data-src="assets/music/Поиск Psychedelic Electronic.mp3"
+              data-src="assets/music/All music/Поиск Psychedelic Electronic.mp3"
             >
               <button
                 class="player__toggle"
@@ -856,7 +866,7 @@
             <div
               class="player"
               data-player
-              data-src="assets/music/Поиск Alternative Electronic.mp3"
+              data-src="assets/music/All music/Поиск Alternative Electronic.mp3"
             >
               <button
                 class="player__toggle"
@@ -922,7 +932,7 @@
             <div
               class="player"
               data-player
-              data-src="assets/music/Поиск Alternative Rock.mp3"
+              data-src="assets/music/All music/Поиск Alternative Rock.mp3"
             >
               <button
                 class="player__toggle"
@@ -1070,10 +1080,10 @@
         aria-hidden="true"
       >
         <div class="scene">
-          <div
-            class="scene__img"
-            style="--scene-desktop: url('assets/images/DreamSongPageLvl3.webp'); --scene-mobile: url('assets/images/Mobile/DreamSongMobile.webp')"
-          ></div>
+          <!-- Фон мира не используется: визуальную сцену рисует визуализатор
+               (Butterchurn, canvas.audio-dna). Статичное изображение мира
+               удалено вместе с data-bg-desktop / data-bg-mobile. -->
+          <div class="scene__img"></div>
         </div>
         <div class="screen__veil"></div>
 
@@ -1094,7 +1104,7 @@
             <div
               class="player"
               data-player
-              data-src="assets/music/Мечтай DnB Deathcore.mp3"
+              data-src="assets/music/All music/Мечтай DnB Deathcore.mp3"
             >
               <button
                 class="player__toggle"
@@ -1240,10 +1250,10 @@
         aria-hidden="true"
       >
         <div class="scene">
-          <div
-            class="scene__img"
-            style="--scene-desktop: url('assets/images/ChildrenOfTheSunsPageLvl3.webp'); --scene-mobile: url('assets/images/Mobile/ChildrenOfTheSunsMobile.webp')"
-          ></div>
+          <!-- Фон мира не используется: визуальную сцену рисует визуализатор
+               (Butterchurn, canvas.audio-dna). Статичное изображение мира
+               удалено вместе с data-bg-desktop / data-bg-mobile. -->
+          <div class="scene__img"></div>
         </div>
         <div class="screen__veil"></div>
 
@@ -1264,7 +1274,7 @@
             <div
               class="player"
               data-player
-              data-src="assets/music/Дети Солнц Psychill.mp3"
+              data-src="assets/music/All music/Дети Солнц Psychill.mp3"
             >
               <button
                 class="player__toggle"
@@ -1330,7 +1340,7 @@
             <div
               class="player"
               data-player
-              data-src="assets/music/Дети Солнц Indietronica.mp3"
+              data-src="assets/music/All music/Дети Солнц Indietronica.mp3"
             >
               <button
                 class="player__toggle"
@@ -1468,10 +1478,10 @@
         aria-hidden="true"
       >
         <div class="scene">
-          <div
-            class="scene__img"
-            style="--scene-desktop: url('assets/images/HopePageLvl3.webp'); --scene-mobile: url('assets/images/Mobile/HopeMobile.webp')"
-          ></div>
+          <!-- Фон мира не используется: визуальную сцену рисует визуализатор
+               (Butterchurn, canvas.audio-dna). Статичное изображение мира
+               удалено вместе с data-bg-desktop / data-bg-mobile. -->
+          <div class="scene__img"></div>
         </div>
         <div class="screen__veil"></div>
 
@@ -1492,7 +1502,7 @@
             <div
               class="player"
               data-player
-              data-src="assets/music/Оправданная надежда Neurofunk.mp3"
+              data-src="assets/music/All music/Оправданная надежда Neurofunk.mp3"
             >
               <button
                 class="player__toggle"
@@ -1558,7 +1568,7 @@
             <div
               class="player"
               data-player
-              data-src="assets/music/Оправданная надежда Downtempo.mp3"
+              data-src="assets/music/All music/Оправданная надежда Downtempo.mp3"
             >
               <button
                 class="player__toggle"
@@ -1711,10 +1721,10 @@
         aria-hidden="true"
       >
         <div class="scene">
-          <div
-            class="scene__img"
-            style="--scene-desktop: url('assets/images/TimePageLvl3.webp'); --scene-mobile: url('assets/images/Mobile/TimeMobile.webp')"
-          ></div>
+          <!-- Фон мира не используется: визуальную сцену рисует визуализатор
+               (Butterchurn, canvas.audio-dna). Статичное изображение мира
+               удалено вместе с data-bg-desktop / data-bg-mobile. -->
+          <div class="scene__img"></div>
         </div>
         <div class="screen__veil"></div>
 
@@ -1729,13 +1739,13 @@
 
         <h1 class="song-title">Время не торопи</h1>
 
-        <div class="song-panel">
+        <div class="song-panel song-panel--time">
           <div class="track">
             <p class="track__genre">Lofi</p>
             <div
               class="player"
               data-player
-              data-src="assets/music/Время не торопи Lofi.mp3"
+              data-src="assets/music/All music/Время не торопи Lofi.mp3"
             >
               <button
                 class="player__toggle"
@@ -1801,7 +1811,7 @@
             <div
               class="player"
               data-player
-              data-src="assets/music/Время не торопи Alternative Rock.mp3"
+              data-src="assets/music/All music/Время не торопи Alternative Rock.mp3"
             >
               <button
                 class="player__toggle"
@@ -1938,8 +1948,95 @@
         </div>
       </section>
 
+      <!-- Галерея — отдельный экран внутри приложения (не новая страница).
+           Manifest и изображения грузятся лениво, при первом входе
+           (см. activateGallery в app.js). Категории и карточки строятся
+           из assets/gallery/gallery.json, а не из статичной разметки. -->
+      <section
+        class="screen screen--gallery"
+        id="screen-gallery"
+        aria-label="Галерея"
+        aria-hidden="true"
+      >
+        <div class="gallery">
+          <div class="gallery__head">
+            <button
+              class="back"
+              type="button"
+              data-back="enter"
+              aria-label="Вернуться на главный экран"
+            >
+              ← Назад
+            </button>
+            <h1 class="gallery__title">Галерея</h1>
+            <div
+              class="gallery__filters"
+              id="gallery-filters"
+              role="group"
+              aria-label="Фильтр по категориям"
+            ></div>
+          </div>
+
+          <div class="gallery__scroll" id="gallery-scroll">
+            <p class="gallery__status" id="gallery-status" hidden></p>
+            <div class="gallery__grid" id="gallery-grid"></div>
+          </div>
+        </div>
+
+        <!-- Lightbox галереи: оверлей внутри того же экрана (не новая
+             страница и не новый .screen). Сестра .gallery, поэтому колесо и
+             тач над оверлеем не прокручивают список галереи. -->
+        <div
+          class="lightbox"
+          id="gallery-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Просмотр изображения"
+          hidden
+        >
+          <div class="lightbox__backdrop" id="lightbox-backdrop"></div>
+
+          <figure class="lightbox__frame" id="lightbox-frame">
+            <img class="lightbox__img" id="lightbox-img" alt="" decoding="async" />
+            <figcaption class="lightbox__caption">
+              <span class="lightbox__counter" id="lightbox-counter"></span>
+              <span class="lightbox__category" id="lightbox-category"></span>
+            </figcaption>
+          </figure>
+
+          <button
+            class="lightbox__nav lightbox__nav--prev"
+            id="lightbox-prev"
+            type="button"
+            aria-label="Предыдущее изображение"
+          >‹</button>
+          <button
+            class="lightbox__nav lightbox__nav--next"
+            id="lightbox-next"
+            type="button"
+            aria-label="Следующее изображение"
+          >›</button>
+          <button
+            class="lightbox__close"
+            id="lightbox-close"
+            type="button"
+            aria-label="Закрыть просмотр"
+          >×</button>
+        </div>
+      </section>
+
     </main>
 
+    <!-- Audio DNA: рабочая версия v3 (audio-dna.js) + Butterchurn-адаптер.
+         version-registry.js — сгенерированный реестр канонических версий
+         (path -> version_id) из music_catalog.json; нужен синхронно.
+         Butterchurn — часть ТОЛЬКО мира песни (Lvl3): на Lvl1 (библиотека) и
+         Lvl2 (карта) визуализатор не подключается. Runtime и золотая
+         библиотека из 10 пресетов грузятся лениво, при первом открытии мира
+         (см. audio-dna-butterchurn.js). v4/v5 не подключаются. -->
+    <script src="audio-dna.js"></script>
+    <script src="vendor/butterchurn/version-registry.js"></script>
+    <script src="audio-dna-butterchurn.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

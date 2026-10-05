@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "presets": [
+    {
+      "id": "3layers",
+      "short": "3 layers",
+      "name": "Geiss - 3 layers (Tunnel Mix)",
+      "src": "vendor/butterchurn/presets/3layers.js",
+      "kb": 3
+    },
+    {
+      "id": "planet1",
+      "short": "Planet 1",
+      "name": "Geiss - Planet 1",
+      "src": "vendor/butterchurn/presets/planet1.js",
+      "kb": 1.3
+    },
+    {
+      "id": "starornament",
+      "short": "Star Ornament",
+      "name": "Zylot - Star Ornament",
+      "src": "vendor/butterchurn/presets/starornament.js",
+      "kb": 4.1
+    },
+    {
+      "id": "mandala",
+      "short": "Mandala Chasers",
+      "name": "Phat+fiShbRaiN+Eo.S_Mandala_Chasers_remix",
+      "src": "vendor/butterchurn/presets/mandala.js",
+      "kb": 5.2
+    },
+    {
+      "id": "fractaldrop",
+      "short": "FractalDrop 7c",
+      "name": "Rovastar + Loadus + Geiss - Tone-mapped FractalDrop 7c",
+      "src": "vendor/butterchurn/presets/fractaldrop.js",
+      "kb": 4.6
+    },
+    {
+      "id": "infinity",
+      "short": "Infinity",
+      "name": "martin - infinity (2010 update)",
+      "src": "vendor/butterchurn/presets/infinity.js",
+      "kb": 7.3
+    },
+    {
+      "id": "ludicrous",
+      "short": "Ludicrous Speed",
+      "name": "martin - ludicrous speed",
+      "src": "vendor/butterchurn/presets/ludicrous.js",
+      "kb": 9.7
+    },
+    {
+      "id": "angel",
+      "short": "Angel Flight",
+      "name": "martin - angel flight",
+      "src": "vendor/butterchurn/presets/angel.js",
+      "kb": 5.7
+    },
+    {
+      "id": "skylight",
+      "short": "Skylight",
+      "name": "Eo.S. + Zylot - skylight (Stained Glass Majesty mix)",
+      "src": "vendor/butterchurn/presets/skylight.js",
+      "kb": 4.6
+    },
+    {
+      "id": "hyperkaleido",
+      "short": "Hyperkaleidoscope Glow",
+      "name": "Rovastar + Geiss - Hyperkaleidoscope Glow 2 motion blur (Jelly)",
+      "src": "vendor/butterchurn/presets/hyperkaleido.js",
+      "kb": 4.4
+    }
+  ]
+}
