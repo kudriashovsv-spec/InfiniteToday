@@ -59,6 +59,7 @@
 - [x] source/build separation verified
 - [x] Phase 8B — Git lineage prepared for SvelteKit cutover
 - [x] GitHub Actions versions updated
+- [x] Phase 8D — Pages workflow registered on default branch
 ## Next
 
 - [ ] decide final deployment architecture
