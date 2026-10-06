@@ -1,32 +1,38 @@
-# Bootstrap GitHub Pages workflow for the Infinite Today cutover.
+# Phase 8A — GitHub Actions workflow для будущего GitHub Pages deployment.
 #
-# Этот workflow живёт на default branch (`main`), чтобы GitHub зарегистрировал
-# его в Actions. Но сам он live-сайт НЕ меняет:
-#   • запускается ТОЛЬКО вручную (workflow_dispatch), push-trigger отсутствует;
-#   • Pages по-прежнему отдаётся старой схемой: Deploy from branch → main / root;
-#   • пока Pages source не переключён на "GitHub Actions", этот workflow не влияет
-#     на https://kudriashovsv-spec.github.io/InfiniteToday/ (v1.1).
+# ЭТО ЛОКАЛЬНАЯ ПОДГОТОВКА. До cutover workflow НЕ выполняется:
+#   • push-trigger отключён (закомментирован), остаётся только ручной запуск;
+#   • GitHub Pages репозитория по-прежнему отдаётся из ветки main (v1.1).
 #
-# Он собирает выбранный ref (по умолчанию `svelte-next`) и публикует его build/.
-# Это позволяет на cutover собрать именно SvelteKit-версию, а не старую v1.1.
+# Будущий порядок cutover (НЕ входит в Phase 8A):
+#   1) запушить source в отдельную ветку этого же repo (например `svelte-next`);
+#   2) вручную переключить Settings → Pages → Source на «GitHub Actions»;
+#   3) запустить workflow (workflow_dispatch или push в source-ветку);
+#   4) прогнать health-check URL из отчёта Phase 8A.
 #
-# Cutover (НЕ автоматизирован, выполняется вручную позже):
-#   1) Settings → Pages → Source = "GitHub Actions";
-#   2) Actions → "Deploy to GitHub Pages" → Run workflow (source_ref=svelte-next);
-#   3) проверить health-check URL: /, /space, /gallery, /world/*.
+# Модель — официальная artifact-based для GitHub Pages:
+#   configure-pages → checkout → setup-node → npm ci → npm run build
+#   → upload-pages-artifact(build) → deploy-pages.
+# Отдельная ветка сборки (gh-pages) НЕ используется.
+#
+# Почему без `static_site_generator: sveltekit`:
+#   base path уже зафиксирован статически в vite.config.js (`paths.base =
+#   '/InfiniteToday'`), а `.nojekyll` лежит в static/ и попадает в build/.
+#   `static_site_generator` нужен, чтобы подставить BASE_PATH в конфиг,
+#   который сам вычисляет base; нам это не нужно и не должно переписывать output.
 
 name: Deploy to GitHub Pages
 
 on:
+  # Безопасный trigger для подготовки: только ручной запуск.
   workflow_dispatch:
-    inputs:
-      source_ref:
-        description: 'Git ref to build (branch / tag / SHA)'
-        required: true
-        default: 'svelte-next'
-        type: string
+  # На cutover раскомментировать и указать реальную source-ветку:
+  # push:
+  #   branches:
+  #     - svelte-next
 
-# Минимально необходимые права: чтение исходников, запись в Pages, OIDC для deploy-pages.
+# Минимально необходимые права: чтение исходников, запись в Pages,
+# OIDC-токен для actions/deploy-pages.
 permissions:
   contents: read
   pages: write
@@ -41,10 +47,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout selected source ref
+      - name: Checkout
         uses: actions/checkout@v6
-        with:
-          ref: ${{ inputs.source_ref }}
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -62,7 +66,7 @@ jobs:
       - name: Build static site (adapter-static → build/)
         run: npm run build
 
-      - name: Upload Pages artifact (build/ only)
+      - name: Upload Pages artifact (только build/)
         uses: actions/upload-pages-artifact@v4
         with:
           path: build
