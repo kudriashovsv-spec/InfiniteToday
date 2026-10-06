@@ -386,6 +386,42 @@ body {
   translate: 0 8px;
 }
 
+/* Desktop Lvl2: визуальные входы миров компактнее примерно в 3 раза.
+   Уменьшены только width/height (каждый мир сохраняет свои пропорции);
+   left/top и позиционирование подписей не меняются. Подписи — на один шаг
+   меньше. Мобильная раскладка (@media max-width: 640px) не затрагивается:
+   там .scene скрыт и работает .mobile-worlds. */
+@media (min-width: 641px) {
+  .hotspot--star {
+    width: 4%;
+    height: 7.1%;
+  }
+
+  .hotspot--star-dream {
+    width: 3%;
+    height: 5.3333%;
+  }
+
+  .hotspot--suns {
+    width: 4.3333%;
+    height: 7.7%;
+  }
+
+  .hotspot--hope {
+    width: 3%;
+    height: 5.3333%;
+  }
+
+  .hotspot--time {
+    width: 3%;
+    height: 5.3333%;
+  }
+
+  .hotspot__label {
+    font-size: clamp(0.9rem, 1.9vw, 1.3rem);
+  }
+}
+
 /* ============================ КНОПКА «НАЗАД» ============================ */
 
 /* Одинакова на Lvl2 и Lvl3: лёгкий текстовый элемент в углу сцены,
@@ -492,6 +528,17 @@ body {
   animation: breathe 3s ease-in-out 1.6s infinite;
 }
 
+/* «Вход» на desktop: чуть крупнее, чуть ярче и на 1 см ниже базового
+   положения. Только desktop — мобильная раскладка (@media max-width: 640px)
+   задаёт свои margin-top/font-size и остаётся без изменений. */
+@media (min-width: 641px) {
+  .enter__hint {
+    margin-top: calc(2rem + 2cm);
+    font-size: clamp(0.95rem, 2vw, 1.3rem);
+    text-shadow: 0 1px 12px rgba(5, 3, 12, 0.7), 0 0 22px rgba(190, 165, 255, 0.5);
+  }
+}
+
 @keyframes soften {
   from {
     opacity: 0;
@@ -585,6 +632,12 @@ body {
    Локальный сдвиг только этого блока (тем же приёмом, что у «Надежды»);
    на мобильном — своё, меньшее значение в @media ниже. */
 .song-panel--time {
+  top: calc(clamp(3rem, 8.4vh, 4.6rem) + 2cm);
+}
+
+/* Мир «Поворот туда»: длинный заголовок тоже заходит на блок (как у «Время
+   не торопи»), поэтому тот же локальный сдвиг. */
+.song-panel--turn {
   top: calc(clamp(3rem, 8.4vh, 4.6rem) + 2cm);
 }
 
@@ -1417,6 +1470,10 @@ body {
     top: calc(5.6rem + 1cm);
   }
 
+  .song-panel--turn {
+    top: calc(5.6rem + 1cm);
+  }
+
   .lyrics-panel.is-open {
     max-height: min(38dvh, 300px);
   }
@@ -2049,5 +2106,74 @@ body {
   }
   .lightbox__frame {
     transform: none;
+  }
+}
+
+/* ==================== L2 DESKTOP: ручная настройка входов ====================
+   Единое место для координат компактных hotspot'ов на PaigLvl2.webp (1672×941).
+   Здесь переопределяются только left/top (центр должен совпадать со звездой)
+   и усиливается видимое кольцо входа. Размеры width/height заданы выше и тут
+   НЕ трогаются. Только desktop: на mobile .scene скрыт и работает .mobile-worlds. */
+@media (min-width: 641px) {
+  /* Центры звёзд на фоне (совпадают с координатами изображения) */
+  .hotspot--star {
+    left: 53.83%;   /* Поиск: синяя звезда голубого созвездия */
+    top: 65.36%;
+  }
+
+  .hotspot--star-dream {
+    left: 63.7%;   /* Мечтай: звезда нижнего синего созвездия */
+    top: 76.4%;
+  }
+
+  .hotspot--suns {
+    left: 17.46%;   /* Дети Солнц: ядро спиральной галактики */
+    top: 20.51%;
+  }
+
+  .hotspot--hope {
+    left: 58.13%;   /* Оправданная надежда: ядро розовой туманности */
+    top: 31.03%;
+  }
+
+  .hotspot--time {
+    left: 90.91%;   /* Время не торопи: центральная звезда туманности */
+    top: 46.68%;
+  }
+
+  /* Кольцо входа заметнее: ярче тонкая обводка + мягкое голубовато-белое
+     свечение (box-shadow). Форма, inset и толщина 1px сохранены. */
+  .hotspot--star::after {
+    border-color: rgba(178, 216, 255, 0.9);
+    opacity: 0.82;
+    box-shadow:
+      0 0 8px rgba(150, 200, 255, 0.55),
+      0 0 18px rgba(120, 170, 255, 0.35),
+      inset 0 0 6px rgba(200, 230, 255, 0.35);
+  }
+
+  .hotspot--star:hover::after,
+  .hotspot--star:focus-visible::after {
+    opacity: 1;
+    box-shadow:
+      0 0 10px rgba(170, 214, 255, 0.75),
+      0 0 24px rgba(130, 180, 255, 0.5),
+      inset 0 0 8px rgba(210, 235, 255, 0.5);
+  }
+}
+
+/* ==================== L2 DESKTOP: входы «Братья» и «Поворот туда» ====================
+   Отдельный override-блок для координат двух новых входов — править удобно
+   в одном месте. Размер, форма и glow берутся от базового .hotspot--star
+   (компактный desktop-размер и кольцо заданы выше), здесь только left/top. */
+@media (min-width: 641px) {
+  .hotspot--brothers {
+    left: 15.9667%;  /* 1/6 экрана от левого края */
+    top: 51.5%;
+  }
+
+  .hotspot--turn {
+    left: 49.3%;       /* ровно по центру карты */
+    top: 45.8%;
   }
 }

@@ -16,6 +16,8 @@
     suns: document.getElementById("screen-suns"),
     hope: document.getElementById("screen-hope"),
     time: document.getElementById("screen-time"),
+    brothers: document.getElementById("screen-brothers"),
+    turn: document.getElementById("screen-turn"),
     gallery: document.getElementById("screen-gallery"),
   };
 
@@ -25,6 +27,8 @@
   const constellationSuns = document.getElementById("constellation-suns");
   const constellationHope = document.getElementById("constellation-hope");
   const constellationTime = document.getElementById("constellation-time");
+  const constellationBrothers = document.getElementById("constellation-brothers");
+  const constellationTurn = document.getElementById("constellation-turn");
 
   if (
     !screens.enter ||
@@ -34,13 +38,17 @@
     !screens.suns ||
     !screens.hope ||
     !screens.time ||
+    !screens.brothers ||
+    !screens.turn ||
     !screens.gallery ||
     !hole ||
     !constellationPosik ||
     !constellationDream ||
     !constellationSuns ||
     !constellationHope ||
-    !constellationTime
+    !constellationTime ||
+    !constellationBrothers ||
+    !constellationTurn
   ) {
     return;
   }
@@ -64,9 +72,9 @@
   // Он живёт внутри того же уровня #gallery, поэтому Back сначала закрывает
   // lightbox, а следующий Back уже уводит из галереи на L1.
   const IMAGE_KEY = "infiniteTodayImage";
-  const LEVEL_KEYS = ["enter", "space", "posik", "dream", "suns", "hope", "time", "gallery"];
+  const LEVEL_KEYS = ["enter", "space", "posik", "dream", "suns", "hope", "time", "brothers", "turn", "gallery"];
   // Уровни соответствуют и просторам, и фрагменту URL (#space, #posik, ...).
-  const LEVEL_SLUGS = { enter: "enter", space: "space", posik: "posik", dream: "dream", suns: "suns", hope: "hope", time: "time", gallery: "gallery" };
+  const LEVEL_SLUGS = { enter: "enter", space: "space", posik: "posik", dream: "dream", suns: "suns", hope: "hope", time: "time", brothers: "brothers", turn: "turn", gallery: "gallery" };
 
   function levelKeyOf(screen) {
     for (const key of LEVEL_KEYS) if (screens[key] === screen) return key;
@@ -213,6 +221,8 @@
   constellationSuns.addEventListener("click", () => go(screens.suns));
   constellationHope.addEventListener("click", () => go(screens.hope));
   constellationTime.addEventListener("click", () => go(screens.time));
+  constellationBrothers.addEventListener("click", () => go(screens.brothers));
+  constellationTurn.addEventListener("click", () => go(screens.turn));
 
   // Ссылка «Галерея» на Lvl1 — внутренний переход по тому же механизму уровней,
   // без перезагрузки и без изменения адреса вне модели #enter/#space/#gallery.
@@ -232,7 +242,7 @@
   });
 
   // Мобильный Lvl2: карточки миров ведут в соответствующий Lvl3
-  // (data-world = ключ экрана: posik / dream / suns / hope / time).
+  // (data-world = ключ экрана: posik / dream / suns / hope / time / brothers / turn).
   document.querySelectorAll("[data-world]").forEach((card) => {
     card.addEventListener("click", () => {
       const target = screens[card.dataset.world];

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#05030c" />
     <title>Infinite Today — Music Laboratory</title>
+    <link rel="icon" type="image/png" href="assets/images/favicon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -659,6 +660,26 @@
           >
             <span class="hotspot__label">Время не торопи</span>
           </button>
+
+          <!-- вход «Братья»: 1/6 от левого края, по центру по вертикали -->
+          <button
+            class="hotspot hotspot--star hotspot--brothers"
+            id="constellation-brothers"
+            type="button"
+            aria-label="Открыть мир песни «Братья»"
+          >
+            <span class="hotspot__label">Братья</span>
+          </button>
+
+          <!-- вход «Поворот туда»: центр карты -->
+          <button
+            class="hotspot hotspot--star hotspot--turn"
+            id="constellation-turn"
+            type="button"
+            aria-label="Открыть мир песни «Поворот туда»"
+          >
+            <span class="hotspot__label">Поворот туда</span>
+          </button>
         </div>
 
         <div class="screen__veil"></div>
@@ -755,6 +776,42 @@
               />
             </span>
             <span class="world-card__title">Время не торопи</span>
+          </button>
+
+          <button
+            class="world-card"
+            type="button"
+            data-world="brothers"
+            aria-label="Открыть мир песни «Братья»"
+          >
+            <span class="world-card__media">
+              <img
+                class="world-card__img"
+                src="assets/images/Mobile/БратьяMobile.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <span class="world-card__title">Братья</span>
+          </button>
+
+          <button
+            class="world-card"
+            type="button"
+            data-world="turn"
+            aria-label="Открыть мир песни «Поворот туда»"
+          >
+            <span class="world-card__media">
+              <img
+                class="world-card__img"
+                src="assets/images/Mobile/ПоворотТудаMobile.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <span class="world-card__title">Поворот туда</span>
           </button>
         </div>
 
@@ -1948,6 +2005,466 @@
         </div>
       </section>
 
+      <!-- Уровень 3 — Мир песни «Братья» -->
+      <section
+        class="screen screen--song"
+        id="screen-brothers"
+        aria-label="Мир песни «Братья»"
+        aria-hidden="true"
+      >
+        <div class="scene">
+          <!-- Фон мира не используется: визуальную сцену рисует визуализатор
+               (Butterchurn, canvas.audio-dna). Статичное изображение мира
+               удалено вместе с data-bg-desktop / data-bg-mobile. -->
+          <div class="scene__img"></div>
+        </div>
+        <div class="screen__veil"></div>
+
+        <button
+          class="back"
+          type="button"
+          data-back="space"
+          aria-label="Вернуться в космос"
+        >
+          ← Назад
+        </button>
+
+        <h1 class="song-title">Братья</h1>
+
+        <div class="song-panel">
+          <div class="track">
+            <p class="track__genre">Aggressive DnB</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/All music/Братья Aggressive DnB.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="track">
+            <p class="track__genre">Indietronica</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/All music/Братья Indietronica.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="lyrics-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="brothers-lyrics"
+          >
+            <span>Текст песни</span>
+            <span class="lyrics-toggle__chevron" aria-hidden="true"></span>
+          </button>
+
+          <div class="lyrics-panel" id="brothers-lyrics" aria-hidden="true">
+            <pre class="lyrics-panel__text" id="brothers-lyrics-text">1 куплет
+Пробираясь через тьму на ощупь впопыхах,
+Не каждый следопыт найдет что пожелал.
+Кто-то превратится в бронзу, а кто-то в серый прах,
+Закон решит достоин он, или напрасен шквал.
+
+Хваткой дикой и хитростью ломая в щепки лес,
+Возвышает города на обломках высоких гор.
+И умы идут за ним, держа мечи наперевес,
+И голоса их сливаются в звенящий алый хор!
+
+Не разглядеть его лица на фоне тысяч лиц,
+И не согреть ладонь над пламенем его огня.
+В его ты власти спишь, не закрывая своих век,
+Но близится пророчество на рассвете дня!
+
+Припев
+Оставь!
+Ты в прошлом свою боль!
+Отныне я с тобой! 
+Забудем старый бой!
+Прости!
+Себя и встань с колен!
+Забыть давно пора!
+Что было — нынче тлен!
+Вперёд! 
+Ты смело сделай шаг!
+Взгляни на небо брат!
+И разожми кулак!
+Возьми! 
+В руку мою ладонь!
+Почувствуй в первый раз! 
+Что значит стать собой!
+
+2 куплет
+Жаль что в один лишь миг Не строится наш мир 
+И острия клинок Оставил много ран 
+Всего и всех мерилом Себя он возомнил 
+Из темноты глубин Бдит ржавчины титан 
+
+Ждёт вызова на бой Могучий Голиаф 
+По принципам своим Конечно он боец 
+Но мы построим мост Между нами тремя  
+И будет братства нашего Сиять резной венец 
+
+И сменят курс ветра и голос обретёшь 
+И потекут ручьи рождая русла рек
+И смоет все границы теплый летний дождь 
+И назовёшь тот мост названьем «ЧЕЛОВЕК»</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Уровень 3 — Мир песни «Поворот туда» -->
+      <section
+        class="screen screen--song"
+        id="screen-turn"
+        aria-label="Мир песни «Поворот туда»"
+        aria-hidden="true"
+      >
+        <div class="scene">
+          <!-- Фон мира не используется: визуальную сцену рисует визуализатор
+               (Butterchurn, canvas.audio-dna). Статичное изображение мира
+               удалено вместе с data-bg-desktop / data-bg-mobile. -->
+          <div class="scene__img"></div>
+        </div>
+        <div class="screen__veil"></div>
+
+        <button
+          class="back"
+          type="button"
+          data-back="space"
+          aria-label="Вернуться в космос"
+        >
+          ← Назад
+        </button>
+
+        <h1 class="song-title">Поворот туда</h1>
+
+        <div class="song-panel song-panel--turn">
+          <div class="track">
+            <p class="track__genre">DnB</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/All music/Поворот туда DnB.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="track">
+            <p class="track__genre">Metalcore</p>
+            <div
+              class="player"
+              data-player
+              data-src="assets/music/All music/Поворот туда Metalcore.mp3"
+            >
+              <button
+                class="player__toggle"
+                type="button"
+                aria-label="Воспроизвести"
+                aria-pressed="false"
+              ></button>
+              <div
+                class="player__bar"
+                role="slider"
+                aria-label="Позиция трека"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
+              >
+                <span class="player__fill"></span>
+              </div>
+              <span class="player__time">0:00 / 0:00</span>
+              <div class="player__volume">
+                <button
+                  class="player__volume-button"
+                  type="button"
+                  aria-label="Громкость"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                    <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                    <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                  </svg>
+                </button>
+                <div class="player__volume-popover" aria-hidden="true">
+                  <button
+                    class="player__mute"
+                    type="button"
+                    aria-label="Выключить звук"
+                    aria-pressed="false"
+                  >
+                    <svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
+                      <path class="player__speaker" d="M2 6h2.4L7.6 3.1v9.8L4.4 10H2z"></path>
+                      <path class="player__wave" d="M9.8 6.1a2.7 2.7 0 0 1 0 3.8"></path>
+                      <path class="player__wave" d="M11.6 4.3a5.2 5.2 0 0 1 0 7.4"></path>
+                    </svg>
+                  </button>
+                  <input
+                    class="player__volume-range"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1"
+                    aria-label="Громкость"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="lyrics-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="turn-lyrics"
+          >
+            <span>Текст песни</span>
+            <span class="lyrics-toggle__chevron" aria-hidden="true"></span>
+          </button>
+
+          <div class="lyrics-panel" id="turn-lyrics" aria-hidden="true">
+            <pre class="lyrics-panel__text" id="turn-lyrics-text">1 Куплет
+Что вшито под корку на беглую пленку
+Не каждому просто заметить в делах
+С детства учили, что негде на свете
+Присесть и подумать, беги в кандалах
+
+Заборы все выше, их не перепрыгнуть
+Ведь ты в своем поле всего лишь один
+Ни звёзды ни солнце не каждый день светят
+В глазницах прохожих пустой желатин
+
+В обрывках серых над городом небо 
+Ботинки разъела соль горьких утрат
+И ночью в постели спешишь завернуться
+Не слышать не думать - стандартный формат
+
+Ты думал всё знаешь но ждёт за изгибом
+Судьбы поворот что пробудет от сна -
+Та самая, что наполняет приливы,
+Пески гонит в горы, ну здравствуй весна
+
+
+Припев
+Собой питаешь Солнце, 
+Ты время и пространство
+В тебе моё лекарство
+Нашёл я нужный ключ
+
+Сатурна красишь кольца,
+В непостижимых далях.
+И перелив хрусталя
+Окрасит в небе луч
+
+Вершин твоих творенье
+Качает в колыбели
+Под звуки, что мы спели
+Ночная тишина
+
+Звёзд в небе сопряженье
+И мириад деталей
+План вечный показали
+Проснувшись ото сна
+
+
+2 Куплет
+Подумаешь что тебе лишь показалось
+Подумаешь что это просто смешно
+Но разом за раз она будет стучаться
+И станет трудней прятаться в свой мешок
+
+Станут острей чувства боли и радости
+Мысли вонзятся словно ножи
+По коже мурашки, нет-нет показалось
+Но станут понятны мотивы всей лжи
+
+И будет непросто но нет невозможного
+Чувству надежды ты просто поверь
+Смелей проверяй куда путь твой меняется
+За каждою дверью есть новая дверь
+
+И старые сказки простые и точные
+Внезапно из тени твоей оживут
+Ты вспомнишь что знал и что верил в то самое
+Что чудо есть данность и сказки не врут</pre>
+          </div>
+        </div>
+      </section>
       <!-- Галерея — отдельный экран внутри приложения (не новая страница).
            Manifest и изображения грузятся лениво, при первом входе
            (см. activateGallery в app.js). Категории и карточки строятся
