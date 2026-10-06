@@ -1,0 +1,60 @@
+/* Infinite Today — глобальные токены и база.
+   Значения и атмосфера перенесены из production v1.1 (styles.css).
+   Всё специфичное для компонентов живёт в их собственном <style>. */
+
+:root {
+	--ease-soft: cubic-bezier(0.65, 0.05, 0.36, 1);
+	--fade: 900ms;
+	--bg-base: #05030c;
+	--text: #f4f0ff;
+	--text-dim: rgba(238, 232, 255, 0.62);
+	--accent-a: #b48bff;
+	--accent-b: #ff8a5c;
+	--star: #6aa8ff;
+
+	/* соотношение сторон основных изображений (1672×941) */
+	--img-w: 1672;
+	--img-h: 941;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	background: var(--bg-base);
+	color: var(--text);
+	font-family: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+	-webkit-font-smoothing: antialiased;
+}
+
+/* Полноэкранный уровень (L1 / L2 / L3). Настоящие route-переходы заменяют
+   hash-навигацию v1.1; мягкое появление сохраняет ощущение смены уровня. */
+.screen {
+	position: fixed;
+	inset: 0;
+	overflow: hidden;
+	background: var(--bg-base);
+	animation: screenIn var(--fade) var(--ease-soft) both;
+}
+
+@keyframes screenIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.screen {
+		animation: none;
+	}
+}

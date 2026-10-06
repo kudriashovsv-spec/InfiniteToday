@@ -1,0 +1,83 @@
+# Phase 8A — GitHub Actions workflow для будущего GitHub Pages deployment.
+#
+# ЭТО ЛОКАЛЬНАЯ ПОДГОТОВКА. До cutover workflow НЕ выполняется:
+#   • push-trigger отключён (закомментирован), остаётся только ручной запуск;
+#   • GitHub Pages репозитория по-прежнему отдаётся из ветки main (v1.1).
+#
+# Будущий порядок cutover (НЕ входит в Phase 8A):
+#   1) запушить source в отдельную ветку этого же repo (например `svelte-next`);
+#   2) вручную переключить Settings → Pages → Source на «GitHub Actions»;
+#   3) запустить workflow (workflow_dispatch или push в source-ветку);
+#   4) прогнать health-check URL из отчёта Phase 8A.
+#
+# Модель — официальная artifact-based для GitHub Pages:
+#   configure-pages → checkout → setup-node → npm ci → npm run build
+#   → upload-pages-artifact(build) → deploy-pages.
+# Отдельная ветка сборки (gh-pages) НЕ используется.
+#
+# Почему без `static_site_generator: sveltekit`:
+#   base path уже зафиксирован статически в vite.config.js (`paths.base =
+#   '/InfiniteToday'`), а `.nojekyll` лежит в static/ и попадает в build/.
+#   `static_site_generator` нужен, чтобы подставить BASE_PATH в конфиг,
+#   который сам вычисляет base; нам это не нужно и не должно переписывать output.
+
+name: Deploy to GitHub Pages
+
+on:
+  # Безопасный trigger для подготовки: только ручной запуск.
+  workflow_dispatch:
+  # На cutover раскомментировать и указать реальную source-ветку:
+  # push:
+  #   branches:
+  #     - svelte-next
+
+# Минимально необходимые права: чтение исходников, запись в Pages,
+# OIDC-токен для actions/deploy-pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Не допускаем параллельных deployment; начатый production-деплой не отменяем.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          # SvelteKit 3 требует Node >= 22.17; проект проверен на Node 24.x.
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static site (adapter-static → build/)
+        run: npm run build
+
+      - name: Upload Pages artifact (только build/)
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

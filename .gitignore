@@ -1,43 +1,23 @@
-# InfiniteToday-Publish — минимальный .gitignore
-#
-# Публикуется строго по dev/production-manifest.json мастерской MusicLaboratory.
-# Здесь перечислено только то, чего в публикации быть НЕ должно.
-# Всё production (index.html, styles.css, app.js, audio-dna*.js, vendor/**,
-# assets/music/All music/*.mp3, assets/images/**, assets/gallery/**) — НЕ игнорируется.
+node_modules
 
-# --- материалы мастерской ---
-dev/
-WorkingFiles/
-analysis/
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
 
-# --- исходники галереи и промежуточные форматы (в публикацию идут только WebP) ---
-assets/images/Gallery/
-assets/gallery/**/*.png
-assets/gallery/**/*.jpg
-assets/gallery/**/*.jpeg
-*.psd
-*.xcf
-
-# --- локальные бэкапы, эксперименты, скриншоты ---
-backup/
-backups/
-experiments/
-screenshots/
-*.zip
-*.bak
-*.log
-
-# --- временные локальные файлы ---
-_*.js
-_*.html
-_*.css
-_*.png
-*.tmp
-
-# --- зависимости и системный мусор ---
-node_modules/
-npm-debug.log*
-Thumbs.db
-Desktop.ini
+# OS
 .DS_Store
-*.sqlite
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
