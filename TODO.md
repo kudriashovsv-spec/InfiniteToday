@@ -59,29 +59,25 @@
 - [x] source/build separation verified
 - [x] Phase 8B — Git lineage prepared for SvelteKit cutover
 - [x] GitHub Actions versions updated
+- [x] Phase 8C — svelte-next pushed to GitHub
 - [x] Phase 8D — Pages workflow registered on default branch
+- [x] GitHub Pages source switched to GitHub Actions
+- [x] First SvelteKit production deployment
+- [x] Live URL validated
+- [x] Desktop live validation
+- [x] Mobile live validation
+- [x] Direct route/deep-link validation
+
 ## Next
 
-- [ ] decide final deployment architecture
-- [ ] GitHub Actions
-- [ ] GitHub Pages deployment
-- [ ] live production validation
-- [ ] migration cutover
+No required migration tasks remain. Optional future work:
 
-## Important references
+- [ ] optional visual polish
+- [ ] future improvements
 
-Golden reference:
+## References
 
-`C:\Projects\EduProject\InfiniteToday-Publish`
-
-Workshop:
-
-`C:\Projects\EduProject\MusicLaboratory`
-
-SvelteKit project:
-
-`C:\Projects\EduProject\InfiniteToday-Svelte`
-
-Production v1.1 commit:
-
-`09f2a92a733fcad9b86ee424071d83d1f85116c1`
+- Repository: https://github.com/kudriashovsv-spec/InfiniteToday
+- Live: https://kudriashovsv-spec.github.io/InfiniteToday/
+- Source branch: `svelte-next`
+- Previous static version (v1.1) commit: `09f2a92a733fcad9b86ee424071d83d1f85116c1`
