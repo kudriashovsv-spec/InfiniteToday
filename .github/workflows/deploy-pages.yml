@@ -1,0 +1,79 @@
+# Bootstrap GitHub Pages workflow for the Infinite Today cutover.
+#
+# Этот workflow живёт на default branch (`main`), чтобы GitHub зарегистрировал
+# его в Actions. Но сам он live-сайт НЕ меняет:
+#   • запускается ТОЛЬКО вручную (workflow_dispatch), push-trigger отсутствует;
+#   • Pages по-прежнему отдаётся старой схемой: Deploy from branch → main / root;
+#   • пока Pages source не переключён на "GitHub Actions", этот workflow не влияет
+#     на https://kudriashovsv-spec.github.io/InfiniteToday/ (v1.1).
+#
+# Он собирает выбранный ref (по умолчанию `svelte-next`) и публикует его build/.
+# Это позволяет на cutover собрать именно SvelteKit-версию, а не старую v1.1.
+#
+# Cutover (НЕ автоматизирован, выполняется вручную позже):
+#   1) Settings → Pages → Source = "GitHub Actions";
+#   2) Actions → "Deploy to GitHub Pages" → Run workflow (source_ref=svelte-next);
+#   3) проверить health-check URL: /, /space, /gallery, /world/*.
+
+name: Deploy to GitHub Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: 'Git ref to build (branch / tag / SHA)'
+        required: true
+        default: 'svelte-next'
+        type: string
+
+# Минимально необходимые права: чтение исходников, запись в Pages, OIDC для deploy-pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Не допускаем параллельных deployment; начатый production-деплой не отменяем.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout selected source ref
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.source_ref }}
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          # SvelteKit 3 требует Node >= 22.17; проект проверен на Node 24.x.
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static site (adapter-static → build/)
+        run: npm run build
+
+      - name: Upload Pages artifact (build/ only)
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
