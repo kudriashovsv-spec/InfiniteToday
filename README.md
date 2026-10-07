@@ -33,7 +33,10 @@ of world cards.
 - a global player on the entry screen that keeps playing while you navigate
 - a per-world player on each world page
 - play / pause, seeking, volume and mute
+- explicit loading, failed and retry states
+- keyboard shortcuts (Space, arrows, `M`, `N`, `P`)
 - only one audible source at a time
+- Media Session metadata and OS media controls
 
 ### Audio visualization
 
@@ -49,6 +52,24 @@ of world cards.
 - masonry layout with lazy loading
 - lightbox with keyboard and touch controls
 - history-aware navigation (browser Back closes the lightbox)
+
+### Sharing
+
+- native Web Share API for the home screen and each world
+- Clipboard fallback when Web Share is unavailable
+- the shared link is always the production `/InfiniteToday` URL
+
+### Discovery
+
+- per-page titles and descriptions, with one canonical URL per page
+- Open Graph and Twitter/X cards, using each world's existing artwork
+- prerendered `sitemap.xml` and `robots.txt`
+
+### Analytics
+
+- privacy-friendly GoatCounter pageviews and custom events
+- no cookies, no persistent identifiers, no fingerprinting
+- disabled in development; the site works fully without it
 
 ## Architecture
 
@@ -77,6 +98,9 @@ Highlights:
   gallery.
 - **Static output.** The whole site is prerendered and deployed as plain static
   files under the `/InfiniteToday` base path.
+- **Metadata and analytics are client-safe.** Per-page SEO metadata is rendered at
+  build time, and analytics loads client-side only — so the static output keeps
+  working even when the analytics provider is blocked or unavailable.
 
 ## Technology
 
@@ -87,6 +111,8 @@ Highlights:
 - TypeScript (strict) — components, routes, data layer and the audio core
 - `svelte-check` for type checking
 - Web Audio API
+- Media Session API
+- GoatCounter (privacy-friendly, cookie-less analytics)
 - Butterchurn (WebGL visualizer)
 - Plain JavaScript deliberately kept in the two visualizer runtime modules
   (`src/lib/audio/butterchurn.js`, `src/lib/audio/audio-dna.js`)
@@ -176,10 +202,11 @@ checker.
 
 ## Status
 
-- SvelteKit migration completed
+- SvelteKit migration completed; the SvelteKit site is now production
 - TypeScript migration completed (components, routes, data layer, audio core)
-- deployed to GitHub Pages and served from the `/InfiniteToday` base path
-- live version validated on desktop and mobile
+- player UX, Media Session, SEO, Web Share and privacy-friendly analytics shipped
+- published to GitHub Pages and served from the `/InfiniteToday` base path
+- validated on desktop and mobile
 
-There are no required migration tasks left. Further visual and functional
-improvements are possible and will be added over time.
+There are no required tasks left. Optional future work (for example migrating the
+two visualizer runtime modules to TypeScript) is tracked in `TODO.md`.
