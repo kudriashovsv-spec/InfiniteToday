@@ -9,19 +9,17 @@
 // Визуализатор отдельно подключает тот же узел к Butterchurn (connectAudio),
 // не разрывая слышимый маршрут.
 
-/** @type {AudioContext | null} */
-let ctx = null;
+/** Единственный на сеанс AudioContext (создаётся лениво, только в браузере). */
+let ctx: AudioContext | null = null;
 
-/** @type {Map<HTMLAudioElement, MediaElementAudioSourceNode>} */
-const sources = new Map();
+/** MediaElementSource для каждого заведённого <audio>. */
+const sources = new Map<HTMLAudioElement, MediaElementAudioSourceNode>();
 
 // Общий analyser для аудиовизуализаторов (Audio DNA). Graph о нём не знает
 // ничего конкретного: просто отдаёт узел и позволяет подключать к нему
 // любой source-узел. Никаких if butterchurn / if audioDNA здесь нет.
-/** @type {AnalyserNode | null} */
-let analyser = null;
-/** @type {GainNode | null} */
-let silentGain = null;
+let analyser: AnalyserNode | null = null;
+let silentGain: GainNode | null = null;
 
 let gestureBound = false;
 
@@ -34,37 +32,41 @@ function bindGestureResume() {
 	window.addEventListener('keydown', onGesture, true);
 }
 
+/** Legacy-имя того же конструктора в старых Safari (без any-каста). */
+interface WebkitAudioWindow extends Window {
+	webkitAudioContext?: typeof AudioContext;
+}
+
 /**
  * Единственный AudioContext (создаётся лениво, только в браузере).
- * @returns {AudioContext | null}
  */
-export function getContext() {
+export function getContext(): AudioContext | null {
 	if (ctx) return ctx;
 	if (typeof window === 'undefined') return null;
-	const AC = window.AudioContext || /** @type {any} */ (window).webkitAudioContext;
+	const legacy = window as WebkitAudioWindow;
+	const AC: typeof AudioContext | undefined =
+		typeof window.AudioContext === 'function' ? window.AudioContext : legacy.webkitAudioContext;
 	if (!AC) return null;
 	ctx = new AC();
 	bindGestureResume();
 	return ctx;
 }
 
-export function resume() {
+export function resume(): void {
 	if (!ctx || ctx.state !== 'suspended') return;
-	const request = ctx.resume();
+	// Спецификация возвращает Promise, но защищаемся от реализаций без него.
+	const request: Promise<void> | undefined = ctx.resume();
 	if (request && typeof request.catch === 'function') request.catch(() => {});
 }
 
-/** @returns {AudioContextState | null} */
-export function getContextState() {
+export function getContextState(): AudioContextState | null {
 	return ctx ? ctx.state : null;
 }
 
 /**
  * MediaElementSource для <audio>: создаётся один раз за сеанс и переиспользуется.
- * @param {HTMLAudioElement} audio
- * @returns {MediaElementAudioSourceNode | null}
  */
-export function getSource(audio) {
+export function getSource(audio: HTMLAudioElement): MediaElementAudioSourceNode | null {
 	const context = getContext();
 	if (!context) return null;
 	let node = sources.get(audio);
@@ -80,9 +82,8 @@ export function getSource(audio) {
  * Освобождает граф для удалённого <audio> (компонент размонтирован), чтобы при
  * повторных входах в миры граф не копил мёртвые узлы. Возврат к тому же
  * элементу после release невозможен — но элементы у нас живут в рамках mount.
- * @param {HTMLAudioElement} audio
  */
-export function releaseSource(audio) {
+export function releaseSource(audio: HTMLAudioElement): void {
 	const node = sources.get(audio);
 	if (!node) return;
 	try {
@@ -102,26 +103,27 @@ export function sourceCount() {
  * Общий AnalyserNode. Создаётся один раз. Подключён к destination через
  * gain=0, чтобы граф гарантированно обрабатывал его и при этом анализ
  * НЕ дублировал слышимый звук.
- * @returns {AnalyserNode | null}
  */
-export function getAnalyser() {
+export function getAnalyser(): AnalyserNode | null {
 	const context = getContext();
 	if (!context) return null;
 	if (!analyser) {
-		analyser = context.createAnalyser();
-		silentGain = context.createGain();
-		silentGain.gain.value = 0;
-		analyser.connect(silentGain);
-		silentGain.connect(context.destination);
+		// Локальные ссылки: модульный `let` без потерь сужения типа.
+		const node = context.createAnalyser();
+		const gain = context.createGain();
+		gain.gain.value = 0;
+		node.connect(gain);
+		gain.connect(context.destination);
+		analyser = node;
+		silentGain = gain;
 	}
 	return analyser;
 }
 
 /**
  * Подключает source-узел к общему analyser (без изменения слышимого сигнала).
- * @param {AudioNode | null} node
  */
-export function tapAnalyser(node) {
+export function tapAnalyser(node: AudioNode | null): void {
 	const a = getAnalyser();
 	if (!a || !node) return;
 	try {
@@ -133,9 +135,8 @@ export function tapAnalyser(node) {
 
 /**
  * Отключает source-узел от общего analyser.
- * @param {AudioNode | null} node
  */
-export function untapAnalyser(node) {
+export function untapAnalyser(node: AudioNode | null): void {
 	if (!analyser || !node) return;
 	try {
 		node.disconnect(analyser);

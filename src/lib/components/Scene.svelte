@@ -1,20 +1,23 @@
-<script>
+<script lang="ts">
 	import { asset } from '$app/paths';
+	import type { AssetPath } from '$app/types';
+	import type { Snippet } from 'svelte';
 
 	/**
 	 * Полноэкранная «сцена» уровня: изображение вписывается по cover так,
 	 * что его пропорции сохраняются, а проценты вложенных элементов
 	 * совпадают с координатами картинки (приём из v1.1).
-	 *
-	 * @type {{
-	 *   src: string,
-	 *   width?: number,
-	 *   height?: number,
-	 *   containOnNarrow?: boolean,
-	 *   children?: import('svelte').Snippet
-	 * }}
 	 */
-	let { src, width = 1672, height = 941, containOnNarrow = false, children } = $props();
+	interface SceneProps {
+		/** путь к изображению относительно static/ */
+		src: AssetPath;
+		width?: number;
+		height?: number;
+		containOnNarrow?: boolean;
+		children?: Snippet;
+	}
+
+	let { src, width = 1672, height = 941, containOnNarrow = false, children }: SceneProps = $props();
 </script>
 
 <div class="scene" class:contain-on-narrow={containOnNarrow} style="--w:{width};--h:{height}">
@@ -32,6 +35,8 @@
 		translate: -50% -50%;
 		width: max(100%, calc(100vh * var(--w) / var(--h)));
 		height: max(100%, calc(100vw * var(--h) / var(--w)));
+		/* dvh учитывает динамическую адресную строку мобильных браузеров */
+		width: max(100%, calc(100dvh * var(--w) / var(--h)));
 		transform-origin: 50% 50%;
 	}
 

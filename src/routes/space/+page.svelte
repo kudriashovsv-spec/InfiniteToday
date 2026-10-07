@@ -4,15 +4,20 @@
 	import MapHotspot from '#lib/components/MapHotspot.svelte';
 	import WorldCard from '#lib/components/WorldCard.svelte';
 	import BackLink from '#lib/components/BackLink.svelte';
+	import Seo from '#lib/components/Seo.svelte';
 	import { worlds } from '#lib/data/worlds.js';
 </script>
 
-<svelte:head>
-	<title>Космос — Infinite Today</title>
-	<meta name="description" content="Космическая карта миров Infinite Today." />
-</svelte:head>
+<Seo
+	title="Космос — карта миров | Infinite Today"
+	description="Космическая карта семи музыкальных миров Infinite Today: выберите мир и войдите в его звук и визуализацию."
+	path="/space"
+	image="images/PaigLvl2.webp"
+	imageAlt="Карта музыкальных миров Infinite Today"
+/>
 
 <div class="screen">
+	<h1 class="sr-only">Космос — карта музыкальных миров Infinite Today</h1>
 	<Scene src="images/PaigLvl2.webp" containOnNarrow>
 		{#each worlds as world (world.slug)}
 			<MapHotspot {world} />
@@ -47,8 +52,10 @@
 			display: flex;
 			flex-direction: column;
 			gap: 1.15rem;
-			padding: 3.5rem 1rem calc(1.4rem + env(safe-area-inset-bottom, 0px));
+			padding: calc(3.5rem + env(safe-area-inset-top, 0px)) 1rem
+				calc(1.4rem + env(safe-area-inset-bottom, 0px));
 			overflow-y: auto;
+			overscroll-behavior: contain;
 			-webkit-overflow-scrolling: touch;
 			scrollbar-width: thin;
 			scrollbar-color: rgba(180, 165, 255, 0.4) transparent;

@@ -1,18 +1,21 @@
-<script>
+<script lang="ts">
 	import { resolve, asset } from '$app/paths';
+	import type { AssetPath } from '$app/types';
 
 	/**
 	 * Мобильная карточка мира (portrait ≤ 640px). На desktop список карточек
 	 * скрыт, там работает карта с точками входа.
-	 *
-	 * @type {{ world: { slug: string, title: string, artwork: string } }}
 	 */
-	let { world } = $props();
+	interface WorldCardProps {
+		world: { slug: string; title: string; artwork: string };
+	}
+
+	let { world }: WorldCardProps = $props();
 </script>
 
-<a class="world-card" href={resolve(`/world/${world.slug}`)} aria-label={`Открыть мир песни «${world.title}»`}>
+<a class="world-card" href={resolve('/world/[slug]', { slug: world.slug })} aria-label={`Открыть мир песни «${world.title}»`}>
 	<span class="world-card__media">
-		<img class="world-card__img" src={asset(world.artwork)} alt="" loading="lazy" decoding="async" />
+		<img class="world-card__img" src={asset(world.artwork as AssetPath)} alt="" loading="lazy" decoding="async" />
 	</span>
 	<span class="world-card__title">{world.title}</span>
 </a>
@@ -36,8 +39,8 @@
 		-webkit-tap-highlight-color: transparent;
 		box-shadow: 0 12px 32px rgba(3, 4, 14, 0.5);
 		transition:
-			transform 320ms var(--ease-soft),
-			border-color 320ms var(--ease-soft);
+			transform var(--dur-ui) var(--ease-out),
+			border-color var(--dur-ui) var(--ease-ui);
 	}
 
 	.world-card:active {
@@ -96,5 +99,10 @@
 		text-shadow:
 			0 1px 2px rgba(3, 4, 14, 0.95),
 			0 2px 14px rgba(3, 4, 14, 0.9);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.world-card:active {
+			transform: none;
+		}
 	}
 </style>

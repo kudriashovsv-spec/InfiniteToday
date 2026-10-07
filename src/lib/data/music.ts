@@ -14,19 +14,21 @@
 // id: для 14 версий миров сохранён проектный id Phase 2 (без переименований);
 // для остальных 26 — version_id из production vendor/butterchurn/version-registry.js.
 
-/**
- * @typedef {object} Track
- * @property {string} id
- * @property {string | null} world
- * @property {string} title
- * @property {string} genre
- * @property {string} src
- * @property {number} num
- * @property {number | null} worldOrder
- */
+export interface Track {
+	id: string;
+	/** slug мира песни или null, если версия живёт только в библиотеке L1 */
+	world: string | null;
+	title: string;
+	genre: string;
+	/** путь относительно static/ (к нему всегда применяется asset()) */
+	src: string;
+	/** порядок в общей библиотеке L1 (как в разметке v1.1, по алфавиту) */
+	num: number;
+	/** порядок версий внутри мира (не совпадает с алфавитным); null для остальных */
+	worldOrder: number | null;
+}
 
-/** @type {Track[]} */
-export const tracks = [
+export const tracks: Track[] = [
 	{ id: 'antisaga-electronic', world: null, title: "Антисага", genre: "Electronic", src: 'music/antisaga-electronic.mp3', num: 1, worldOrder: null },
 	{ id: 'beshenaya-electropop', world: null, title: "Бешеная", genre: "Electropop", src: 'music/beshenaya-electropop.mp3', num: 2, worldOrder: null },
 	{ id: 'brothers-aggressive-dnb', world: 'brothers', title: "Братья", genre: "Aggressive DnB", src: 'music/brothers-aggressive-dnb.mp3', num: 3, worldOrder: 1 },
@@ -69,23 +71,18 @@ export const tracks = [
 	{ id: 'ya-geroy-nashego-vremeni-trap', world: null, title: "Я герой нашего времени", genre: "Trap", src: 'music/ya-geroy-nashego-vremeni-trap.mp3', num: 40, worldOrder: null },
 ];
 
-/** @type {Map<string, Track>} */
-const byId = new Map(tracks.map((track) => [track.id, track]));
+const byId = new Map<string, Track>(
+	tracks.map((track): [string, Track] => [track.id, track])
+);
 
-/**
- * @param {string} id
- * @returns {Track | undefined}
- */
-export function getTrack(id) {
+export function getTrack(id: string): Track | undefined {
 	return byId.get(id);
 }
 
 /**
  * Версии конкретного мира в порядке страниц v1.1 (worldOrder).
- * @param {string} slug
- * @returns {Track[]}
  */
-export function getWorldTracks(slug) {
+export function getWorldTracks(slug: string): Track[] {
 	return tracks
 		.filter((track) => track.world === slug)
 		.sort((a, b) => (a.worldOrder ?? 0) - (b.worldOrder ?? 0));
@@ -93,8 +90,7 @@ export function getWorldTracks(slug) {
 
 /**
  * Полная библиотека L1 в порядке v1.1 (num).
- * @returns {Track[]}
  */
-export function getLibraryTracks() {
+export function getLibraryTracks(): Track[] {
 	return tracks;
 }

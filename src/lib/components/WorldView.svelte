@@ -1,21 +1,24 @@
-<script>
+<script lang="ts">
 	import { resolve } from '$app/paths';
+	import type { Track } from '#lib/data/music.js';
+	import type { World } from '#lib/data/worlds.js';
 	import TrackPlayer from './TrackPlayer.svelte';
 	import LyricsPanel from './LyricsPanel.svelte';
 	import BackLink from './BackLink.svelte';
+	import ShareButton from './ShareButton.svelte';
 
 	/**
 	 * Переиспользуемый мир песни (L3) — зародыш будущего `SongWorld`.
 	 * Получает данные и не знает ни одного конкретного мира, трека или текста:
 	 * все 7 миров рисует этот же компонент.
-	 *
-	 * @type {{
-	 *   world: { slug: string, title: string, panelShift: boolean },
-	 *   tracks: { id: string, title: string, genre: string, src: string }[],
-	 *   lyrics: string
-	 * }}
 	 */
-	let { world, tracks, lyrics } = $props();
+	interface WorldViewProps {
+		world: World;
+		tracks: Track[];
+		lyrics: string;
+	}
+
+	let { world, tracks, lyrics }: WorldViewProps = $props();
 </script>
 
 <BackLink href={resolve('/space')} ariaLabel="Вернуться в космос" />
@@ -33,13 +36,19 @@
 	{#if lyrics}
 		<LyricsPanel text={lyrics} />
 	{/if}
+
+	<ShareButton
+		path={`/world/${world.slug}`}
+		title={`${world.title} — Infinite Today`}
+		text={`Мир песни «${world.title}» в музыкальной лаборатории Infinite Today.`}
+	/>
 </div>
 
 <style>
 	.song-title {
 		position: absolute;
 		z-index: 2;
-		top: clamp(1rem, 3.6vh, 2.4rem);
+		top: calc(clamp(1rem, 3.6vh, 2.4rem) + env(safe-area-inset-top, 0px));
 		left: 50%;
 		translate: -50% 0;
 		margin: 0;
@@ -63,7 +72,7 @@
 	.song-panel {
 		position: absolute;
 		z-index: 2;
-		top: clamp(3rem, 8.4vh, 4.6rem);
+		top: calc(clamp(3rem, 8.4vh, 4.6rem) + env(safe-area-inset-top, 0px));
 		left: clamp(0.9rem, 3vw, 2rem);
 		width: clamp(280px, 27vw, 360px);
 		display: flex;
@@ -75,7 +84,7 @@
 	/* Длинный заголовок мира заходит на блок — сдвигаем саму панель.
 	   Это различие ДАННЫХ (world.panelShift), а не отдельная страница. */
 	.song-panel.is-shifted {
-		top: calc(clamp(3rem, 8.4vh, 4.6rem) + 2cm);
+		top: calc(clamp(3rem, 8.4vh, 4.6rem) + 2cm + env(safe-area-inset-top, 0px));
 	}
 
 	.track {
@@ -97,21 +106,21 @@
 
 	@media (max-width: 640px) {
 		.song-title {
-			top: 2.6rem;
+			top: calc(2.6rem + env(safe-area-inset-top, 0px));
 			font-size: clamp(1.4rem, 6.4vw, 2rem);
 			letter-spacing: 0.1em;
 			text-indent: 0.1em;
 		}
 
 		.song-panel {
-			top: 5.6rem;
+			top: calc(5.6rem + env(safe-area-inset-top, 0px));
 			left: 0.8rem;
 			right: 0.8rem;
 			width: auto;
 		}
 
 		.song-panel.is-shifted {
-			top: calc(5.6rem + 1cm);
+			top: calc(5.6rem + 1cm + env(safe-area-inset-top, 0px));
 		}
 	}
 </style>

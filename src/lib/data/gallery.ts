@@ -13,45 +13,64 @@ import manifest from './gallery.json';
 /** Путь к галерее относительно static/ (используется с asset()). */
 export const galleryDir = 'gallery';
 
-/**
- * @typedef {{ path: string, w: number, h: number, bytes: number }} GalleryFile
- * @typedef {{
- *   id: string,
- *   category: string,
- *   title: string,
- *   w: number,
- *   h: number,
- *   ratio: number,
- *   files: { lg?: GalleryFile, md?: GalleryFile, sm: GalleryFile }
- * }} GalleryWork
- * @typedef {{ slug: string, title: string, kind: string, count: number }} GalleryCategory
- */
+export interface GalleryFile {
+	path: string;
+	w: number;
+	h: number;
+	bytes: number;
+}
+
+export interface GalleryFiles {
+	lg?: GalleryFile;
+	md?: GalleryFile;
+	sm: GalleryFile;
+}
+
+export interface GalleryWork {
+	id: string;
+	category: string;
+	title: string;
+	w: number;
+	h: number;
+	ratio: number;
+	files: GalleryFiles;
+}
+
+export interface GalleryCategory {
+	slug: string;
+	title: string;
+	kind: string;
+	count: number;
+}
+
+/** Итоги сборки манифеста (categories/images/files/bytes). */
+export interface GalleryStats {
+	categories: number;
+	images: number;
+	files: number;
+	bytes: number;
+}
 
 /** 11 категорий в порядке production v1.1 (порядок задан явно, не сортируем). */
-export const categories = /** @type {GalleryCategory[]} */ (manifest.categories);
+export const categories: GalleryCategory[] = manifest.categories;
 
 /** 99 работ в порядке production v1.1. */
-export const works = /** @type {GalleryWork[]} */ (manifest.images);
+export const works: GalleryWork[] = manifest.images;
 
 /** Статистика из манифеста (categories/images/files/bytes). */
-export const galleryStats = manifest.stats;
+export const galleryStats: GalleryStats = manifest.stats;
 
 /**
  * Файл нужного варианта с fallback на sm.
- * @param {GalleryWork} work
- * @param {'lg' | 'md' | 'sm'} variant
- * @returns {GalleryFile}
  */
-export function fileOf(work, variant) {
+export function fileOf(work: GalleryWork, variant: 'lg' | 'md' | 'sm'): GalleryFile {
 	return work.files[variant] || work.files.sm;
 }
 
 /**
  * Работы выбранной категории (или все при 'all') в порядке манифеста.
- * @param {string} category
- * @returns {GalleryWork[]}
  */
-export function worksIn(category) {
+export function worksIn(category: string): GalleryWork[] {
 	if (!category || category === 'all') return works;
 	return works.filter((work) => work.category === category);
 }

@@ -1,14 +1,17 @@
-<script>
+<script lang="ts">
 	import { resolve } from '$app/paths';
+	import type { World } from '#lib/data/worlds.js';
 
 	/**
 	 * Переиспользуемая точка входа на карте L2. Координаты и сторона подписи
 	 * приходят из данных мира, поэтому для 7 миров нет 7 CSS-классов —
 	 * только одна модель.
-	 *
-	 * @type {{ world: { slug: string, title: string, labelSide: string, hotspot: { left: string, top: string, width: string, height: string } } }}
 	 */
-	let { world } = $props();
+	interface MapHotspotProps {
+		world: World;
+	}
+
+	let { world }: MapHotspotProps = $props();
 
 	const labelClass = $derived(
 		world.labelSide === 'above'
@@ -21,7 +24,7 @@
 
 <a
 	class="hotspot {labelClass}"
-	href={resolve(`/world/${world.slug}`)}
+	href={resolve('/world/[slug]', { slug: world.slug })}
 	style="--left:{world.hotspot.left};--top:{world.hotspot.top};--w:{world.hotspot.width};--h:{world.hotspot.height}"
 	aria-label={`Открыть мир песни «${world.title}»`}
 >
@@ -40,8 +43,8 @@
 		cursor: pointer;
 		-webkit-tap-highlight-color: transparent;
 		transition:
-			transform 480ms var(--ease-soft),
-			filter 480ms var(--ease-soft);
+			transform var(--dur-ui) var(--ease-out),
+			filter var(--dur-ui) var(--ease-ui);
 	}
 
 	.hotspot:focus {
@@ -84,21 +87,18 @@
 			0 0 18px rgba(120, 170, 255, 0.35),
 			inset 0 0 6px rgba(200, 230, 255, 0.35);
 		transition:
-			opacity 420ms var(--ease-soft),
-			transform 420ms var(--ease-soft);
+			opacity var(--dur-slow) var(--ease-soft),
+			transform var(--dur-slow) var(--ease-soft);
 	}
 
-	.hotspot:hover,
 	.hotspot:focus-visible {
 		transform: scale(1.05);
 	}
 
-	.hotspot:hover::before,
 	.hotspot:focus-visible::before {
 		animation-duration: 2.2s;
 	}
 
-	.hotspot:hover::after,
 	.hotspot:focus-visible::after {
 		opacity: 1;
 		transform: scale(1.06);
@@ -106,6 +106,25 @@
 			0 0 10px rgba(170, 214, 255, 0.75),
 			0 0 24px rgba(130, 180, 255, 0.5),
 			inset 0 0 8px rgba(210, 235, 255, 0.5);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.hotspot:hover {
+			transform: scale(1.05);
+		}
+
+		.hotspot:hover::before {
+			animation-duration: 2.2s;
+		}
+
+		.hotspot:hover::after {
+			opacity: 1;
+			transform: scale(1.06);
+			box-shadow:
+				0 0 10px rgba(170, 214, 255, 0.75),
+				0 0 24px rgba(130, 180, 255, 0.5),
+				inset 0 0 8px rgba(210, 235, 255, 0.5);
+		}
 	}
 
 	@keyframes starPulse {
@@ -136,12 +155,17 @@
 			0 0 18px rgba(2, 4, 12, 0.75);
 		opacity: 0.8;
 		pointer-events: none;
-		transition: opacity 320ms var(--ease-soft);
+		transition: opacity var(--dur-ui) var(--ease-ui);
 	}
 
-	.hotspot:hover .hotspot__label,
 	.hotspot:focus-visible .hotspot__label {
 		opacity: 1;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.hotspot:hover .hotspot__label {
+			opacity: 1;
+		}
 	}
 
 	/* Подпись над зоной — у входа, где снизу нет места (v1.1: «Мечтай») */
@@ -161,6 +185,16 @@
 	@media (prefers-reduced-motion: reduce) {
 		.hotspot::before {
 			animation: none;
+		}
+
+		.hotspot:hover,
+		.hotspot:focus-visible {
+			transform: none;
+		}
+
+		.hotspot:hover::after,
+		.hotspot:focus-visible::after {
+			transform: none;
 		}
 	}
 </style>

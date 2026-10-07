@@ -8,16 +8,15 @@
 //
 // Пресеты не привязаны к мирам: как в v1.1, это общий shuffle-bag на все версии.
 
-/**
- * @typedef {object} ButterchurnPreset
- * @property {string} id
- * @property {string} short
- * @property {string} name
- * @property {string} src  путь относительно static/
- */
+export interface ButterchurnPreset {
+	id: string;
+	short: string;
+	name: string;
+	/** путь относительно static/ */
+	src: string;
+}
 
-/** @type {ButterchurnPreset[]} */
-export const presets = [
+export const presets: ButterchurnPreset[] = [
 	{ id: '3layers', short: '3 layers', name: 'Geiss - 3 layers (Tunnel Mix)', src: 'vendor/butterchurn/presets/3layers.js' },
 	{ id: 'planet1', short: 'Planet 1', name: 'Geiss - Planet 1', src: 'vendor/butterchurn/presets/planet1.js' },
 	{ id: 'starornament', short: 'Star Ornament', name: 'Zylot - Star Ornament', src: 'vendor/butterchurn/presets/starornament.js' },

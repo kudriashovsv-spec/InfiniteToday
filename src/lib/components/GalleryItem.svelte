@@ -1,23 +1,28 @@
-<script>
+<script lang="ts">
 	import { asset } from '$app/paths';
-	import { galleryDir, fileOf } from '#lib/data/gallery.js';
+	import type { AssetPath } from '$app/types';
+	import { galleryDir, fileOf, type GalleryWork } from '#lib/data/gallery.js';
 
 	/**
 	 * Одна карточка галереи. Отдаёт браузеру готовый srcset из production-
 	 * вариантов (sm + md; lg — только для lightbox) и резервирует пропорцию
 	 * через width/height из манифеста. Картинка грузится лениво.
-	 *
-	 * @type {{ work: import('#lib/data/gallery.js').GalleryWork, onopen: (id: string, el: HTMLElement) => void }}
 	 */
-	let { work, onopen } = $props();
+	interface GalleryItemProps {
+		work: GalleryWork;
+		onopen: (id: string, el: HTMLElement) => void;
+	}
+
+	let { work, onopen }: GalleryItemProps = $props();
 
 	const sm = $derived(fileOf(work, 'sm'));
 	const md = $derived(fileOf(work, 'md'));
-	const src = $derived(asset(`${galleryDir}/${sm.path}`));
+	// Пути приходят из gallery.json (runtime string) — сужаем к списку реальных ассетов.
+	const src = $derived(asset(`${galleryDir}/${sm.path}` as AssetPath));
 	const srcset = $derived(
 		md.path !== sm.path
-			? `${asset(`${galleryDir}/${sm.path}`)} ${sm.w}w, ${asset(`${galleryDir}/${md.path}`)} ${md.w}w`
-			: `${asset(`${galleryDir}/${sm.path}`)} ${sm.w}w`
+			? `${asset(`${galleryDir}/${sm.path}` as AssetPath)} ${sm.w}w, ${asset(`${galleryDir}/${md.path}` as AssetPath)} ${md.w}w`
+			: `${asset(`${galleryDir}/${sm.path}` as AssetPath)} ${sm.w}w`
 	);
 </script>
 
@@ -26,7 +31,7 @@
 	type="button"
 	data-gallery-id={work.id}
 	aria-label={`Открыть изображение: ${work.title}`}
-	onclick={(event) => onopen(work.id, /** @type {HTMLElement} */ (event.currentTarget))}
+	onclick={(event) => onopen(work.id, event.currentTarget)}
 >
 	<img
 		class="gcard__img"
@@ -56,6 +61,14 @@
 		/* waterfall: карточка не разрывается между колонками */
 		break-inside: avoid;
 		-webkit-tap-highlight-color: transparent;
+		transition:
+			border-color var(--dur-ui) var(--ease-ui),
+			transform var(--dur-ui) var(--ease-out),
+			box-shadow var(--dur-ui) var(--ease-ui);
+	}
+
+	.gcard:active {
+		transform: scale(0.985);
 	}
 
 	.gcard__img {
@@ -65,13 +78,6 @@
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.gcard {
-			transition:
-				border-color 280ms var(--ease-soft),
-				transform 280ms var(--ease-soft),
-				box-shadow 280ms var(--ease-soft);
-		}
-
 		.gcard:hover {
 			border-color: rgba(180, 139, 255, 0.42);
 			transform: translateY(-2px);
@@ -88,5 +94,11 @@
 	.gcard:focus-visible {
 		outline: 1px solid rgba(216, 198, 255, 0.55);
 		outline-offset: 3px;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.gcard:active {
+			transform: none;
+		}
 	}
 </style>

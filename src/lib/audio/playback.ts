@@ -8,21 +8,20 @@
 // Веб-аудио граф (AudioContext, MediaElementSource) живёт отдельно, в
 // src/lib/audio/graph.js — чтобы этот модуль не превращался в монолит.
 
-/** @type {Set<HTMLAudioElement>} */
-const registered = new Set();
+/** Подписчик на смену активного источника (для визуализатора). */
+export type ActiveAudioListener = (audio: HTMLAudioElement | null) => void;
 
-/** @type {HTMLAudioElement | null} */
-let activeAudio = null;
+const registered = new Set<HTMLAudioElement>();
 
-/** @type {Set<(audio: HTMLAudioElement | null) => void>} */
-const activeListeners = new Set();
+let activeAudio: HTMLAudioElement | null = null;
+
+const activeListeners = new Set<ActiveAudioListener>();
 
 /**
  * Регистрирует audio на время жизни компонента.
- * @param {HTMLAudioElement} audio
- * @returns {() => void} функция очистки
+ * @returns функция очистки
  */
-export function registerAudio(audio) {
+export function registerAudio(audio: HTMLAudioElement): () => void {
 	registered.add(audio);
 	return () => {
 		registered.delete(audio);
@@ -32,9 +31,8 @@ export function registerAudio(audio) {
 
 /**
  * Ставит на паузу все зарегистрированные аудио, кроме переданного.
- * @param {HTMLAudioElement} except
  */
-export function pauseOthers(except) {
+export function pauseOthers(except: HTMLAudioElement): void {
 	for (const audio of registered) {
 		if (audio !== except && !audio.paused) audio.pause();
 	}
@@ -42,24 +40,18 @@ export function pauseOthers(except) {
 
 /**
  * Помечает audio как активный источник для визуализатора.
- * @param {HTMLAudioElement | null} audio
  */
-export function setActiveAudio(audio) {
+export function setActiveAudio(audio: HTMLAudioElement | null): void {
 	if (activeAudio === audio) return;
 	activeAudio = audio;
 	for (const listener of activeListeners) listener(activeAudio);
 }
 
-/** @returns {HTMLAudioElement | null} */
-export function getActiveAudio() {
+export function getActiveAudio(): HTMLAudioElement | null {
 	return activeAudio;
 }
 
-/**
- * @param {(audio: HTMLAudioElement | null) => void} listener
- * @returns {() => void}
- */
-export function subscribeActiveAudio(listener) {
+export function subscribeActiveAudio(listener: ActiveAudioListener): () => void {
 	activeListeners.add(listener);
 	return () => {
 		activeListeners.delete(listener);

@@ -1,13 +1,15 @@
-<script>
+<script lang="ts">
 	/**
 	 * Сворачиваемый текст песни. Отдельный переиспользуемый компонент:
 	 * следующий мир получит lyrics тем же способом, без копирования разметки.
-	 *
-	 * @type {{ text: string }}
 	 */
-	let { text } = $props();
+	interface LyricsPanelProps {
+		text: string;
+	}
 
-	let open = $state(false);
+	let { text }: LyricsPanelProps = $props();
+
+	let open: boolean = $state(false);
 </script>
 
 <button
@@ -45,17 +47,29 @@
 		backdrop-filter: blur(9px) saturate(1.1);
 		-webkit-backdrop-filter: blur(9px) saturate(1.1);
 		transition:
-			color 300ms var(--ease-soft),
-			background 300ms var(--ease-soft),
-			border-color 300ms var(--ease-soft);
+			color var(--dur-ui) var(--ease-ui),
+			background var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out),
+			border-color var(--dur-ui) var(--ease-ui);
 		-webkit-tap-highlight-color: transparent;
 	}
 
-	.lyrics-toggle:hover,
+	.lyrics-toggle:active {
+		transform: scale(0.97);
+	}
+
 	.lyrics-toggle:focus-visible {
 		color: #f4f0ff;
 		background: rgba(9, 10, 26, 0.5);
 		border-color: rgba(190, 200, 255, 0.28);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.lyrics-toggle:hover {
+			color: #f4f0ff;
+			background: rgba(9, 10, 26, 0.5);
+			border-color: rgba(190, 200, 255, 0.28);
+		}
 	}
 
 	.lyrics-toggle:focus {
@@ -75,8 +89,8 @@
 		rotate: 45deg;
 		translate: 0 -1px;
 		transition:
-			rotate 300ms var(--ease-soft),
-			translate 300ms var(--ease-soft);
+			rotate var(--dur-ui) var(--ease-ui),
+			translate var(--dur-ui) var(--ease-out);
 	}
 
 	.lyrics-toggle.is-open .lyrics-toggle__chevron {
@@ -90,8 +104,8 @@
 		opacity: 0;
 		overflow: hidden;
 		transition:
-			max-height 480ms var(--ease-soft),
-			opacity 360ms var(--ease-soft);
+			max-height var(--dur-enter) var(--ease-out),
+			opacity var(--dur-ui) var(--ease-ui);
 	}
 
 	.lyrics-panel.is-open {
@@ -103,6 +117,7 @@
 		margin: 0;
 		max-height: min(44vh, 360px);
 		overflow-y: auto;
+		overscroll-behavior: contain;
 		padding: 0.85rem 0.95rem;
 		border: 1px solid rgba(190, 200, 255, 0.14);
 		border-radius: 14px;
@@ -132,6 +147,16 @@
 		.lyrics-panel.is-open,
 		.lyrics-panel__text {
 			max-height: min(38dvh, 300px);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.lyrics-panel {
+			transition: opacity var(--dur-ui) linear;
+		}
+
+		.lyrics-toggle:active {
+			transform: none;
 		}
 	}
 </style>

@@ -1,0 +1,13 @@
+{
+	"extends": "$app/tsconfig",
+	"compilerOptions": {
+		"strict": true,
+
+		// Пилот TypeScript: старые .js пока НЕ проверяем глобально.
+		// allowJs (из $app/tsconfig) остаётся true, поэтому .ts-модули могут
+		// импортировать существующие .js и получать их типы из JSDoc.
+		// checkJs включим осознанно, когда миграция дойдёт до остальных файлов.
+		"checkJs": false
+	},
+	"include": ["src", "vite.config.js"]
+}

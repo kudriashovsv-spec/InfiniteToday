@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { tracks } from '#lib/data/music.js';
 	import {
@@ -9,6 +9,7 @@
 		next,
 		prev,
 		toggle,
+		retry,
 		seekTo,
 		setVolume,
 		toggleMute
@@ -23,37 +24,41 @@
 	 * глобальное состояние и один audio-слой.
 	 */
 
-	/** @type {HTMLElement | null} */
-	let playerEl = $state(null);
-	let volumeOpen = $state(false);
+	let playerEl: HTMLElement | null = $state(null);
+	let volumeButtonEl: HTMLButtonElement | null = $state(null);
+	let volumeOpen: boolean = $state(false);
 	let scrubbing = false;
 
 	const track = $derived(currentTrack());
 
 	onMount(() => {
-		/** @param {MouseEvent} event */
-		const onDocClick = (event) => {
+		const onDocClick = (event: MouseEvent): void => {
 			if (!volumeOpen) return;
 			if (playerEl && event.target instanceof Node && playerEl.contains(event.target)) return;
 			volumeOpen = false;
 		};
 		document.addEventListener('click', onDocClick);
-		return () => document.removeEventListener('click', onDocClick);
+		window.addEventListener('keydown', onKeydown);
+		return () => {
+			document.removeEventListener('click', onDocClick);
+			window.removeEventListener('keydown', onKeydown);
+		};
 	});
 
-	/** @param {PointerEvent | MouseEvent} event */
-	function ratioFromEvent(event) {
-		const target = /** @type {HTMLElement} */ (event.currentTarget);
-		const rect = target.getBoundingClientRect();
+	/** События бара: Svelte отдаёт currentTarget самим элементом бара. */
+	type BarPointerEvent = PointerEvent & { currentTarget: HTMLDivElement };
+	type BarMouseEvent = MouseEvent & { currentTarget: HTMLDivElement };
+
+	function ratioFromEvent(event: BarPointerEvent | BarMouseEvent): number {
+		const rect = event.currentTarget.getBoundingClientRect();
 		return Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
 	}
 
-	/** @param {PointerEvent} event */
-	function onBarPointerDown(event) {
+	function onBarPointerDown(event: BarPointerEvent): void {
+		if (player.duration <= 0) return;
 		scrubbing = true;
-		const target = /** @type {HTMLElement} */ (event.currentTarget);
 		try {
-			target.setPointerCapture?.(event.pointerId);
+			event.currentTarget.setPointerCapture?.(event.pointerId);
 		} catch {
 			/* ignore */
 		}
@@ -61,32 +66,27 @@
 		event.preventDefault();
 	}
 
-	/** @param {PointerEvent} event */
-	function onBarPointerMove(event) {
+	function onBarPointerMove(event: BarPointerEvent): void {
 		if (!scrubbing) return;
 		seekTo(ratioFromEvent(event) * player.duration);
 	}
 
-	/** @param {PointerEvent} event */
-	function endScrub(event) {
+	function endScrub(event: BarPointerEvent): void {
 		if (!scrubbing) return;
 		scrubbing = false;
-		const target = /** @type {HTMLElement} */ (event.currentTarget);
 		try {
-			target.releasePointerCapture?.(event.pointerId);
+			event.currentTarget.releasePointerCapture?.(event.pointerId);
 		} catch {
 			/* ignore */
 		}
 	}
 
-	/** @param {MouseEvent} event */
-	function onBarClick(event) {
+	function onBarClick(event: BarMouseEvent): void {
 		if (event.detail === 0) return;
 		seekTo(ratioFromEvent(event) * player.duration);
 	}
 
-	/** @param {KeyboardEvent} event */
-	function onBarKeydown(event) {
+	function onBarKeydown(event: KeyboardEvent): void {
 		if (event.key === 'ArrowRight') {
 			seekTo(player.currentTime + 5);
 		} else if (event.key === 'ArrowLeft') {
@@ -98,10 +98,96 @@
 	}
 
 	const progress = $derived(player.duration > 0 ? player.currentTime / player.duration : 0);
+	const loading = $derived(player.loading && !player.playing);
+	const seekText = $derived(
+		player.duration > 0
+			? `${formatTime(player.currentTime)} из ${formatTime(player.duration)}`
+			: formatTime(player.currentTime)
+	);
+	const toggleLabel = $derived(
+		player.failed
+			? 'Повторить загрузку'
+			: player.retrying
+				? 'Повторная загрузка'
+				: loading
+					? 'Загрузка'
+					: player.playing
+						? 'Пауза'
+						: 'Воспроизвести'
+	);
+
+	/** Текстовые поля/списки сами обрабатывают клавиши — не мешаем. */
+	function isTextTarget(target: EventTarget | null): boolean {
+		if (!(target instanceof HTMLElement)) return false;
+		if (target.isContentEditable) return true;
+		const tag = target.tagName;
+		return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+	}
+
+	/**
+	 * Keyboard shortcuts глобального player (только на L1, где есть этот UI):
+	 * Space play/pause, ←/→ seek, ↑/↓ volume, M mute, N next, P previous.
+	 * Не перехватываем клавиши у полей ввода, у кнопок/ссылок (Space — их
+	 * нативная активация) и у слайдера (его стрелки нативны).
+	 */
+	function onKeydown(event: KeyboardEvent): void {
+		if (event.defaultPrevented) return;
+		const key = event.key;
+
+		if (volumeOpen && key === 'Escape') {
+			volumeOpen = false;
+			volumeButtonEl?.focus({ preventScroll: true });
+			event.preventDefault();
+			return;
+		}
+
+		if (event.metaKey || event.ctrlKey || event.altKey) return;
+		if (isTextTarget(event.target)) return;
+
+		const el = event.target instanceof HTMLElement ? event.target : null;
+		const activates = !!el && (el.tagName === 'BUTTON' || el.tagName === 'A');
+		const isSlider = !!el && el.getAttribute('role') === 'slider';
+		if ((key === ' ' || key === 'Spacebar') && activates) return;
+		if ((key === 'ArrowRight' || key === 'ArrowLeft') && isSlider) return;
+
+		switch (key) {
+			case ' ':
+			case 'Spacebar':
+				toggle();
+				break;
+			case 'ArrowRight':
+				seekTo(player.currentTime + 5);
+				break;
+			case 'ArrowLeft':
+				seekTo(player.currentTime - 5);
+				break;
+			case 'ArrowUp':
+				setVolume(player.volume + 0.05);
+				break;
+			case 'ArrowDown':
+				setVolume(player.volume - 0.05);
+				break;
+			case 'm':
+			case 'M':
+				toggleMute();
+				break;
+			case 'n':
+			case 'N':
+				next();
+				break;
+			case 'p':
+			case 'P':
+				prev();
+				break;
+			default:
+				return;
+		}
+		event.preventDefault();
+	}
 </script>
 
 <div class="library">
-	<p class="library__current">
+	<p class="library__current" aria-live="polite">
 		<span class="library__current-title">{track?.title ?? ''}</span>
 		<span class="library__current-genre">{track?.genre ?? ''}</span>
 	</p>
@@ -109,6 +195,8 @@
 	<div
 		class="player"
 		class:is-playing={player.playing}
+		class:is-loading={loading}
+		class:is-failed={player.failed}
 		class:is-muted={player.muted}
 		class:is-volume-open={volumeOpen}
 		bind:this={playerEl}
@@ -122,10 +210,12 @@
 		<button
 			class="player__toggle"
 			type="button"
-			aria-label={player.playing ? 'Пауза' : 'Воспроизвести'}
+			aria-label={toggleLabel}
 			aria-pressed={player.playing}
 			onclick={() => toggle()}
-		></button>
+		>
+			<span class="player__spinner" aria-hidden="true"></span>
+		</button>
 
 		<button class="player__skip player__next" type="button" aria-label="Следующий трек" onclick={() => next()}>
 			<svg class="player__skip-icon" viewBox="0 0 16 16" aria-hidden="true">
@@ -135,12 +225,16 @@
 
 		<div
 			class="player__bar"
+			class:is-disabled={player.duration <= 0}
 			role="slider"
 			tabindex="0"
 			aria-label="Позиция трека"
+			aria-orientation="horizontal"
 			aria-valuemin="0"
 			aria-valuemax="100"
 			aria-valuenow={Math.round(progress * 100)}
+			aria-valuetext={seekText}
+			aria-disabled={player.duration <= 0}
 			onpointerdown={onBarPointerDown}
 			onpointermove={onBarPointerMove}
 			onpointerup={endScrub}
@@ -160,6 +254,7 @@
 				aria-label="Громкость"
 				aria-haspopup="true"
 				aria-expanded={volumeOpen}
+				bind:this={volumeButtonEl}
 				onclick={() => (volumeOpen = !volumeOpen)}
 			>
 				<svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
@@ -195,6 +290,15 @@
 			</div>
 		</div>
 	</div>
+
+	{#if player.failed}
+		<p class="player__error" role="alert">
+			<span>Не удалось загрузить трек.</span>
+			<button class="player__retry" type="button" onclick={() => retry()}>Повторить</button>
+		</p>
+	{:else if player.retrying}
+		<p class="player__error player__error--note" role="status">Повторная загрузка…</p>
+	{/if}
 
 	<div class="library__list">
 		{#each tracks as item (item.id)}
@@ -284,14 +388,25 @@
 			0 0 11px rgba(2, 4, 12, 0.85);
 		-webkit-tap-highlight-color: transparent;
 		transition:
-			color 260ms var(--ease-soft),
-			background 260ms var(--ease-soft);
+			color var(--dur-ui) var(--ease-ui),
+			background var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
 	}
 
-	.lib-track:hover,
+	.lib-track:active {
+		transform: scale(0.99);
+	}
+
 	.lib-track:focus-visible {
 		color: #ffffff;
 		background: rgba(180, 165, 255, 0.1);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.lib-track:hover {
+			color: #ffffff;
+			background: rgba(180, 165, 255, 0.1);
+		}
 	}
 
 	.lib-track:focus {
@@ -366,24 +481,28 @@
 		color: rgba(244, 240, 255, 0.8);
 		cursor: pointer;
 		transition:
-			background 300ms var(--ease-soft),
-			color 300ms var(--ease-soft);
+			background var(--dur-ui) var(--ease-ui),
+			color var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
 		-webkit-tap-highlight-color: transparent;
 	}
 
-	.player__skip:hover,
+	.player__skip:active {
+		transform: scale(0.92);
+	}
+
 	.player__skip:focus-visible {
 		background: rgba(180, 165, 255, 0.28);
 		color: #f4f0ff;
-	}
-
-	.player__skip:focus {
-		outline: none;
-	}
-
-	.player__skip:focus-visible {
 		outline: 1px solid rgba(216, 198, 255, 0.7);
 		outline-offset: 2px;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.player__skip:hover {
+			background: rgba(180, 165, 255, 0.28);
+			color: #f4f0ff;
+		}
 	}
 
 	.player__skip-icon {
@@ -397,6 +516,7 @@
 	}
 
 	.player__toggle {
+		position: relative;
 		flex: none;
 		display: grid;
 		place-items: center;
@@ -406,50 +526,69 @@
 		border-radius: 50%;
 		background: rgba(180, 165, 255, 0.18);
 		cursor: pointer;
-		transition: background 300ms var(--ease-soft);
+		transition:
+			background var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
 		-webkit-tap-highlight-color: transparent;
 	}
 
-	.player__toggle:hover,
+	.player__toggle:active {
+		transform: scale(0.94);
+	}
+
 	.player__toggle:focus-visible {
 		background: rgba(180, 165, 255, 0.32);
-	}
-
-	.player__toggle:focus {
-		outline: none;
-	}
-
-	.player__toggle:focus-visible {
 		outline: 1px solid rgba(216, 198, 255, 0.7);
 		outline-offset: 3px;
 	}
 
-	.player__toggle::before {
+	@media (hover: hover) and (pointer: fine) {
+		.player__toggle:hover {
+			background: rgba(180, 165, 255, 0.32);
+		}
+	}
+
+	/* Иконки play/pause: crossfade/scale вместо резкого display:none. */
+	.player__toggle::before,
+	.player__toggle::after {
 		content: '';
+		position: absolute;
+		inset: 0;
+		margin: auto;
+		transition:
+			opacity var(--dur-fast) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
+	}
+
+	.player__toggle::before {
 		width: 0;
 		height: 0;
 		border-style: solid;
 		border-width: 0.4rem 0 0.4rem 0.66rem;
 		border-color: transparent transparent transparent #f4f0ff;
 		translate: 1px 0;
+		opacity: 1;
+		transform: scale(1);
 	}
 
 	.player.is-playing .player__toggle::before {
-		display: none;
+		opacity: 0;
+		transform: scale(0.7);
 	}
 
 	.player__toggle::after {
-		content: '';
-		display: none;
 		width: 0.62rem;
 		height: 0.78rem;
 		background:
 			linear-gradient(#f4f0ff, #f4f0ff) left / 0.22rem 100% no-repeat,
 			linear-gradient(#f4f0ff, #f4f0ff) right / 0.22rem 100% no-repeat;
+		opacity: 0;
+		transform: scale(0.7);
 	}
 
 	.player.is-playing .player__toggle::after {
-		display: block;
+		opacity: 1;
+		transform: scale(1);
 	}
 
 	.player__bar {
@@ -485,6 +624,119 @@
 		background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
 	}
 
+	/* Видимый thumb на позиции воспроизведения. */
+	.player__fill::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		right: -4px;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #f4f0ff;
+		box-shadow: 0 0 8px rgba(150, 200, 255, 0.55);
+		opacity: 0.85;
+		transform: translate(0, -50%) scale(0.85);
+		transition:
+			transform var(--dur-fast) var(--ease-out),
+			opacity var(--dur-fast) var(--ease-ui);
+	}
+
+	.player__bar:hover .player__fill::after,
+	.player__bar:focus-visible .player__fill::after,
+	.player__bar:active .player__fill::after {
+		opacity: 1;
+		transform: translate(0, -50%) scale(1);
+	}
+
+	.player__bar.is-disabled {
+		cursor: default;
+	}
+
+	.player__bar.is-disabled .player__fill::after {
+		opacity: 0;
+	}
+
+	/* Индикатор загрузки: кольцо вместо иконки play, без layout shift. */
+	.player__spinner {
+		position: absolute;
+		inset: 0;
+		margin: auto;
+		width: 0.95rem;
+		height: 0.95rem;
+		border: 2px solid rgba(244, 240, 255, 0.22);
+		border-top-color: #f4f0ff;
+		border-radius: 50%;
+		opacity: 0;
+		animation: player-spin 700ms linear infinite;
+		transition: opacity var(--dur-fast) var(--ease-ui);
+	}
+
+	.player.is-loading .player__spinner {
+		opacity: 1;
+	}
+
+	.player.is-loading .player__toggle::before,
+	.player.is-loading .player__toggle::after {
+		opacity: 0;
+	}
+
+	@keyframes player-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	/* Ошибка загрузки: понятное действие «Повторить» через существующий retry(). */
+	.player__error {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0.35rem 0 0 0.15rem;
+		font-family: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+		font-size: 0.72rem;
+		font-weight: 300;
+		color: #ffb1a1;
+		pointer-events: auto;
+		text-shadow: 0 1px 2px rgba(2, 4, 12, 0.95);
+	}
+
+	.player__error--note {
+		color: rgba(238, 232, 255, 0.72);
+	}
+
+	.player__retry {
+		flex: none;
+		padding: 0.15rem 0.6rem;
+		border: 1px solid rgba(255, 177, 161, 0.5);
+		border-radius: 999px;
+		background: rgba(255, 177, 161, 0.12);
+		color: #ffd9d1;
+		font: inherit;
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+		transition:
+			background var(--dur-ui) var(--ease-ui),
+			border-color var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
+	}
+
+	.player__retry:active {
+		transform: scale(0.95);
+	}
+
+	.player__retry:focus-visible {
+		outline: 1px solid rgba(255, 200, 190, 0.8);
+		outline-offset: 2px;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.player__retry:hover {
+			background: rgba(255, 177, 161, 0.22);
+			border-color: rgba(255, 177, 161, 0.75);
+		}
+	}
+
 	.player__time {
 		flex: none;
 		font-size: 0.66rem;
@@ -511,7 +763,14 @@
 		color: rgba(244, 240, 255, 0.85);
 		cursor: pointer;
 		-webkit-tap-highlight-color: transparent;
-		transition: color 200ms var(--ease-soft);
+		transition:
+			color var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
+	}
+
+	.player__volume-button:active,
+	.player__mute:active {
+		transform: scale(0.88);
 	}
 
 	.player__volume-button {
@@ -525,23 +784,19 @@
 		height: 0.95rem;
 	}
 
-	.player__volume-button:hover,
 	.player__volume-button:focus-visible,
-	.player__mute:hover,
 	.player__mute:focus-visible {
 		color: #ffffff;
-	}
-
-	.player__volume-button:focus,
-	.player__mute:focus {
-		outline: none;
-	}
-
-	.player__volume-button:focus-visible,
-	.player__mute:focus-visible {
 		outline: 1px solid rgba(216, 198, 255, 0.6);
 		outline-offset: 3px;
 		border-radius: 3px;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.player__volume-button:hover,
+		.player__mute:hover {
+			color: #ffffff;
+		}
 	}
 
 	.player__volume-popover {
@@ -564,9 +819,9 @@
 		pointer-events: none;
 		transform: translate(4px, -50%);
 		transition:
-			opacity 220ms var(--ease-soft),
-			transform 220ms var(--ease-soft),
-			visibility 0s linear 220ms;
+			opacity var(--dur-ui) var(--ease-ui),
+			transform var(--dur-ui) var(--ease-out),
+			visibility 0s linear var(--dur-ui);
 	}
 
 	.player.is-volume-open .player__volume-popover {
@@ -593,7 +848,7 @@
 	}
 
 	.player__wave {
-		transition: opacity 200ms var(--ease-soft);
+		transition: opacity var(--dur-ui) var(--ease-ui);
 	}
 
 	.player.is-muted .player__wave {
@@ -685,6 +940,7 @@
 			display: flex;
 			flex-direction: column;
 			overflow-y: auto;
+			overscroll-behavior: contain;
 			pointer-events: auto;
 			-webkit-overflow-scrolling: touch;
 			scrollbar-width: thin;
@@ -700,6 +956,10 @@
 			overflow: hidden;
 		}
 
+		.player__bar::before {
+			inset: -14px 0;
+		}
+
 		.player__volume-popover {
 			left: auto;
 			right: calc(100% + 0.55rem);
@@ -708,6 +968,26 @@
 
 		.player.is-volume-open .player__volume-popover {
 			transform: translate(0, -50%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.lib-track:active,
+		.player__skip:active,
+		.player__toggle:active,
+		.player__volume-button:active,
+		.player__mute:active,
+		.player__retry:active {
+			transform: none;
+		}
+
+		.player__toggle::before,
+		.player__toggle::after {
+			transition: opacity var(--dur-fast) linear;
+		}
+
+		.player__spinner {
+			animation: none;
 		}
 	}
 </style>

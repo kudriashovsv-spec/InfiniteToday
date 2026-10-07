@@ -2,12 +2,31 @@
 	import { resolve } from '$app/paths';
 	import Scene from '#lib/components/Scene.svelte';
 	import LibraryPanel from '#lib/components/LibraryPanel.svelte';
+	import Seo from '#lib/components/Seo.svelte';
+	import ShareButton from '#lib/components/ShareButton.svelte';
+	import { absoluteUrl, SITE_NAME } from '#lib/seo.js';
+
+	const description =
+		'Музыкальная лаборатория «Бесконечное сегодня»: семь музыкальных миров, живые аудиовизуализации и галерея работ.';
+	const jsonLd = {
+		'@context': 'https://schema.org',
+		'@type': 'WebSite',
+		name: SITE_NAME,
+		alternateName: 'Бесконечное сегодня',
+		url: absoluteUrl('/'),
+		description,
+		inLanguage: 'ru'
+	};
 </script>
 
-<svelte:head>
-	<title>Infinite Today — Music Laboratory</title>
-	<meta name="description" content="Infinite Today — музыкальная вселенная. Войди через чёрную дыру." />
-</svelte:head>
+<Seo
+	title="Infinite Today — Бесконечное сегодня"
+	{description}
+	path="/"
+	image="images/MainPageLvl1.webp"
+	imageAlt="Infinite Today — титульный экран с чёрной дырой"
+	{jsonLd}
+/>
 
 <div class="screen">
 	<Scene src="images/MainPageLvl1.webp">
@@ -42,6 +61,12 @@
 		<a class="social__link" href="https://t.me/parabola_music" target="_blank" rel="noopener noreferrer"
 			>Telegram</a
 		>
+		<ShareButton
+			variant="ghost"
+			path="/"
+			title="Infinite Today — Бесконечное сегодня"
+			text="Музыкальная лаборатория «Бесконечное сегодня»: семь музыкальных миров и живая визуализация."
+		/>
 	</div>
 
 	<!-- Вход в галерею — отдельная страница (настоящий SvelteKit route). -->
@@ -79,7 +104,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: flex-start;
-		padding: clamp(4vh, 7vh, 10vh) 8vmin 8vmin;
+		padding: calc(clamp(4vh, 7vh, 10vh) + env(safe-area-inset-top, 0px)) 8vmin 8vmin;
 		text-align: center;
 		pointer-events: none; /* клики проходят к чёрной дыре */
 	}
@@ -183,14 +208,17 @@
 			0 6px 22px rgba(3, 2, 10, 0.45),
 			inset 0 0 18px rgba(180, 139, 255, 0.06);
 		transition:
-			color 300ms var(--ease-soft),
-			border-color 300ms var(--ease-soft),
-			box-shadow 300ms var(--ease-soft),
-			transform 300ms var(--ease-soft);
+			color var(--dur-ui) var(--ease-ui),
+			border-color var(--dur-ui) var(--ease-ui),
+			box-shadow var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
 		-webkit-tap-highlight-color: transparent;
 	}
 
-	.gallery-entry:hover,
+	.gallery-entry:active {
+		transform: scale(0.97);
+	}
+
 	.gallery-entry:focus-visible {
 		color: #ffffff;
 		border-color: rgba(180, 139, 255, 0.5);
@@ -198,19 +226,18 @@
 			0 8px 28px rgba(3, 2, 10, 0.5),
 			0 0 22px rgba(180, 139, 255, 0.18),
 			inset 0 0 20px rgba(180, 139, 255, 0.08);
-	}
-
-	.gallery-entry:focus {
-		outline: none;
-	}
-
-	.gallery-entry:focus-visible {
 		outline: 1px solid rgba(216, 198, 255, 0.55);
 		outline-offset: 4px;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.gallery-entry:hover {
+			color: #ffffff;
+			border-color: rgba(180, 139, 255, 0.5);
+			box-shadow:
+				0 8px 28px rgba(3, 2, 10, 0.5),
+				0 0 22px rgba(180, 139, 255, 0.18),
+				inset 0 0 20px rgba(180, 139, 255, 0.08);
 			transform: translateY(-1px);
 		}
 	}
@@ -238,27 +265,27 @@
 		text-shadow:
 			0 1px 2px rgba(2, 4, 12, 0.95),
 			0 0 9px rgba(2, 4, 12, 0.8);
-		transition: color 260ms var(--ease-soft);
+		transition: color var(--dur-ui) var(--ease-ui);
 	}
 
-	.social__link:hover,
 	.social__link:focus-visible {
 		color: #ffffff;
-	}
-
-	.social__link:focus {
-		outline: none;
-	}
-
-	.social__link:focus-visible {
 		outline: 1px solid rgba(216, 198, 255, 0.55);
 		outline-offset: 3px;
 		border-radius: 3px;
 	}
 
+	@media (hover: hover) and (pointer: fine) {
+		.social__link:hover {
+			color: #ffffff;
+		}
+	}
+
 	@media (max-width: 640px) {
 		.enter {
-			padding: clamp(2.4rem, 8vh, 4rem) 6vmin 0;
+			/* +2.2rem (~35px): на телефоне блок «Music Laboratory / Infinite Today / Вход»
+			   уходит ниже правой share-колонки, чтобы не пересекаться с ней. */
+			padding: calc(clamp(2.4rem, 8vh, 4rem) + 2.2rem + env(safe-area-inset-top, 0px)) 6vmin 0;
 		}
 
 		.enter__title {
@@ -266,7 +293,13 @@
 		}
 
 		.enter__hint {
-			margin-top: 1.4rem;
+			/* «Вход» позиционируется независимо от верхних надписей:
+			   строго по центру viewport по X и ~35px выше геометрического центра. */
+			position: absolute;
+			left: 50%;
+			top: calc(50% - 2.2rem);
+			translate: -50% -50%;
+			margin: 0;
 			font-size: 0.95rem;
 			letter-spacing: 0.4em;
 			text-indent: 0.4em;
@@ -274,9 +307,9 @@
 
 		/* Вход в галерею на мобильном: левый верх. */
 		.gallery-entry {
-			top: clamp(0.5rem, 1.6vh, 0.8rem);
+			top: calc(clamp(0.5rem, 1.6vh, 0.8rem) + env(safe-area-inset-top, 0px));
 			bottom: auto;
-			left: 0.8rem;
+			left: calc(0.8rem + env(safe-area-inset-left, 0px));
 			min-height: 40px;
 			padding: 0.4rem 0.9rem;
 			border-radius: 12px;
@@ -287,9 +320,9 @@
 
 		/* Ссылки — в верхний угол, чтобы их не закрывала нижняя панель. */
 		.social {
-			top: clamp(0.6rem, 2vh, 1rem);
+			top: calc(clamp(0.6rem, 2vh, 1rem) + env(safe-area-inset-top, 0px));
 			bottom: auto;
-			right: 0.8rem;
+			right: calc(0.8rem + env(safe-area-inset-right, 0px));
 		}
 
 		.social__link {
@@ -301,6 +334,10 @@
 		.enter__hint {
 			animation: none;
 			opacity: 0.62;
+		}
+
+		.gallery-entry:active {
+			transform: none;
 		}
 	}
 </style>

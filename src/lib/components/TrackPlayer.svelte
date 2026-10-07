@@ -1,31 +1,42 @@
-<script>
+<script lang="ts">
 	import { asset } from '$app/paths';
+	import type { AssetPath } from '$app/types';
+	import type { Track } from '#lib/data/music.js';
 	import { registerAudio, pauseOthers, setActiveAudio } from '#lib/audio/playback.js';
 	import { releaseSource } from '#lib/audio/graph.js';
+	import { trackPlay } from '#lib/analytics.js';
 
 	/**
 	 * Переиспользуемый проигрыватель одной музыкальной версии.
 	 * Реальный HTML audio + play/pause, progress (клик, drag, клавиатура)
 	 * и duration. Осознанно не тащит объём, mute/popover и плейлисты старого
 	 * player — Phase 1 проверяет только музыкальный слой архитектуры.
-	 *
-	 * @type {{ track: { id: string, title: string, genre: string, src: string } }}
 	 */
-	let { track } = $props();
+	interface TrackPlayerProps {
+		track: Track;
+	}
 
-	/** @type {HTMLAudioElement | null} */
-	let audioEl = $state(null);
-	let playing = $state(false);
-	let currentTime = $state(0);
-	let duration = $state(0);
-	let failed = $state(false);
+	let { track }: TrackPlayerProps = $props();
+
+	let audioEl: HTMLAudioElement | null = $state(null);
+	let playing: boolean = $state(false);
+	let loading: boolean = $state(false);
+	let currentTime: number = $state(0);
+	let duration: number = $state(0);
+	let failed: boolean = $state(false);
+	// Аналитика: один track-play на реальный старт (onplaying), не на клик.
+	let playCounted = false;
 
 	// asset() добавляет base (/InfiniteToday) и корректный относительный
 	// префикс на вложенных route — жёстких путей к аудио нет.
-	const src = $derived(asset(track.src));
+	// `src` приходит из реестра как runtime string — сужаем к списку реальных ассетов.
+	const src = $derived(asset(track.src as AssetPath));
 	const progress = $derived(duration > 0 ? currentTime / duration : 0);
+	const seekText = $derived(
+		duration > 0 ? `${formatTime(currentTime)} из ${formatTime(duration)}` : formatTime(currentTime)
+	);
 
-	function syncFromElement() {
+	function syncFromElement(): void {
 		if (!audioEl) return;
 		currentTime = audioEl.currentTime || 0;
 		if (Number.isFinite(audioEl.duration)) duration = audioEl.duration;
@@ -47,52 +58,61 @@
 		};
 	});
 
-	/**
-	 * @param {number} seconds
-	 * @returns {string}
-	 */
-	function formatTime(seconds) {
+	function formatTime(seconds: number): string {
 		if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
 		const total = Math.floor(seconds);
 		return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
 	}
 
-	function toggle() {
+	function play(): void {
 		if (!audioEl) return;
-		if (audioEl.paused) {
-			const request = audioEl.play();
-			if (request && typeof request.catch === 'function') request.catch(() => {});
-		} else {
-			audioEl.pause();
+		if (failed) {
+			retry();
+			return;
 		}
+		// Спецификация возвращает Promise, но защищаемся от реализаций без него.
+		const request: Promise<void> | undefined = audioEl.play();
+		if (request && typeof request.catch === 'function') request.catch(() => {});
 	}
 
-	/** @param {number} time */
-	function seekToTime(time) {
+	function toggle(): void {
+		if (!audioEl) return;
+		if (audioEl.paused) play();
+		else audioEl.pause();
+	}
+
+	/** Ответ на ошибку загрузки: перезагружаем элемент и пробуем снова. */
+	function retry(): void {
+		if (!audioEl) return;
+		failed = false;
+		loading = true;
+		audioEl.load();
+		play();
+	}
+
+	function seekToTime(time: number): void {
 		if (!audioEl) return;
 		const total = audioEl.duration;
 		if (!Number.isFinite(total) || total <= 0) return;
 		audioEl.currentTime = Math.min(Math.max(time, 0), total);
 	}
 
-	/**
-	 * @param {PointerEvent | MouseEvent} event
-	 * @returns {number}
-	 */
-	function ratioFromEvent(event) {
-		const target = /** @type {HTMLElement} */ (event.currentTarget);
-		const rect = target.getBoundingClientRect();
+	/** События бара: Svelte отдаёт currentTarget самим элементом бара. */
+	type BarPointerEvent = PointerEvent & { currentTarget: HTMLDivElement };
+	type BarMouseEvent = MouseEvent & { currentTarget: HTMLDivElement };
+
+	function ratioFromEvent(event: BarPointerEvent | BarMouseEvent): number {
+		const rect = event.currentTarget.getBoundingClientRect();
 		return Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
 	}
 
 	let scrubbing = false;
 
-	/** @param {PointerEvent} event */
-	function onBarPointerDown(event) {
+	function onBarPointerDown(event: BarPointerEvent): void {
+		if (duration <= 0) return;
 		scrubbing = true;
-		const target = /** @type {HTMLElement} */ (event.currentTarget);
 		try {
-			target.setPointerCapture?.(event.pointerId);
+			event.currentTarget.setPointerCapture?.(event.pointerId);
 		} catch {
 			/* ignore */
 		}
@@ -100,32 +120,27 @@
 		event.preventDefault();
 	}
 
-	/** @param {PointerEvent} event */
-	function onBarPointerMove(event) {
+	function onBarPointerMove(event: BarPointerEvent): void {
 		if (!scrubbing) return;
 		seekToTime(ratioFromEvent(event) * duration);
 	}
 
-	/** @param {PointerEvent} event */
-	function endScrub(event) {
+	function endScrub(event: BarPointerEvent): void {
 		if (!scrubbing) return;
 		scrubbing = false;
-		const target = /** @type {HTMLElement} */ (event.currentTarget);
 		try {
-			target.releasePointerCapture?.(event.pointerId);
+			event.currentTarget.releasePointerCapture?.(event.pointerId);
 		} catch {
 			/* ignore */
 		}
 	}
 
-	/** @param {MouseEvent} event */
-	function onBarClick(event) {
+	function onBarClick(event: BarMouseEvent): void {
 		if (event.detail === 0) return;
 		seekToTime(ratioFromEvent(event) * duration);
 	}
 
-	/** @param {KeyboardEvent} event */
-	function onBarKeydown(event) {
+	function onBarKeydown(event: KeyboardEvent): void {
 		if (event.key === 'ArrowRight') {
 			seekToTime(currentTime + 5);
 		} else if (event.key === 'ArrowLeft') {
@@ -137,23 +152,35 @@
 	}
 </script>
 
-<div class="player" class:is-playing={playing}>
+<div class="player" class:is-playing={playing} class:is-loading={loading && !playing} class:is-failed={failed}>
 	<button
 		class="player__toggle"
 		type="button"
-		aria-label={playing ? 'Пауза' : 'Воспроизвести'}
+		aria-label={failed
+			? 'Повторить загрузку'
+			: loading && !playing
+				? 'Загрузка'
+				: playing
+					? 'Пауза'
+					: 'Воспроизвести'}
 		aria-pressed={playing}
 		onclick={toggle}
-	></button>
+	>
+		<span class="player__spinner" aria-hidden="true"></span>
+	</button>
 
 	<div
 		class="player__bar"
+		class:is-disabled={duration <= 0}
 		role="slider"
 		tabindex="0"
 		aria-label="Позиция трека"
+		aria-orientation="horizontal"
 		aria-valuemin="0"
 		aria-valuemax="100"
 		aria-valuenow={Math.round(progress * 100)}
+		aria-valuetext={seekText}
+		aria-disabled={duration <= 0}
 		onpointerdown={onBarPointerDown}
 		onpointermove={onBarPointerMove}
 		onpointerup={endScrub}
@@ -168,7 +195,10 @@
 </div>
 
 {#if failed}
-	<p class="player__error" role="alert">Не удалось загрузить аудио</p>
+	<p class="player__error" role="alert">
+		<span>Не удалось загрузить аудио.</span>
+		<button class="player__retry" type="button" onclick={retry}>Повторить</button>
+	</p>
 {/if}
 
 <audio
@@ -177,18 +207,44 @@
 	preload="metadata"
 	onplay={() => {
 		playing = true;
+		loading = false;
 		if (audioEl) {
 			pauseOthers(audioEl);
 			setActiveAudio(audioEl);
 		}
 	}}
-	onpause={() => (playing = false)}
-	onended={() => (playing = false)}
+	onplaying={() => {
+		if (!playCounted) {
+			playCounted = true;
+			trackPlay({ id: track.id, world: track.world });
+		}
+	}}
+	onpause={() => {
+		playing = false;
+		playCounted = false;
+	}}
+	onended={() => {
+		playing = false;
+		loading = false;
+		playCounted = false;
+	}}
 	ontimeupdate={syncFromElement}
 	onloadedmetadata={syncFromElement}
-	oncanplay={syncFromElement}
+	oncanplay={() => {
+		loading = false;
+		syncFromElement();
+	}}
 	ondurationchange={syncFromElement}
-	onerror={() => (failed = true)}
+	onloadstart={() => {
+		failed = false;
+		loading = true;
+	}}
+	onwaiting={() => (loading = true)}
+	onerror={() => {
+		failed = true;
+		loading = false;
+		playCounted = false;
+	}}
 ></audio>
 
 <style>
@@ -207,6 +263,7 @@
 	}
 
 	.player__toggle {
+		position: relative;
 		flex: none;
 		display: grid;
 		place-items: center;
@@ -216,52 +273,71 @@
 		border-radius: 50%;
 		background: rgba(180, 165, 255, 0.18);
 		cursor: pointer;
-		transition: background 300ms var(--ease-soft);
+		transition:
+			background var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
 		-webkit-tap-highlight-color: transparent;
 	}
 
-	.player__toggle:hover,
+	.player__toggle:active {
+		transform: scale(0.94);
+	}
+
 	.player__toggle:focus-visible {
 		background: rgba(180, 165, 255, 0.32);
-	}
-
-	.player__toggle:focus {
-		outline: none;
-	}
-
-	.player__toggle:focus-visible {
 		outline: 1px solid rgba(216, 198, 255, 0.7);
 		outline-offset: 3px;
 	}
 
+	@media (hover: hover) and (pointer: fine) {
+		.player__toggle:hover {
+			background: rgba(180, 165, 255, 0.32);
+		}
+	}
+
+	/* Иконки play/pause: crossfade/scale вместо резкого display:none. */
+	.player__toggle::before,
+	.player__toggle::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		margin: auto;
+		transition:
+			opacity var(--dur-fast) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
+	}
+
 	/* Иконка «play» */
 	.player__toggle::before {
-		content: '';
 		width: 0;
 		height: 0;
 		border-style: solid;
 		border-width: 0.4rem 0 0.4rem 0.66rem;
 		border-color: transparent transparent transparent #f4f0ff;
 		translate: 1px 0;
+		opacity: 1;
+		transform: scale(1);
 	}
 
 	.player.is-playing .player__toggle::before {
-		display: none;
+		opacity: 0;
+		transform: scale(0.7);
 	}
 
 	/* Иконка «pause» */
 	.player__toggle::after {
-		content: '';
-		display: none;
 		width: 0.62rem;
 		height: 0.78rem;
 		background:
 			linear-gradient(#f4f0ff, #f4f0ff) left / 0.22rem 100% no-repeat,
 			linear-gradient(#f4f0ff, #f4f0ff) right / 0.22rem 100% no-repeat;
+		opacity: 0;
+		transform: scale(0.7);
 	}
 
 	.player.is-playing .player__toggle::after {
-		display: block;
+		opacity: 1;
+		transform: scale(1);
 	}
 
 	.player__bar {
@@ -289,12 +365,89 @@
 		border-radius: 3px;
 	}
 
+	@media (prefers-reduced-motion: reduce) {
+		.player__toggle:active,
+		.player__retry:active {
+			transform: none;
+		}
+
+		.player__toggle::before,
+		.player__toggle::after {
+			transition: opacity var(--dur-fast) linear;
+		}
+
+		.player__spinner {
+			animation: none;
+		}
+	}
+
 	.player__fill {
 		position: absolute;
 		inset: 0 auto 0 0;
 		width: 0;
 		border-radius: 2px;
 		background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
+	}
+
+	.player__fill::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		right: -4px;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #f4f0ff;
+		box-shadow: 0 0 8px rgba(150, 200, 255, 0.55);
+		opacity: 0.85;
+		transform: translate(0, -50%) scale(0.85);
+		transition:
+			transform var(--dur-fast) var(--ease-out),
+			opacity var(--dur-fast) var(--ease-ui);
+	}
+
+	.player__bar:hover .player__fill::after,
+	.player__bar:focus-visible .player__fill::after,
+	.player__bar:active .player__fill::after {
+		opacity: 1;
+		transform: translate(0, -50%) scale(1);
+	}
+
+	.player__bar.is-disabled {
+		cursor: default;
+	}
+
+	.player__bar.is-disabled .player__fill::after {
+		opacity: 0;
+	}
+
+	.player__spinner {
+		position: absolute;
+		inset: 0;
+		margin: auto;
+		width: 0.95rem;
+		height: 0.95rem;
+		border: 2px solid rgba(244, 240, 255, 0.22);
+		border-top-color: #f4f0ff;
+		border-radius: 50%;
+		opacity: 0;
+		animation: player-spin 700ms linear infinite;
+		transition: opacity var(--dur-fast) var(--ease-ui);
+	}
+
+	.player.is-loading .player__spinner {
+		opacity: 1;
+	}
+
+	.player.is-loading .player__toggle::before,
+	.player.is-loading .player__toggle::after {
+		opacity: 0;
+	}
+
+	@keyframes player-spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.player__time {
@@ -307,9 +460,44 @@
 	}
 
 	.player__error {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 		margin: 0.35rem 0 0;
 		font-size: 0.72rem;
 		color: #ffb1a1;
+	}
+
+	.player__retry {
+		flex: none;
+		padding: 0.15rem 0.6rem;
+		border: 1px solid rgba(255, 177, 161, 0.5);
+		border-radius: 999px;
+		background: rgba(255, 177, 161, 0.12);
+		color: #ffd9d1;
+		font: inherit;
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+		transition:
+			background var(--dur-ui) var(--ease-ui),
+			border-color var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
+	}
+
+	.player__retry:active {
+		transform: scale(0.95);
+	}
+
+	.player__retry:focus-visible {
+		outline: 1px solid rgba(255, 200, 190, 0.8);
+		outline-offset: 2px;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.player__retry:hover {
+			background: rgba(255, 177, 161, 0.22);
+			border-color: rgba(255, 177, 161, 0.75);
+		}
 	}
 
 	audio {

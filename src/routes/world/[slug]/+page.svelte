@@ -3,6 +3,8 @@
 	import AudioDNA from '#lib/components/AudioDNA.svelte';
 	import ButterchurnCanvas from '#lib/components/ButterchurnCanvas.svelte';
 	import WorldView from '#lib/components/WorldView.svelte';
+	import Seo from '#lib/components/Seo.svelte';
+	import { absoluteUrl, pluralRu } from '#lib/seo.js';
 	import { isSupported } from '#lib/audio/butterchurn.js';
 
 	/**
@@ -26,10 +28,20 @@
 	});
 </script>
 
-<svelte:head>
-	<title>{data.world.title} — Infinite Today</title>
-	<meta name="description" content="Мир песни «{data.world.title}» в Infinite Today." />
-</svelte:head>
+<Seo
+	title={`${data.world.title} — мир песни | Infinite Today`}
+	description={`Мир песни «${data.world.title}»: ${data.tracks.length} ${pluralRu(data.tracks.length, 'версия', 'версии', 'версий')} со словами и аудиовизуализацией. Infinite Today.`}
+	path={`/world/${data.world.slug}`}
+	image={data.world.artwork}
+	imageAlt={`Артворк мира «${data.world.title}»`}
+	jsonLd={{
+		'@context': 'https://schema.org',
+		'@type': 'MusicComposition',
+		name: data.world.title,
+		inLanguage: 'ru',
+		url: absoluteUrl(`/world/${data.world.slug}`)
+	}}
+/>
 
 <div class="screen screen--world">
 	<!-- Визуализатор L3 — ровно один слот. Butterchurn остаётся основным, а
