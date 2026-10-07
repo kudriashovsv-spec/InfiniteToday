@@ -7,7 +7,6 @@
 </script>
 
 <svelte:head>
-	<title>Infinite Today — Music Laboratory</title>
 	<link rel="icon" type="image/png" href={asset('favicon.png')} />
 </svelte:head>
 

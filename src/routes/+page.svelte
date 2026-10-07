@@ -2,12 +2,30 @@
 	import { resolve } from '$app/paths';
 	import Scene from '#lib/components/Scene.svelte';
 	import LibraryPanel from '#lib/components/LibraryPanel.svelte';
+	import Seo from '#lib/components/Seo.svelte';
+	import { absoluteUrl, SITE_NAME } from '#lib/seo.js';
+
+	const description =
+		'Музыкальная лаборатория «Бесконечное сегодня»: семь музыкальных миров, живые аудиовизуализации и галерея работ.';
+	const jsonLd = {
+		'@context': 'https://schema.org',
+		'@type': 'WebSite',
+		name: SITE_NAME,
+		alternateName: 'Бесконечное сегодня',
+		url: absoluteUrl('/'),
+		description,
+		inLanguage: 'ru'
+	};
 </script>
 
-<svelte:head>
-	<title>Infinite Today — Music Laboratory</title>
-	<meta name="description" content="Infinite Today — музыкальная вселенная. Войди через чёрную дыру." />
-</svelte:head>
+<Seo
+	title="Infinite Today — Бесконечное сегодня"
+	{description}
+	path="/"
+	image="images/MainPageLvl1.webp"
+	imageAlt="Infinite Today — титульный экран с чёрной дырой"
+	{jsonLd}
+/>
 
 <div class="screen">
 	<Scene src="images/MainPageLvl1.webp">

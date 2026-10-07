@@ -1,11 +1,19 @@
 <script>
 	import GalleryView from '#lib/components/GalleryView.svelte';
+	import Seo from '#lib/components/Seo.svelte';
+	import { galleryStats } from '#lib/data/gallery.js';
+	import { pluralRu } from '#lib/seo.js';
+
+	const description = `Галерея Infinite Today: ${galleryStats.categories} ${pluralRu(galleryStats.categories, 'категория', 'категории', 'категорий')} и ${galleryStats.images} ${pluralRu(galleryStats.images, 'работа', 'работы', 'работ')} вокруг музыки и миров.`;
 </script>
 
-<svelte:head>
-	<title>Галерея — Infinite Today</title>
-	<meta name="description" content="Галерея работ Infinite Today: 11 категорий, 99 работ." />
-</svelte:head>
+<Seo
+	title="Галерея — Infinite Today"
+	{description}
+	path="/gallery"
+	image="images/MainPageLvl1.webp"
+	imageAlt="Галерея работ Infinite Today"
+/>
 
 <div class="screen screen--gallery">
 	<GalleryView />
