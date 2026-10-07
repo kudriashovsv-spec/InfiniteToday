@@ -166,7 +166,13 @@
 	aria-modal="true"
 	aria-label="Просмотр изображения"
 >
-	<div class="lightbox__backdrop" onclick={() => onclose()}></div>
+	<button
+		class="lightbox__backdrop"
+		type="button"
+		tabindex="-1"
+		aria-label="Закрыть просмотр"
+		onclick={() => onclose()}
+	></button>
 
 	{#if image}
 		<figure
@@ -239,6 +245,11 @@
 	.lightbox__backdrop {
 		position: absolute;
 		inset: 0;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		-webkit-appearance: none;
+		appearance: none;
 		background: radial-gradient(120% 80% at 50% 42%, rgba(20, 10, 42, 0.62) 0%, rgba(3, 2, 10, 0.93) 72%);
 		-webkit-backdrop-filter: blur(3px);
 		backdrop-filter: blur(3px);

@@ -76,19 +76,22 @@
 - [x] audio core → TypeScript (`graph`, `playback`, `player.svelte.ts`)
 - [x] all 14 Svelte components → TypeScript (`<script lang="ts">`)
 - [x] `src/app.d.ts` for `App.PageState` (gallery lightbox shallow state)
-- [x] `npm run check` → 0 errors (2 pre-existing `Lightbox` a11y warnings kept as baseline)
+- [x] `npm run check` → 0 errors / 0 warnings
 - [x] UX/visual polish pass after two audits (safe-area, motion tokens, reduced-motion, a11y focus states)
+
+### Post-migration fixes
+
+- [x] Lightbox focus — opening focuses the close button; Escape, close and browser Back return
+  focus to the source card (the `returnFocus` effect is gated on the open→closed transition,
+  so the async shallow `goto` no longer races it)
+- [x] Gallery masonry — CSS Grid + shortest-column-first replaces CSS multi-column; the layout
+  fills the available width instead of leaving a fully empty trailing column
+- [x] `Lightbox` backdrop is a real `<button type="button" tabindex="-1">` (0 a11y warnings)
 
 ## Next
 
 No required migration tasks remain. Deliberately deferred (not bugs, not started):
 
-- [ ] **Lightbox focus bug** — after opening, focus lands on the gallery card instead of
-  the close button, and on close it falls to `<body>`; the `returnFocus` effect in
-  `GalleryView` races the async `goto`, so `returnFocus` is cleared before the lightbox opens
-  (pre-existing; verified unchanged by A/B against the pre-migration build)
-- [ ] **Gallery masonry / space filling** — the waterfall grid can leave uneven trailing
-  gaps; revisit column balancing / last-row fill
 - [ ] **Normal player improvements** — general playback UX work on the global L1 player
   (e.g. visible error surface for `player.failed`, keyboard shortcuts, clearer states)
 - [ ] **Media Session** — integrate the Media Session API (metadata, artwork, OS media keys)

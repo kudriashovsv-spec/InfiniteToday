@@ -136,7 +136,7 @@ Scope expansion запрещён.
 - dev
 - build
 - preview
-- `npm run check` (svelte-check; 0 errors — 2 a11y-warning в `Lightbox` считаются baseline)
+- `npm run check` (svelte-check; 0 errors / 0 warnings)
 - routes
 - direct deep-links
 - asset loading
