@@ -1,4 +1,4 @@
-# Infinite Today — Migration TODO
+# Infinite Today — TODO
 
 ## Completed
 
@@ -88,26 +88,30 @@
   fills the available width instead of leaving a fully empty trailing column
 - [x] `Lightbox` backdrop is a real `<button type="button" tabindex="-1">` (0 a11y warnings)
 
+### Post-migration product waves
+
+- [x] Player UX — explicit loading / failed / retry states, clearer controls, keyboard shortcuts
+- [x] Media Session — metadata, artwork, OS media actions
+- [x] SEO / Open Graph / sitemap / robots — per-page metadata, canonical URLs, OG/Twitter cards,
+  JSON-LD, `sitemap.xml`, `robots.txt`
+- [x] Web Share — native share for the home screen and worlds, with Clipboard fallback
+- [x] Privacy-friendly analytics — GoatCounter pageviews and custom events (production)
+
 ## Next
 
-No required migration tasks remain. Deliberately deferred (not bugs, not started):
+No required tasks remain. The migration and all planned product waves are completed
+and published in production.
 
-- [ ] **Normal player improvements** — general playback UX work on the global L1 player
-  (e.g. visible error surface for `player.failed`, keyboard shortcuts, clearer states)
-- [ ] **Media Session** — integrate the Media Session API (metadata, artwork, OS media keys)
-- [ ] **SEO / Open Graph / sitemap** — per-page titles/descriptions, OG/Twitter cards, `sitemap.xml`
-- [ ] **Web Share** — native share for a world / gallery item where supported
-- [ ] **Analytics** — privacy-friendly page/feature analytics
-
-Also postponed:
+### Deferred (optional — not bugs, not started)
 
 - [ ] migrating `src/lib/audio/butterchurn.js` and `src/lib/audio/audio-dna.js` to TypeScript
   (runtime visualizer modules; intentionally left as JavaScript)
-- [ ] optional visual polish
+- [ ] optional visual polish / future improvements
 
 ## References
 
 - Repository: https://github.com/kudriashovsv-spec/InfiniteToday
-- Live: https://kudriashovsv-spec.github.io/InfiniteToday/
-- Source branch: `svelte-next`
+- Live (production): https://kudriashovsv-spec.github.io/InfiniteToday/
+- Production branch: `main`
+- Development / source branch: `svelte-next`
 - Previous static version (v1.1) commit: `09f2a92a733fcad9b86ee424071d83d1f85116c1`
