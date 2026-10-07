@@ -68,12 +68,39 @@
 - [x] Mobile live validation
 - [x] Direct route/deep-link validation
 
+### TypeScript migration
+
+- [x] `jsconfig.json` → `tsconfig.json` (`extends: "$app/tsconfig"`, `strict: true`)
+- [x] tooling: `typescript` + `svelte-check`, script `npm run check`
+- [x] data layer → TypeScript (`worlds`, `music`, `lyrics`, `butterchurn`, `gallery`)
+- [x] audio core → TypeScript (`graph`, `playback`, `player.svelte.ts`)
+- [x] all 14 Svelte components → TypeScript (`<script lang="ts">`)
+- [x] `src/app.d.ts` for `App.PageState` (gallery lightbox shallow state)
+- [x] `npm run check` → 0 errors (2 pre-existing `Lightbox` a11y warnings kept as baseline)
+- [x] UX/visual polish pass after two audits (safe-area, motion tokens, reduced-motion, a11y focus states)
+
 ## Next
 
-No required migration tasks remain. Optional future work:
+No required migration tasks remain. Deliberately deferred (not bugs, not started):
 
+- [ ] **Lightbox focus bug** — after opening, focus lands on the gallery card instead of
+  the close button, and on close it falls to `<body>`; the `returnFocus` effect in
+  `GalleryView` races the async `goto`, so `returnFocus` is cleared before the lightbox opens
+  (pre-existing; verified unchanged by A/B against the pre-migration build)
+- [ ] **Gallery masonry / space filling** — the waterfall grid can leave uneven trailing
+  gaps; revisit column balancing / last-row fill
+- [ ] **Normal player improvements** — general playback UX work on the global L1 player
+  (e.g. visible error surface for `player.failed`, keyboard shortcuts, clearer states)
+- [ ] **Media Session** — integrate the Media Session API (metadata, artwork, OS media keys)
+- [ ] **SEO / Open Graph / sitemap** — per-page titles/descriptions, OG/Twitter cards, `sitemap.xml`
+- [ ] **Web Share** — native share for a world / gallery item where supported
+- [ ] **Analytics** — privacy-friendly page/feature analytics
+
+Also postponed:
+
+- [ ] migrating `src/lib/audio/butterchurn.js` and `src/lib/audio/audio-dna.js` to TypeScript
+  (runtime visualizer modules; intentionally left as JavaScript)
 - [ ] optional visual polish
-- [ ] future improvements
 
 ## References
 

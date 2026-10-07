@@ -84,9 +84,12 @@ Highlights:
 - Svelte 5
 - Vite
 - `@sveltejs/adapter-static`
-- Plain JavaScript (no TypeScript build step)
+- TypeScript (strict) — components, routes, data layer and the audio core
+- `svelte-check` for type checking
 - Web Audio API
 - Butterchurn (WebGL visualizer)
+- Plain JavaScript deliberately kept in the two visualizer runtime modules
+  (`src/lib/audio/butterchurn.js`, `src/lib/audio/audio-dna.js`)
 - GitHub Actions + GitHub Pages
 
 ## Project structure
@@ -117,6 +120,12 @@ Build and preview the production output:
 ```bash
 npm run build
 npm run preview
+```
+
+Type-check the project (components, routes and TypeScript modules):
+
+```bash
+npm run check
 ```
 
 The site is served from the base path `/InfiniteToday`, in both development and
@@ -158,9 +167,17 @@ Music, worlds, the visualizers and the gallery were each moved into their own
 subsystem instead of being duplicated across pages, while the look and behaviour
 of the original were preserved.
 
+The codebase was then migrated to TypeScript under `strict` mode: the data layer,
+the audio core, the routes and all Svelte components are typed, and
+`svelte-check` runs against them. The two visualizer runtime modules
+(`src/lib/audio/butterchurn.js` and `src/lib/audio/audio-dna.js`) intentionally
+stay plain JavaScript for now — they were not rewritten just to satisfy the type
+checker.
+
 ## Status
 
 - SvelteKit migration completed
+- TypeScript migration completed (components, routes, data layer, audio core)
 - deployed to GitHub Pages and served from the `/InfiniteToday` base path
 - live version validated on desktop and mobile
 

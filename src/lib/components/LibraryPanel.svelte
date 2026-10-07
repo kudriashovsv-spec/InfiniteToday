@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { tracks } from '#lib/data/music.js';
 	import {
@@ -23,16 +23,14 @@
 	 * глобальное состояние и один audio-слой.
 	 */
 
-	/** @type {HTMLElement | null} */
-	let playerEl = $state(null);
-	let volumeOpen = $state(false);
+	let playerEl: HTMLElement | null = $state(null);
+	let volumeOpen: boolean = $state(false);
 	let scrubbing = false;
 
 	const track = $derived(currentTrack());
 
 	onMount(() => {
-		/** @param {MouseEvent} event */
-		const onDocClick = (event) => {
+		const onDocClick = (event: MouseEvent): void => {
 			if (!volumeOpen) return;
 			if (playerEl && event.target instanceof Node && playerEl.contains(event.target)) return;
 			volumeOpen = false;
@@ -41,19 +39,19 @@
 		return () => document.removeEventListener('click', onDocClick);
 	});
 
-	/** @param {PointerEvent | MouseEvent} event */
-	function ratioFromEvent(event) {
-		const target = /** @type {HTMLElement} */ (event.currentTarget);
-		const rect = target.getBoundingClientRect();
+	/** События бара: Svelte отдаёт currentTarget самим элементом бара. */
+	type BarPointerEvent = PointerEvent & { currentTarget: HTMLDivElement };
+	type BarMouseEvent = MouseEvent & { currentTarget: HTMLDivElement };
+
+	function ratioFromEvent(event: BarPointerEvent | BarMouseEvent): number {
+		const rect = event.currentTarget.getBoundingClientRect();
 		return Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
 	}
 
-	/** @param {PointerEvent} event */
-	function onBarPointerDown(event) {
+	function onBarPointerDown(event: BarPointerEvent): void {
 		scrubbing = true;
-		const target = /** @type {HTMLElement} */ (event.currentTarget);
 		try {
-			target.setPointerCapture?.(event.pointerId);
+			event.currentTarget.setPointerCapture?.(event.pointerId);
 		} catch {
 			/* ignore */
 		}
@@ -61,32 +59,27 @@
 		event.preventDefault();
 	}
 
-	/** @param {PointerEvent} event */
-	function onBarPointerMove(event) {
+	function onBarPointerMove(event: BarPointerEvent): void {
 		if (!scrubbing) return;
 		seekTo(ratioFromEvent(event) * player.duration);
 	}
 
-	/** @param {PointerEvent} event */
-	function endScrub(event) {
+	function endScrub(event: BarPointerEvent): void {
 		if (!scrubbing) return;
 		scrubbing = false;
-		const target = /** @type {HTMLElement} */ (event.currentTarget);
 		try {
-			target.releasePointerCapture?.(event.pointerId);
+			event.currentTarget.releasePointerCapture?.(event.pointerId);
 		} catch {
 			/* ignore */
 		}
 	}
 
-	/** @param {MouseEvent} event */
-	function onBarClick(event) {
+	function onBarClick(event: BarMouseEvent): void {
 		if (event.detail === 0) return;
 		seekTo(ratioFromEvent(event) * player.duration);
 	}
 
-	/** @param {KeyboardEvent} event */
-	function onBarKeydown(event) {
+	function onBarKeydown(event: KeyboardEvent): void {
 		if (event.key === 'ArrowRight') {
 			seekTo(player.currentTime + 5);
 		} else if (event.key === 'ArrowLeft') {
@@ -284,14 +277,25 @@
 			0 0 11px rgba(2, 4, 12, 0.85);
 		-webkit-tap-highlight-color: transparent;
 		transition:
-			color 260ms var(--ease-soft),
-			background 260ms var(--ease-soft);
+			color var(--dur-ui) var(--ease-ui),
+			background var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
 	}
 
-	.lib-track:hover,
+	.lib-track:active {
+		transform: scale(0.99);
+	}
+
 	.lib-track:focus-visible {
 		color: #ffffff;
 		background: rgba(180, 165, 255, 0.1);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.lib-track:hover {
+			color: #ffffff;
+			background: rgba(180, 165, 255, 0.1);
+		}
 	}
 
 	.lib-track:focus {
@@ -366,24 +370,28 @@
 		color: rgba(244, 240, 255, 0.8);
 		cursor: pointer;
 		transition:
-			background 300ms var(--ease-soft),
-			color 300ms var(--ease-soft);
+			background var(--dur-ui) var(--ease-ui),
+			color var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
 		-webkit-tap-highlight-color: transparent;
 	}
 
-	.player__skip:hover,
+	.player__skip:active {
+		transform: scale(0.92);
+	}
+
 	.player__skip:focus-visible {
 		background: rgba(180, 165, 255, 0.28);
 		color: #f4f0ff;
-	}
-
-	.player__skip:focus {
-		outline: none;
-	}
-
-	.player__skip:focus-visible {
 		outline: 1px solid rgba(216, 198, 255, 0.7);
 		outline-offset: 2px;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.player__skip:hover {
+			background: rgba(180, 165, 255, 0.28);
+			color: #f4f0ff;
+		}
 	}
 
 	.player__skip-icon {
@@ -397,6 +405,7 @@
 	}
 
 	.player__toggle {
+		position: relative;
 		flex: none;
 		display: grid;
 		place-items: center;
@@ -406,50 +415,69 @@
 		border-radius: 50%;
 		background: rgba(180, 165, 255, 0.18);
 		cursor: pointer;
-		transition: background 300ms var(--ease-soft);
+		transition:
+			background var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
 		-webkit-tap-highlight-color: transparent;
 	}
 
-	.player__toggle:hover,
+	.player__toggle:active {
+		transform: scale(0.94);
+	}
+
 	.player__toggle:focus-visible {
 		background: rgba(180, 165, 255, 0.32);
-	}
-
-	.player__toggle:focus {
-		outline: none;
-	}
-
-	.player__toggle:focus-visible {
 		outline: 1px solid rgba(216, 198, 255, 0.7);
 		outline-offset: 3px;
 	}
 
-	.player__toggle::before {
+	@media (hover: hover) and (pointer: fine) {
+		.player__toggle:hover {
+			background: rgba(180, 165, 255, 0.32);
+		}
+	}
+
+	/* Иконки play/pause: crossfade/scale вместо резкого display:none. */
+	.player__toggle::before,
+	.player__toggle::after {
 		content: '';
+		position: absolute;
+		inset: 0;
+		margin: auto;
+		transition:
+			opacity var(--dur-fast) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
+	}
+
+	.player__toggle::before {
 		width: 0;
 		height: 0;
 		border-style: solid;
 		border-width: 0.4rem 0 0.4rem 0.66rem;
 		border-color: transparent transparent transparent #f4f0ff;
 		translate: 1px 0;
+		opacity: 1;
+		transform: scale(1);
 	}
 
 	.player.is-playing .player__toggle::before {
-		display: none;
+		opacity: 0;
+		transform: scale(0.7);
 	}
 
 	.player__toggle::after {
-		content: '';
-		display: none;
 		width: 0.62rem;
 		height: 0.78rem;
 		background:
 			linear-gradient(#f4f0ff, #f4f0ff) left / 0.22rem 100% no-repeat,
 			linear-gradient(#f4f0ff, #f4f0ff) right / 0.22rem 100% no-repeat;
+		opacity: 0;
+		transform: scale(0.7);
 	}
 
 	.player.is-playing .player__toggle::after {
-		display: block;
+		opacity: 1;
+		transform: scale(1);
 	}
 
 	.player__bar {
@@ -511,7 +539,14 @@
 		color: rgba(244, 240, 255, 0.85);
 		cursor: pointer;
 		-webkit-tap-highlight-color: transparent;
-		transition: color 200ms var(--ease-soft);
+		transition:
+			color var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
+	}
+
+	.player__volume-button:active,
+	.player__mute:active {
+		transform: scale(0.88);
 	}
 
 	.player__volume-button {
@@ -525,23 +560,19 @@
 		height: 0.95rem;
 	}
 
-	.player__volume-button:hover,
 	.player__volume-button:focus-visible,
-	.player__mute:hover,
 	.player__mute:focus-visible {
 		color: #ffffff;
-	}
-
-	.player__volume-button:focus,
-	.player__mute:focus {
-		outline: none;
-	}
-
-	.player__volume-button:focus-visible,
-	.player__mute:focus-visible {
 		outline: 1px solid rgba(216, 198, 255, 0.6);
 		outline-offset: 3px;
 		border-radius: 3px;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.player__volume-button:hover,
+		.player__mute:hover {
+			color: #ffffff;
+		}
 	}
 
 	.player__volume-popover {
@@ -564,9 +595,9 @@
 		pointer-events: none;
 		transform: translate(4px, -50%);
 		transition:
-			opacity 220ms var(--ease-soft),
-			transform 220ms var(--ease-soft),
-			visibility 0s linear 220ms;
+			opacity var(--dur-ui) var(--ease-ui),
+			transform var(--dur-ui) var(--ease-out),
+			visibility 0s linear var(--dur-ui);
 	}
 
 	.player.is-volume-open .player__volume-popover {
@@ -593,7 +624,7 @@
 	}
 
 	.player__wave {
-		transition: opacity 200ms var(--ease-soft);
+		transition: opacity var(--dur-ui) var(--ease-ui);
 	}
 
 	.player.is-muted .player__wave {
@@ -685,6 +716,7 @@
 			display: flex;
 			flex-direction: column;
 			overflow-y: auto;
+			overscroll-behavior: contain;
 			pointer-events: auto;
 			-webkit-overflow-scrolling: touch;
 			scrollbar-width: thin;
@@ -708,6 +740,21 @@
 
 		.player.is-volume-open .player__volume-popover {
 			transform: translate(0, -50%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.lib-track:active,
+		.player__skip:active,
+		.player__toggle:active,
+		.player__volume-button:active,
+		.player__mute:active {
+			transform: none;
+		}
+
+		.player__toggle::before,
+		.player__toggle::after {
+			transition: opacity var(--dur-fast) linear;
 		}
 	}
 </style>

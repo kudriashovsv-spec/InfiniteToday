@@ -13,6 +13,7 @@
 </svelte:head>
 
 <div class="screen">
+	<h1 class="sr-only">Космос — карта музыкальных миров Infinite Today</h1>
 	<Scene src="images/PaigLvl2.webp" containOnNarrow>
 		{#each worlds as world (world.slug)}
 			<MapHotspot {world} />
@@ -47,8 +48,10 @@
 			display: flex;
 			flex-direction: column;
 			gap: 1.15rem;
-			padding: 3.5rem 1rem calc(1.4rem + env(safe-area-inset-bottom, 0px));
+			padding: calc(3.5rem + env(safe-area-inset-top, 0px)) 1rem
+				calc(1.4rem + env(safe-area-inset-bottom, 0px));
 			overflow-y: auto;
+			overscroll-behavior: contain;
 			-webkit-overflow-scrolling: touch;
 			scrollbar-width: thin;
 			scrollbar-color: rgba(180, 165, 255, 0.4) transparent;

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { presets } from '#lib/data/butterchurn.js';
 	import * as engine from '#lib/audio/butterchurn.js';
@@ -10,23 +10,28 @@
 	 * и audio/playback.js. Компонент ничего не знает ни о мирах, ни о треках.
 	 */
 
-	/** @type {HTMLElement | null} */
-	let host = $state(null);
-	/** @type {'loading' | 'ready' | 'unsupported' | 'error'} */
-	let status = $state('loading');
-	let presetIndex = $state(-1);
+	// Типы engine-API выведены из JSDoc runtime-модуля: его typedef'ы
+	// (VizStatus / VizHandlers) локальные и не экспортируются.
+	type VizHandlers = Parameters<typeof engine.mount>[1];
+	type VizStatus = Parameters<VizHandlers['onStatus']>[0];
+
+	let host: HTMLElement | null = $state(null);
+	let status: VizStatus = $state('loading');
+	let presetIndex: number = $state(-1);
 
 	onMount(() => {
-		const cleanup = engine.mount(host, {
+		const element = host;
+		if (!element) return;
+
+		const cleanup = engine.mount(element, {
 			onStatus: (value) => (status = value),
 			onPreset: (value) => (presetIndex = value)
 		});
 
-		/** @type {ResizeObserver | undefined} */
-		let observer;
-		if (host && typeof ResizeObserver !== 'undefined') {
-			observer = new ResizeObserver(() => engine.resize(host.clientWidth, host.clientHeight));
-			observer.observe(host);
+		let observer: ResizeObserver | undefined;
+		if (typeof ResizeObserver !== 'undefined') {
+			observer = new ResizeObserver(() => engine.resize(element.clientWidth, element.clientHeight));
+			observer.observe(element);
 		}
 
 		return () => {
@@ -142,19 +147,29 @@
 		font-size: 1.15rem;
 		line-height: 1;
 		cursor: pointer;
-		transition: background 300ms var(--ease-soft), color 300ms var(--ease-soft);
+		transition:
+			background var(--dur-ui) var(--ease-ui),
+			color var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
 		-webkit-tap-highlight-color: transparent;
 	}
 
-	.dna-controls__step:hover,
-	.dna-controls__step:focus-visible {
-		color: #f4f0ff;
-		background: rgba(180, 165, 255, 0.28);
+	.dna-controls__step:active {
+		transform: scale(0.92);
 	}
 
 	.dna-controls__step:focus-visible {
+		color: #f4f0ff;
+		background: rgba(180, 165, 255, 0.28);
 		outline: 1px solid rgba(216, 198, 255, 0.6);
 		outline-offset: 3px;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.dna-controls__step:hover {
+			color: #f4f0ff;
+			background: rgba(180, 165, 255, 0.28);
+		}
 	}
 
 	.dna-controls__label {
@@ -183,6 +198,12 @@
 		.dna-controls__label {
 			min-width: 0;
 			max-width: 42vw;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.dna-controls__step:active {
+			transform: none;
 		}
 	}
 </style>

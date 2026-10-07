@@ -56,6 +56,23 @@ SvelteKit 3 используется намеренно. Важно:
 - `$app/paths` (`resolve`, `asset`) использовать для корректной работы base path;
 - не переносить старые SvelteKit 2 patterns без проверки актуальной документации.
 
+Стек типов:
+
+- TypeScript включён в режиме `strict` (`tsconfig.json` extends `$app/tsconfig`, `checkJs: false`);
+- data layer, audio core, routes и все Svelte-компоненты — TypeScript (`<script lang="ts">`);
+- `src/lib/audio/butterchurn.js` и `src/lib/audio/audio-dna.js` **намеренно остаются JavaScript**
+  (runtime-визуализаторы: WebGL/vendor-глобалы). Не переписывать их на TypeScript
+  автоматически — только отдельным решением;
+- `vite.config.js` тоже остаётся JavaScript;
+- типы из `.js`-модулей получать выводом из JSDoc/сигнатур (`ReturnType<typeof …>`,
+  `Parameters<typeof …>`), а не дублированием и не `any`.
+- `asset()` принимает `AssetPath`; пути, приходящие из данных как `string`, сужать
+  только на границе вызова `asset(...)`, не меняя доменные типы (`Track`, `GalleryFile`);
+- `resolve()` для динамических маршрутов — в route-ID-форме:
+  `resolve('/world/[slug]', { slug })`;
+- `page.url` — readonly URL и не передаётся в `goto()`; использовать `page.url.href`;
+- shallow-состояние страницы описывать в `src/app.d.ts` (`App.PageState`).
+
 ## 5. GitHub Pages
 
 Будущий production URL:
@@ -119,6 +136,7 @@ Scope expansion запрещён.
 - dev
 - build
 - preview
+- `npm run check` (svelte-check; 0 errors — 2 a11y-warning в `Lightbox` считаются baseline)
 - routes
 - direct deep-links
 - asset loading

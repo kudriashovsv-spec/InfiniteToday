@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { createAudioDNA } from '#lib/audio/audio-dna.js';
 
@@ -9,18 +9,16 @@
 	 * ни о Butterchurn, ни о конкретных треках.
 	 */
 
-	/** @type {HTMLCanvasElement | null} */
-	let canvas = $state(null);
-	/** @type {ReturnType<typeof createAudioDNA> | null} */
-	let engine = null;
+	let canvas: HTMLCanvasElement | null = $state(null);
+	// Тип engine выведен из API модуля (у createAudioDNA нет @returns-typedef).
+	let engine: ReturnType<typeof createAudioDNA> | null = null;
 
 	onMount(() => {
 		if (!canvas) return;
 		engine = createAudioDNA(canvas);
 		engine.start();
 
-		/** @type {ResizeObserver | undefined} */
-		let observer;
+		let observer: ResizeObserver | undefined;
 		if (typeof ResizeObserver !== 'undefined') {
 			observer = new ResizeObserver(() => engine?.resize());
 			observer.observe(canvas);

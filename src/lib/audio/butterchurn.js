@@ -21,6 +21,24 @@ const RUNTIME_SRC = 'vendor/butterchurn/butterchurn.min.js';
 const PRESET_GLOBAL = '__BC_LIBRARY_PRESETS';
 const MAX_DPR = 2;
 
+// prefers-reduced-motion: снижаем интенсивность визуализатора (низкий fps,
+// dpr 1), не убирая его и не меняя функциональность (пресеты/звук).
+let reducedMotion = false;
+let reducedBound = false;
+
+function initReducedMotion() {
+	if (reducedBound || typeof window === 'undefined' || !window.matchMedia) return;
+	reducedBound = true;
+	const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+	reducedMotion = query.matches;
+	/** @param {MediaQueryListEvent} event */
+	const onChange = (event) => {
+		reducedMotion = event.matches;
+	};
+	if (typeof query.addEventListener === 'function') query.addEventListener('change', onChange);
+	else if (typeof query.addListener === 'function') query.addListener(onChange);
+}
+
 /**
  * @typedef {'loading' | 'ready' | 'unsupported' | 'error'} VizStatus
  * @typedef {{ onStatus: (status: VizStatus) => void, onPreset?: (index: number) => void }} VizHandlers
@@ -46,6 +64,7 @@ let activeToken = 0;
 
 let rafId = null;
 let lastNow = 0;
+let lastFrameAt = 0;
 let renders = 0;
 let status = /** @type {VizStatus} */ ('loading');
 
@@ -61,7 +80,9 @@ let bagSize = 0;
 let bagLast = -1;
 
 function dpr() {
-	return typeof window === 'undefined' ? 1 : Math.min(window.devicePixelRatio || 1, MAX_DPR);
+	if (typeof window === 'undefined') return 1;
+	if (reducedMotion) return 1;
+	return Math.min(window.devicePixelRatio || 1, MAX_DPR);
 }
 
 function nowMs() {
@@ -268,6 +289,9 @@ function loop(now) {
 		return;
 	}
 	rafId = requestAnimationFrame(loop);
+	// reduced-motion: рендерим редко (~8 fps), а не каждый кадр.
+	if (reducedMotion && now - lastFrameAt < 120) return;
+	lastFrameAt = now;
 	const dt = lastNow ? Math.min(0.05, (now - lastNow) / 1000) : 0.016;
 	lastNow = now;
 	try {
@@ -302,6 +326,7 @@ function stopLoop() {
  * @returns {() => void}
  */
 export function mount(host, handlers) {
+	initReducedMotion();
 	const token = ++mountToken;
 	activeToken = token;
 	handlersRef = handlers;
@@ -402,6 +427,7 @@ export function snapshot() {
 		presetIndex,
 		preset: presetName,
 		presets: presets.length,
+		reduced: reducedMotion,
 		renders,
 		connected: connectedNodes.length
 	};

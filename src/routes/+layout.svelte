@@ -11,7 +11,9 @@
 	<link rel="icon" type="image/png" href={asset('favicon.png')} />
 </svelte:head>
 
-{@render children()}
+<main>
+	{@render children()}
+</main>
 
 <!-- Глобальный L1 player: persistent <audio>, переживает любые route transitions. -->
 <GlobalPlayer />

@@ -14,27 +14,35 @@
 // `artwork` — путь ОТНОСИТЕЛЬНО static/. В v1.1 сцену L3 рисует визуализатор
 // (Butterchurn), отдельного desktop-артворка у миров нет; поэтому сценой и
 // мобильной карточкой служит реальный artwork мира (mobile WebP).
+//
+// Пилот TypeScript: JSDoc-typedefs перенесены в настоящие типы. Публичный
+// рантайм-API модуля не изменился (`worlds`, `getWorld`).
 
-/**
- * @typedef {object} WorldHotspot
- * @property {string} left    процент от ширины изображения карты
- * @property {string} top     процент от высоты изображения карты
- * @property {string} width   ширина зоны (desktop)
- * @property {string} height  высота зоны (desktop)
- */
+export interface WorldHotspot {
+	/** процент от ширины изображения карты */
+	left: string;
+	/** процент от высоты изображения карты */
+	top: string;
+	/** ширина зоны (desktop) */
+	width: string;
+	/** высота зоны (desktop) */
+	height: string;
+}
 
-/**
- * @typedef {object} World
- * @property {string} slug
- * @property {string} title
- * @property {string} artwork
- * @property {'below' | 'above' | 'left'} labelSide  положение подписи на карте
- * @property {boolean} panelShift  сдвиг панели вниз (длинный заголовок мира)
- * @property {WorldHotspot} hotspot
- */
+/** положение подписи на карте */
+export type WorldLabelSide = 'below' | 'above' | 'left';
 
-/** @type {World[]} */
-export const worlds = [
+export interface World {
+	slug: string;
+	title: string;
+	artwork: string;
+	labelSide: WorldLabelSide;
+	/** сдвиг панели вниз (длинный заголовок мира) */
+	panelShift: boolean;
+	hotspot: WorldHotspot;
+}
+
+export const worlds: World[] = [
 	{
 		slug: 'posik',
 		title: 'Поиск',
@@ -93,10 +101,6 @@ export const worlds = [
 	}
 ];
 
-/**
- * @param {string} slug
- * @returns {World | undefined}
- */
-export function getWorld(slug) {
+export function getWorld(slug: string): World | undefined {
 	return worlds.find((world) => world.slug === slug);
 }

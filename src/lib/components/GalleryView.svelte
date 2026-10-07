@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
@@ -14,31 +14,26 @@
 	 * поэтому Back закрывает lightbox, а следующий Back уходит из галереи (v1.1).
 	 */
 
-	let filter = $state('all');
-	/** @type {HTMLElement | null} */
-	let returnFocus = $state(null);
+	let filter: string = $state('all');
+	let returnFocus: HTMLElement | null = $state(null);
 
 	const filtered = $derived(worksIn(filter));
 	const lightboxId = $derived(typeof page.state?.lightbox === 'string' ? page.state.lightbox : null);
 	const lightboxIndex = $derived(lightboxId ? filtered.findIndex((work) => work.id === lightboxId) : -1);
 
-	/**
-	 * @param {string} id
-	 * @param {HTMLElement} element
-	 */
-	function openLightbox(id, element) {
+	function openLightbox(id: string, element: HTMLElement): void {
 		returnFocus = element;
-		goto(page.url, { state: { lightbox: id }, shallow: true });
+		// page.url — readonly URL, а goto() в SvelteKit 3 принимает string | URL.
+		goto(page.url.href, { state: { lightbox: id }, shallow: true });
 	}
 
-	/** @param {number} delta */
-	function stepLightbox(delta) {
+	function stepLightbox(delta: number): void {
 		if (filtered.length < 2 || lightboxIndex < 0) return;
 		const index = (lightboxIndex + delta + filtered.length) % filtered.length;
-		goto(page.url, { state: { lightbox: filtered[index].id }, replace: true, shallow: true });
+		goto(page.url.href, { state: { lightbox: filtered[index].id }, replace: true, shallow: true });
 	}
 
-	function closeLightbox() {
+	function closeLightbox(): void {
 		// как v1.1: закрытие снимает запись истории
 		if (page.state?.lightbox) history.back();
 	}
@@ -107,7 +102,8 @@
 		position: relative;
 		z-index: 2;
 		flex: 0 0 auto;
-		padding: clamp(3.1rem, 7.6vh, 4.4rem) clamp(1rem, 4vw, 3rem) 0.5rem;
+		padding: calc(clamp(3.1rem, 7.6vh, 4.4rem) + env(safe-area-inset-top, 0px)) clamp(1rem, 4vw, 3rem)
+			0.5rem;
 	}
 
 	.gallery__title {
@@ -152,15 +148,26 @@
 		cursor: pointer;
 		-webkit-tap-highlight-color: transparent;
 		transition:
-			color 260ms var(--ease-soft),
-			border-color 260ms var(--ease-soft),
-			background-color 260ms var(--ease-soft);
+			color var(--dur-ui) var(--ease-ui),
+			border-color var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out),
+			background-color var(--dur-ui) var(--ease-ui);
 	}
 
-	.chip:hover,
+	.chip:active {
+		transform: scale(0.97);
+	}
+
 	.chip:focus-visible {
 		color: #ffffff;
 		border-color: rgba(216, 198, 255, 0.4);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.chip:hover {
+			color: #ffffff;
+			border-color: rgba(216, 198, 255, 0.4);
+		}
 	}
 
 	.chip:focus {
@@ -195,6 +202,7 @@
 		flex: 1 1 auto;
 		overflow-y: auto;
 		overflow-x: hidden;
+		overscroll-behavior: contain;
 		padding: 0.4rem clamp(1rem, 4vw, 3rem) clamp(1.4rem, 5vh, 3rem);
 	}
 
@@ -231,6 +239,7 @@
 		.gallery__filters {
 			flex-wrap: nowrap;
 			overflow-x: auto;
+			overscroll-behavior-x: contain;
 			scrollbar-width: none;
 			-webkit-overflow-scrolling: touch;
 		}

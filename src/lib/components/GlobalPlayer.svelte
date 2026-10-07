@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { attachGlobalAudio } from '#lib/audio/player.svelte.js';
 
@@ -10,8 +10,7 @@
 	 * здесь только элемент и связывание его с глобальным состоянием.
 	 */
 
-	/** @type {HTMLAudioElement | null} */
-	let element = $state(null);
+	let element: HTMLAudioElement | null = $state(null);
 
 	onMount(() => (element ? attachGlobalAudio(element) : undefined));
 </script>
