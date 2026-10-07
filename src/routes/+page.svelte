@@ -3,6 +3,7 @@
 	import Scene from '#lib/components/Scene.svelte';
 	import LibraryPanel from '#lib/components/LibraryPanel.svelte';
 	import Seo from '#lib/components/Seo.svelte';
+	import ShareButton from '#lib/components/ShareButton.svelte';
 	import { absoluteUrl, SITE_NAME } from '#lib/seo.js';
 
 	const description =
@@ -60,6 +61,12 @@
 		<a class="social__link" href="https://t.me/parabola_music" target="_blank" rel="noopener noreferrer"
 			>Telegram</a
 		>
+		<ShareButton
+			variant="ghost"
+			path="/"
+			title="Infinite Today — Бесконечное сегодня"
+			text="Музыкальная лаборатория «Бесконечное сегодня»: семь музыкальных миров и живая визуализация."
+		/>
 	</div>
 
 	<!-- Вход в галерею — отдельная страница (настоящий SvelteKit route). -->
@@ -276,7 +283,9 @@
 
 	@media (max-width: 640px) {
 		.enter {
-			padding: calc(clamp(2.4rem, 8vh, 4rem) + env(safe-area-inset-top, 0px)) 6vmin 0;
+			/* +2.2rem (~35px): на телефоне блок «Music Laboratory / Infinite Today / Вход»
+			   уходит ниже правой share-колонки, чтобы не пересекаться с ней. */
+			padding: calc(clamp(2.4rem, 8vh, 4rem) + 2.2rem + env(safe-area-inset-top, 0px)) 6vmin 0;
 		}
 
 		.enter__title {
@@ -284,7 +293,13 @@
 		}
 
 		.enter__hint {
-			margin-top: 1.4rem;
+			/* «Вход» позиционируется независимо от верхних надписей:
+			   строго по центру viewport по X и ~35px выше геометрического центра. */
+			position: absolute;
+			left: 50%;
+			top: calc(50% - 2.2rem);
+			translate: -50% -50%;
+			margin: 0;
 			font-size: 0.95rem;
 			letter-spacing: 0.4em;
 			text-indent: 0.4em;

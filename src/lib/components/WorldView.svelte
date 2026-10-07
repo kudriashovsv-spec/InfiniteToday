@@ -5,6 +5,7 @@
 	import TrackPlayer from './TrackPlayer.svelte';
 	import LyricsPanel from './LyricsPanel.svelte';
 	import BackLink from './BackLink.svelte';
+	import ShareButton from './ShareButton.svelte';
 
 	/**
 	 * Переиспользуемый мир песни (L3) — зародыш будущего `SongWorld`.
@@ -35,6 +36,12 @@
 	{#if lyrics}
 		<LyricsPanel text={lyrics} />
 	{/if}
+
+	<ShareButton
+		path={`/world/${world.slug}`}
+		title={`${world.title} — Infinite Today`}
+		text={`Мир песни «${world.title}» в музыкальной лаборатории Infinite Today.`}
+	/>
 </div>
 
 <style>
