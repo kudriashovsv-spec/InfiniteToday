@@ -1,9 +1,10 @@
 // Каталог миров (production-материал).
 //
-// Phase 2: перенесены все 7 миров v1.1. Один и тот же WorldView рисует любой
-// из них по данным — отдельных страниц/условных веток под мир нет.
+// Phase 2: перенесены все 7 миров v1.1; позже добавлены ещё три
+// (Бешеная, Дота виновата, Здравствуй в первый раз) — всего 10. Один и тот же
+// WorldView рисует любой из них по данным — отдельных страниц под мир нет.
 //
-// Чтобы добавить восьмой мир, достаточно: добавить запись сюда, версии в
+// Чтобы добавить новый мир, достаточно: добавить запись сюда, версии в
 // music.js, текст в lyrics.js и artwork в static/images/worlds/. UI не меняется.
 //
 // Координаты hotspot — РЕАЛЬНЫЕ desktop-значения production v1.1
@@ -39,6 +40,10 @@ export interface World {
 	labelSide: WorldLabelSide;
 	/** сдвиг панели вниз (длинный заголовок мира) */
 	panelShift: boolean;
+	/** необязательный сдвиг заголовка L3 вниз на Desktop (CSS length) */
+	titleShift?: string;
+	/** необязательное ограничение ширины заголовка L3 на Mobile (CSS length) */
+	titleMobileMaxWidth?: string;
 	hotspot: WorldHotspot;
 }
 
@@ -49,7 +54,7 @@ export const worlds: World[] = [
 		artwork: 'images/worlds/posik.webp',
 		labelSide: 'below',
 		panelShift: false,
-		hotspot: { left: '53.83%', top: '65.36%', width: '4%', height: '7.1%' }
+		hotspot: { left: '49.25%', top: '45.47%', width: '4%', height: '7.1%' }
 	},
 	{
 		slug: 'dream',
@@ -57,7 +62,7 @@ export const worlds: World[] = [
 		artwork: 'images/worlds/dream.webp',
 		labelSide: 'above',
 		panelShift: false,
-		hotspot: { left: '63.7%', top: '76.4%', width: '3%', height: '5.3333%' }
+		hotspot: { left: '16.05%', top: '51.69%', width: '3%', height: '5.33%' }
 	},
 	{
 		slug: 'suns',
@@ -73,7 +78,8 @@ export const worlds: World[] = [
 		artwork: 'images/worlds/hope.webp',
 		labelSide: 'below',
 		panelShift: true,
-		hotspot: { left: '58.13%', top: '31.03%', width: '3%', height: '5.3333%' }
+		titleMobileMaxWidth: '10em',
+		hotspot: { left: '58.08%', top: '31.22%', width: '3%', height: '5.33%' }
 	},
 	{
 		slug: 'time',
@@ -89,7 +95,7 @@ export const worlds: World[] = [
 		artwork: 'images/worlds/brothers.webp',
 		labelSide: 'below',
 		panelShift: false,
-		hotspot: { left: '15.9667%', top: '51.5%', width: '4%', height: '7.1%' }
+		hotspot: { left: '21.54%', top: '62.61%', width: '4%', height: '7.1%' }
 	},
 	{
 		slug: 'turn',
@@ -97,10 +103,65 @@ export const worlds: World[] = [
 		artwork: 'images/worlds/turn.webp',
 		labelSide: 'below',
 		panelShift: true,
-		hotspot: { left: '49.3%', top: '45.8%', width: '4%', height: '7.1%' }
+		hotspot: { left: '63.73%', top: '76.62%', width: '4%', height: '7.1%' }
+	},
+	// Новые миры (Desktop L2). left/top — центр входа (MapHotspot использует
+	// translate: -50% -50%), в процентах от карты PaigLvl2.webp (1672×941).
+	{
+		slug: 'beshenaya',
+		title: 'Бешеная',
+		artwork: 'images/worlds/beshenaya.webp',
+		labelSide: 'below',
+		panelShift: false,
+		hotspot: { left: '26.25%', top: '41.39%', width: '4%', height: '7.1%' }
+	},
+	{
+		slug: 'dota-vinovata',
+		title: 'Дота виновата',
+		artwork: 'images/worlds/dota-vinovata.webp',
+		labelSide: 'above',
+		panelShift: true,
+		hotspot: { left: '34.6%', top: '37.74%', width: '4%', height: '7.1%' }
+	},
+	{
+		slug: 'zdravstvuy-v-pervyy-raz',
+		title: 'Здравствуй в первый раз',
+		artwork: 'images/worlds/zdravstvuy-v-pervyy-raz.webp',
+		labelSide: 'above',
+		panelShift: true,
+		titleShift: '19px',
+		titleMobileMaxWidth: '8.55em',
+		hotspot: { left: '53.8%', top: '65.45%', width: '4%', height: '7.1%' }
 	}
 ];
 
 export function getWorld(slug: string): World | undefined {
 	return worlds.find((world) => world.slug === slug);
+}
+
+// Постоянный порядок миров для Mobile L2 (список карточек).
+//
+// Это отдельная конфигурация ТОЛЬКО для мобильного списка: Desktop L2,
+// sitemap, route entries и остальные потребители продолжают использовать
+// порядок массива `worlds`. Здесь хранятся только slug'и, а объекты миров
+// берутся из `worlds` — единственного источника правды.
+export const mobileWorldOrder: readonly string[] = [
+	'zdravstvuy-v-pervyy-raz',
+	'posik',
+	'dota-vinovata',
+	'time',
+	'beshenaya',
+	'brothers',
+	'turn',
+	'dream',
+	'suns',
+	'hope'
+];
+
+/** Миры в фиксированном Mobile-порядке (для карточек на узких экранах). */
+export function getMobileWorlds(): World[] {
+	const bySlug = new Map(worlds.map((world) => [world.slug, world]));
+	return mobileWorldOrder
+		.map((slug) => bySlug.get(slug))
+		.filter((world): world is World => world !== undefined);
 }

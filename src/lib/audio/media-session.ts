@@ -5,15 +5,17 @@
 // молчит при отсутствии API и никогда не выполняется во время SSR.
 
 import { asset } from '$app/paths';
-import type { AssetPath } from '$app/types';
 import { getWorld } from '#lib/data/worlds.js';
-import { currentTrack, player, play, pause, next, prev, seekTo } from './player.svelte.js';
+import { currentTrack, player, play, pause, next, prev } from './player.svelte.js';
 
-/** Шаг перемотки для OS-действий seekbackward / seekforward, секунды. */
-const SEEK_STEP = 10;
-
-/** Действия, которые регистрируем в initMediaSession и снимаем в cleanup. */
-const ACTIONS = ['play', 'pause', 'nexttrack', 'previoustrack', 'seekbackward', 'seekforward'] as const;
+/**
+ * Действия OS Media Session, которые регистрируем и снимаем в cleanup.
+ *
+ * `seekbackward`/`seekforward` намеренно НЕ регистрируем: на iOS это уводит
+ * Lock Screen в режим «±10 сек» вместо кнопок переключения треков.
+ * Внутренний seek (progress bar, клавиатура) это не затрагивает.
+ */
+const ACTIONS = ['play', 'pause', 'nexttrack', 'previoustrack'] as const;
 
 function session(): MediaSession | null {
 	if (typeof navigator === 'undefined') return null;
@@ -22,13 +24,31 @@ function session(): MediaSession | null {
 	return ms ?? null;
 }
 
-/** Артворк из существующих ресурсов: картинка мира или главный экран. */
+/** Безопасная регистрация действия: неподдерживаемое молча игнорируем. */
+function setHandler(ms: MediaSession, action: MediaSessionAction, handler: (() => void) | null): void {
+	try {
+		ms.setActionHandler(action, handler);
+	} catch {
+		/* действие может быть не поддержано браузером */
+	}
+}
+
+/**
+ * Единая обложка системного Now Playing (iPhone Lock Screen и др.).
+ *
+ * Осознанно одна и та же для всех L1-треков. Позже источник легко заменить на
+ * per-track artwork, не меняя остальную архитектуру Media Session: достаточно
+ * поменять наполнение `artwork()`.
+ */
+const NOW_PLAYING_ARTWORK: MediaImage = {
+	src: asset('images/now-playing.jpg'),
+	type: 'image/jpeg',
+	sizes: '1024x1024'
+};
+
+/** Артворк для OS Now Playing: пока одна общая обложка для всех треков. */
 function artwork(): MediaImage[] {
-	const track = currentTrack();
-	const world = track?.world ? getWorld(track.world) : undefined;
-	const path = world?.artwork ?? 'images/MainPageLvl1.webp';
-	// Путь из данных — runtime string; сужаем на границе к типу известных ассетов.
-	return [{ src: asset(path as AssetPath), type: 'image/webp' }];
+	return [NOW_PLAYING_ARTWORK];
 }
 
 let lastTrackId: string | null = null;
@@ -69,27 +89,20 @@ export function syncMediaSession(): void {
 
 /**
  * Регистрирует обработчики OS-действий через существующие player-actions.
+ * Неподдерживаемое действие тихо игнорируется — модуль деградирует безопасно.
  * @returns cleanup, снимающий обработчики
  */
 export function initMediaSession(): () => void {
 	const ms = session();
 	if (!ms) return () => {};
 
-	ms.setActionHandler('play', () => play());
-	ms.setActionHandler('pause', () => pause());
-	ms.setActionHandler('nexttrack', () => next());
-	ms.setActionHandler('previoustrack', () => prev());
-	ms.setActionHandler('seekbackward', () => seekTo(player.currentTime - SEEK_STEP));
-	ms.setActionHandler('seekforward', () => seekTo(player.currentTime + SEEK_STEP));
+	setHandler(ms, 'play', () => play());
+	setHandler(ms, 'pause', () => pause());
+	setHandler(ms, 'nexttrack', () => next());
+	setHandler(ms, 'previoustrack', () => prev());
 
 	return () => {
-		for (const action of ACTIONS) {
-			try {
-				ms.setActionHandler(action, null);
-			} catch {
-				/* ignore */
-			}
-		}
+		for (const action of ACTIONS) setHandler(ms, action, null);
 		lastTrackId = null;
 	};
 }

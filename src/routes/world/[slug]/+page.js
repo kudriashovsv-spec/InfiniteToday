@@ -4,7 +4,7 @@ import { getWorldTracks } from '#lib/data/music.js';
 import { getLyrics } from '#lib/data/lyrics.js';
 
 // Для статического билда SvelteKit должен знать, какие slug пререндерить.
-// Список берётся из каталога миров — восьмой мир появится здесь автоматически.
+// Список берётся из каталога миров — новый мир появится здесь автоматически.
 export function entries() {
 	return worlds.map((world) => ({ slug: world.slug }));
 }

@@ -41,9 +41,7 @@
 - [x] Phase 5.1 — visualizer exclusivity / restore v1.1 visual model
 - [x] Phase 6 — Gallery
 - [x] Gallery data layer
-- [x] 11 categories
-- [x] 99 works
-- [x] 291 WebP runtime assets
+- [x] Gallery restructured: 10 categories, 109 works, 301 WebP runtime files
 - [x] lazy loading
 - [x] lightbox
 - [x] Gallery navigation/history
@@ -96,6 +94,13 @@
   JSON-LD, `sitemap.xml`, `robots.txt`
 - [x] Web Share — native share for the home screen and worlds, with Clipboard fallback
 - [x] Privacy-friendly analytics — GoatCounter pageviews and custom events (production)
+- [x] Three new worlds — Бешеная, Дота виновата, Здравствуй в первый раз
+- [x] L2 desktop hotspot calibration tool (dev-only, `?calibrate`)
+- [x] Fixed mobile world order, independent of the desktop map order
+- [x] L3 title alignment (desktop shift + mobile centered wrapping)
+- [x] Author-curated L1 track order (40 tracks, from `WorkingFiles/Порядок песен`)
+- [x] Per-track download links in the L1 library
+- [x] Media Session — previous/next track controls; single shared Lock Screen artwork
 
 ## Next
 

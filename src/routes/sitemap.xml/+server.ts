@@ -1,7 +1,7 @@
 // Production sitemap.xml для статического GitHub Pages deployment.
 //
 // Список публичных страниц строится из данных проекта (главная, space, gallery
-// и все миры из каталога), поэтому восьмой мир появится здесь автоматически.
+// и все миры из каталога), поэтому новый мир появится здесь автоматически.
 // Внутренние/fragment-состояния (lightbox, query-UI) в sitemap не попадают.
 import { worlds } from '#lib/data/worlds.js';
 import { absoluteUrl } from '#lib/seo.js';

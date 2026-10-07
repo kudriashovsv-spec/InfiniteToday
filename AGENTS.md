@@ -77,7 +77,12 @@ SvelteKit 3 используется намеренно. Важно:
 - `resolve()` для динамических маршрутов — в route-ID-форме:
   `resolve('/world/[slug]', { slug })`;
 - `page.url` — readonly URL и не передаётся в `goto()`; использовать `page.url.href`;
-- shallow-состояние страницы описывать в `src/app.d.ts` (`App.PageState`).
+- shallow-состояние страницы описывать в `src/app.d.ts` (`App.PageState`);
+- Gallery-данные — `src/lib/data/gallery.json` (10 категорий, 109 works); runtime-файлы —
+  `static/gallery/<category-slug>/`; 10 world-mobile работ переиспользуют `static/images/worlds/`
+  без физических копий;
+- L2-входы калибруются **dev-only** инструментом `/space?calibrate` (`import.meta.env.DEV`,
+  `HotspotCalibrator.svelte`); в production он не рендерится — не удалять.
 
 ## 5. GitHub Pages
 
