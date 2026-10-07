@@ -9,6 +9,7 @@
 		next,
 		prev,
 		toggle,
+		retry,
 		seekTo,
 		setVolume,
 		toggleMute
@@ -24,6 +25,7 @@
 	 */
 
 	let playerEl: HTMLElement | null = $state(null);
+	let volumeButtonEl: HTMLButtonElement | null = $state(null);
 	let volumeOpen: boolean = $state(false);
 	let scrubbing = false;
 
@@ -36,7 +38,11 @@
 			volumeOpen = false;
 		};
 		document.addEventListener('click', onDocClick);
-		return () => document.removeEventListener('click', onDocClick);
+		window.addEventListener('keydown', onKeydown);
+		return () => {
+			document.removeEventListener('click', onDocClick);
+			window.removeEventListener('keydown', onKeydown);
+		};
 	});
 
 	/** События бара: Svelte отдаёт currentTarget самим элементом бара. */
@@ -49,6 +55,7 @@
 	}
 
 	function onBarPointerDown(event: BarPointerEvent): void {
+		if (player.duration <= 0) return;
 		scrubbing = true;
 		try {
 			event.currentTarget.setPointerCapture?.(event.pointerId);
@@ -91,10 +98,96 @@
 	}
 
 	const progress = $derived(player.duration > 0 ? player.currentTime / player.duration : 0);
+	const loading = $derived(player.loading && !player.playing);
+	const seekText = $derived(
+		player.duration > 0
+			? `${formatTime(player.currentTime)} из ${formatTime(player.duration)}`
+			: formatTime(player.currentTime)
+	);
+	const toggleLabel = $derived(
+		player.failed
+			? 'Повторить загрузку'
+			: player.retrying
+				? 'Повторная загрузка'
+				: loading
+					? 'Загрузка'
+					: player.playing
+						? 'Пауза'
+						: 'Воспроизвести'
+	);
+
+	/** Текстовые поля/списки сами обрабатывают клавиши — не мешаем. */
+	function isTextTarget(target: EventTarget | null): boolean {
+		if (!(target instanceof HTMLElement)) return false;
+		if (target.isContentEditable) return true;
+		const tag = target.tagName;
+		return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+	}
+
+	/**
+	 * Keyboard shortcuts глобального player (только на L1, где есть этот UI):
+	 * Space play/pause, ←/→ seek, ↑/↓ volume, M mute, N next, P previous.
+	 * Не перехватываем клавиши у полей ввода, у кнопок/ссылок (Space — их
+	 * нативная активация) и у слайдера (его стрелки нативны).
+	 */
+	function onKeydown(event: KeyboardEvent): void {
+		if (event.defaultPrevented) return;
+		const key = event.key;
+
+		if (volumeOpen && key === 'Escape') {
+			volumeOpen = false;
+			volumeButtonEl?.focus({ preventScroll: true });
+			event.preventDefault();
+			return;
+		}
+
+		if (event.metaKey || event.ctrlKey || event.altKey) return;
+		if (isTextTarget(event.target)) return;
+
+		const el = event.target instanceof HTMLElement ? event.target : null;
+		const activates = !!el && (el.tagName === 'BUTTON' || el.tagName === 'A');
+		const isSlider = !!el && el.getAttribute('role') === 'slider';
+		if ((key === ' ' || key === 'Spacebar') && activates) return;
+		if ((key === 'ArrowRight' || key === 'ArrowLeft') && isSlider) return;
+
+		switch (key) {
+			case ' ':
+			case 'Spacebar':
+				toggle();
+				break;
+			case 'ArrowRight':
+				seekTo(player.currentTime + 5);
+				break;
+			case 'ArrowLeft':
+				seekTo(player.currentTime - 5);
+				break;
+			case 'ArrowUp':
+				setVolume(player.volume + 0.05);
+				break;
+			case 'ArrowDown':
+				setVolume(player.volume - 0.05);
+				break;
+			case 'm':
+			case 'M':
+				toggleMute();
+				break;
+			case 'n':
+			case 'N':
+				next();
+				break;
+			case 'p':
+			case 'P':
+				prev();
+				break;
+			default:
+				return;
+		}
+		event.preventDefault();
+	}
 </script>
 
 <div class="library">
-	<p class="library__current">
+	<p class="library__current" aria-live="polite">
 		<span class="library__current-title">{track?.title ?? ''}</span>
 		<span class="library__current-genre">{track?.genre ?? ''}</span>
 	</p>
@@ -102,6 +195,8 @@
 	<div
 		class="player"
 		class:is-playing={player.playing}
+		class:is-loading={loading}
+		class:is-failed={player.failed}
 		class:is-muted={player.muted}
 		class:is-volume-open={volumeOpen}
 		bind:this={playerEl}
@@ -115,10 +210,12 @@
 		<button
 			class="player__toggle"
 			type="button"
-			aria-label={player.playing ? 'Пауза' : 'Воспроизвести'}
+			aria-label={toggleLabel}
 			aria-pressed={player.playing}
 			onclick={() => toggle()}
-		></button>
+		>
+			<span class="player__spinner" aria-hidden="true"></span>
+		</button>
 
 		<button class="player__skip player__next" type="button" aria-label="Следующий трек" onclick={() => next()}>
 			<svg class="player__skip-icon" viewBox="0 0 16 16" aria-hidden="true">
@@ -128,12 +225,16 @@
 
 		<div
 			class="player__bar"
+			class:is-disabled={player.duration <= 0}
 			role="slider"
 			tabindex="0"
 			aria-label="Позиция трека"
+			aria-orientation="horizontal"
 			aria-valuemin="0"
 			aria-valuemax="100"
 			aria-valuenow={Math.round(progress * 100)}
+			aria-valuetext={seekText}
+			aria-disabled={player.duration <= 0}
 			onpointerdown={onBarPointerDown}
 			onpointermove={onBarPointerMove}
 			onpointerup={endScrub}
@@ -153,6 +254,7 @@
 				aria-label="Громкость"
 				aria-haspopup="true"
 				aria-expanded={volumeOpen}
+				bind:this={volumeButtonEl}
 				onclick={() => (volumeOpen = !volumeOpen)}
 			>
 				<svg class="player__volume-icon" viewBox="0 0 16 16" aria-hidden="true">
@@ -188,6 +290,15 @@
 			</div>
 		</div>
 	</div>
+
+	{#if player.failed}
+		<p class="player__error" role="alert">
+			<span>Не удалось загрузить трек.</span>
+			<button class="player__retry" type="button" onclick={() => retry()}>Повторить</button>
+		</p>
+	{:else if player.retrying}
+		<p class="player__error player__error--note" role="status">Повторная загрузка…</p>
+	{/if}
 
 	<div class="library__list">
 		{#each tracks as item (item.id)}
@@ -513,6 +624,119 @@
 		background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
 	}
 
+	/* Видимый thumb на позиции воспроизведения. */
+	.player__fill::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		right: -4px;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #f4f0ff;
+		box-shadow: 0 0 8px rgba(150, 200, 255, 0.55);
+		opacity: 0.85;
+		transform: translate(0, -50%) scale(0.85);
+		transition:
+			transform var(--dur-fast) var(--ease-out),
+			opacity var(--dur-fast) var(--ease-ui);
+	}
+
+	.player__bar:hover .player__fill::after,
+	.player__bar:focus-visible .player__fill::after,
+	.player__bar:active .player__fill::after {
+		opacity: 1;
+		transform: translate(0, -50%) scale(1);
+	}
+
+	.player__bar.is-disabled {
+		cursor: default;
+	}
+
+	.player__bar.is-disabled .player__fill::after {
+		opacity: 0;
+	}
+
+	/* Индикатор загрузки: кольцо вместо иконки play, без layout shift. */
+	.player__spinner {
+		position: absolute;
+		inset: 0;
+		margin: auto;
+		width: 0.95rem;
+		height: 0.95rem;
+		border: 2px solid rgba(244, 240, 255, 0.22);
+		border-top-color: #f4f0ff;
+		border-radius: 50%;
+		opacity: 0;
+		animation: player-spin 700ms linear infinite;
+		transition: opacity var(--dur-fast) var(--ease-ui);
+	}
+
+	.player.is-loading .player__spinner {
+		opacity: 1;
+	}
+
+	.player.is-loading .player__toggle::before,
+	.player.is-loading .player__toggle::after {
+		opacity: 0;
+	}
+
+	@keyframes player-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	/* Ошибка загрузки: понятное действие «Повторить» через существующий retry(). */
+	.player__error {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0.35rem 0 0 0.15rem;
+		font-family: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+		font-size: 0.72rem;
+		font-weight: 300;
+		color: #ffb1a1;
+		pointer-events: auto;
+		text-shadow: 0 1px 2px rgba(2, 4, 12, 0.95);
+	}
+
+	.player__error--note {
+		color: rgba(238, 232, 255, 0.72);
+	}
+
+	.player__retry {
+		flex: none;
+		padding: 0.15rem 0.6rem;
+		border: 1px solid rgba(255, 177, 161, 0.5);
+		border-radius: 999px;
+		background: rgba(255, 177, 161, 0.12);
+		color: #ffd9d1;
+		font: inherit;
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+		transition:
+			background var(--dur-ui) var(--ease-ui),
+			border-color var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
+	}
+
+	.player__retry:active {
+		transform: scale(0.95);
+	}
+
+	.player__retry:focus-visible {
+		outline: 1px solid rgba(255, 200, 190, 0.8);
+		outline-offset: 2px;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.player__retry:hover {
+			background: rgba(255, 177, 161, 0.22);
+			border-color: rgba(255, 177, 161, 0.75);
+		}
+	}
+
 	.player__time {
 		flex: none;
 		font-size: 0.66rem;
@@ -732,6 +956,10 @@
 			overflow: hidden;
 		}
 
+		.player__bar::before {
+			inset: -14px 0;
+		}
+
 		.player__volume-popover {
 			left: auto;
 			right: calc(100% + 0.55rem);
@@ -748,13 +976,18 @@
 		.player__skip:active,
 		.player__toggle:active,
 		.player__volume-button:active,
-		.player__mute:active {
+		.player__mute:active,
+		.player__retry:active {
 			transform: none;
 		}
 
 		.player__toggle::before,
 		.player__toggle::after {
 			transition: opacity var(--dur-fast) linear;
+		}
+
+		.player__spinner {
+			animation: none;
 		}
 	}
 </style>

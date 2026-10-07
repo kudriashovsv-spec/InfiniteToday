@@ -21,22 +21,26 @@ import { releaseSource } from '#lib/audio/graph.js';
 export interface PlayerState {
 	trackId: string;
 	playing: boolean;
+	loading: boolean;
+	retrying: boolean;
+	failed: boolean;
 	currentTime: number;
 	duration: number;
 	volume: number;
 	muted: boolean;
-	failed: boolean;
 }
 
 /** Глобальное реактивное состояние библиотеки L1. */
 export const player: PlayerState = $state({
 	trackId: tracks.length ? tracks[0].id : '',
 	playing: false,
+	loading: false,
+	retrying: false,
+	failed: false,
 	currentTime: 0,
 	duration: 0,
 	volume: 1,
-	muted: false,
-	failed: false
+	muted: false
 });
 
 let audioEl: HTMLAudioElement | null = null;
@@ -91,20 +95,41 @@ export function attachGlobalAudio(el: HTMLAudioElement): () => void {
 	el.preload = 'none';
 
 	const onPlay = () => {
-		player.playing = true;
+		// 'play' — воспроизведение только ЗАПРОШЕНО, данные могут ещё грузиться.
+		// Поэтому playing/loading выставляются на 'playing', а не здесь.
 		pauseOthers(el);
 		setActiveAudio(el);
 	};
+	const onPlaying = () => {
+		player.playing = true;
+		player.loading = false;
+		player.retrying = false;
+	};
 	const onPause = () => {
 		player.playing = false;
+		player.loading = false;
 	};
 	const onEnded = () => {
 		player.playing = false;
+		player.loading = false;
+		player.retrying = false;
 		autoAdvance();
 	};
 	const onTime = syncProgress;
 	const onMeta = () => {
 		if (Number.isFinite(el.duration)) player.duration = el.duration;
+	};
+	const onReady = () => {
+		onMeta();
+		player.loading = false;
+		player.retrying = false;
+	};
+	const onLoadStart = () => {
+		player.failed = false;
+		player.loading = true;
+	};
+	const onWaiting = () => {
+		player.loading = true;
 	};
 	const onVolume = () => {
 		player.volume = el.volume;
@@ -112,15 +137,20 @@ export function attachGlobalAudio(el: HTMLAudioElement): () => void {
 	};
 	const onError = () => {
 		player.failed = true;
+		player.loading = false;
+		player.retrying = false;
 	};
 
 	el.addEventListener('play', onPlay);
+	el.addEventListener('playing', onPlaying);
 	el.addEventListener('pause', onPause);
 	el.addEventListener('ended', onEnded);
 	el.addEventListener('timeupdate', onTime);
 	el.addEventListener('loadedmetadata', onMeta);
 	el.addEventListener('durationchange', onMeta);
-	el.addEventListener('canplay', onMeta);
+	el.addEventListener('canplay', onReady);
+	el.addEventListener('loadstart', onLoadStart);
+	el.addEventListener('waiting', onWaiting);
 	el.addEventListener('volumechange', onVolume);
 	el.addEventListener('error', onError);
 
@@ -128,12 +158,15 @@ export function attachGlobalAudio(el: HTMLAudioElement): () => void {
 
 	return () => {
 		el.removeEventListener('play', onPlay);
+		el.removeEventListener('playing', onPlaying);
 		el.removeEventListener('pause', onPause);
 		el.removeEventListener('ended', onEnded);
 		el.removeEventListener('timeupdate', onTime);
 		el.removeEventListener('loadedmetadata', onMeta);
 		el.removeEventListener('durationchange', onMeta);
-		el.removeEventListener('canplay', onMeta);
+		el.removeEventListener('canplay', onReady);
+		el.removeEventListener('loadstart', onLoadStart);
+		el.removeEventListener('waiting', onWaiting);
 		el.removeEventListener('volumechange', onVolume);
 		el.removeEventListener('error', onError);
 		unregister();
@@ -152,6 +185,8 @@ export function selectTrack(id: string, autoplay = true): void {
 	if (changed) {
 		player.currentTime = 0;
 		player.duration = 0;
+		player.loading = false;
+		player.retrying = false;
 		assignedId = null;
 	}
 	if (autoplay) {
@@ -193,10 +228,43 @@ export function prev(): void {
 	selectIndex(((index === -1 ? 0 : index - 1) % count + count) % count, true);
 }
 
+export function play(): void {
+	if (!audioEl) return;
+	if (player.failed) {
+		retry();
+		return;
+	}
+	if (audioEl.paused) requestPlay();
+}
+
+export function pause(): void {
+	if (audioEl && !audioEl.paused) audioEl.pause();
+}
+
 export function toggle(): void {
 	if (!audioEl) return;
+	if (player.failed) {
+		retry();
+		return;
+	}
 	if (audioEl.paused) requestPlay();
 	else audioEl.pause();
+}
+
+/**
+ * Восстановление после ошибки загрузки. Не отдельная audio-логика: заново
+ * переназначаем src через штатный applySrc() (assignedId сбрасывается, иначе
+ * повторный src был бы проигнорирован), перезагружаем элемент и пробуем play().
+ */
+export function retry(): void {
+	if (!audioEl) return;
+	player.failed = false;
+	player.retrying = true;
+	player.loading = true;
+	assignedId = null;
+	applySrc();
+	audioEl.load();
+	requestPlay();
 }
 
 export function seekTo(seconds: number): void {
