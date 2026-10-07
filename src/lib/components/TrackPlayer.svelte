@@ -4,6 +4,7 @@
 	import type { Track } from '#lib/data/music.js';
 	import { registerAudio, pauseOthers, setActiveAudio } from '#lib/audio/playback.js';
 	import { releaseSource } from '#lib/audio/graph.js';
+	import { trackPlay } from '#lib/analytics.js';
 
 	/**
 	 * Переиспользуемый проигрыватель одной музыкальной версии.
@@ -23,6 +24,8 @@
 	let currentTime: number = $state(0);
 	let duration: number = $state(0);
 	let failed: boolean = $state(false);
+	// Аналитика: один track-play на реальный старт (onplaying), не на клик.
+	let playCounted = false;
 
 	// asset() добавляет base (/InfiniteToday) и корректный относительный
 	// префикс на вложенных route — жёстких путей к аудио нет.
@@ -210,10 +213,20 @@
 			setActiveAudio(audioEl);
 		}
 	}}
-	onpause={() => (playing = false)}
+	onplaying={() => {
+		if (!playCounted) {
+			playCounted = true;
+			trackPlay({ id: track.id, world: track.world });
+		}
+	}}
+	onpause={() => {
+		playing = false;
+		playCounted = false;
+	}}
 	onended={() => {
 		playing = false;
 		loading = false;
+		playCounted = false;
 	}}
 	ontimeupdate={syncFromElement}
 	onloadedmetadata={syncFromElement}
@@ -230,6 +243,7 @@
 	onerror={() => {
 		failed = true;
 		loading = false;
+		playCounted = false;
 	}}
 ></audio>
 

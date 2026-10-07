@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { attachGlobalAudio } from '#lib/audio/player.svelte.js';
+	import { attachGlobalAudio, player } from '#lib/audio/player.svelte.js';
 	import { initMediaSession, syncMediaSession } from '#lib/audio/media-session.js';
+	import { getTrack } from '#lib/data/music.js';
+	import { trackPlay } from '#lib/analytics.js';
 
 	/**
 	 * Persistent <audio> for the global L1 player.
@@ -26,6 +28,23 @@
 	// Media Session в синхроне с глобальным player state.
 	$effect(() => {
 		syncMediaSession();
+	});
+
+	// Аналитика: считаем реальный старт воспроизведения (состояние playing),
+	// а не нажатие кнопки. Один трек — одно событие до паузы/остановки.
+	let countedTrackId: string | null = null;
+	$effect(() => {
+		const playing = player.playing;
+		const id = player.trackId;
+		if (playing && id) {
+			if (countedTrackId !== id) {
+				countedTrackId = id;
+				const track = getTrack(id);
+				if (track) trackPlay({ id: track.id, world: track.world });
+			}
+		} else {
+			countedTrackId = null;
+		}
 	});
 </script>
 

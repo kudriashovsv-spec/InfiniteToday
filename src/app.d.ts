@@ -11,6 +11,15 @@ declare global {
 			lightbox?: string;
 		}
 	}
+
+	/** Build-time analytics config (Vite). */
+	interface ImportMetaEnv {
+		readonly VITE_GOATCOUNTER_CODE?: string;
+	}
+
+	interface ImportMeta {
+		readonly env: ImportMetaEnv;
+	}
 }
 
 export {};

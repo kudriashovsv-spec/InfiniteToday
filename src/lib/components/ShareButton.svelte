@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { absoluteUrl } from '#lib/seo.js';
+	import { trackShare } from '#lib/analytics.js';
 
 	/**
 	 * Переиспользуемая кнопка «Поделиться».
@@ -81,6 +82,13 @@
 		}
 	}
 
+	/** Успешное копирование считается share-событием (отмена — нет). */
+	async function copyAndTrack(): Promise<boolean> {
+		const ok = await copyLink();
+		if (ok) trackShare(path);
+		return ok;
+	}
+
 	async function onShare(): Promise<void> {
 		if (busy) return;
 
@@ -91,7 +99,7 @@
 			if (typeof navigator.canShare === 'function' && !navigator.canShare(data)) {
 				busy = true;
 				try {
-					flash((await copyLink()) ? 'copied' : 'error');
+					flash((await copyAndTrack()) ? 'copied' : 'error');
 				} finally {
 					busy = false;
 				}
@@ -100,11 +108,12 @@
 			busy = true;
 			try {
 				await navigator.share(data);
+				trackShare(path);
 				status = 'idle';
 			} catch (error) {
 				// Отмена — не ошибка; настоящая ошибка → fallback на копирование.
 				if (isAbort(error)) status = 'idle';
-				else flash((await copyLink()) ? 'copied' : 'error');
+				else flash((await copyAndTrack()) ? 'copied' : 'error');
 			} finally {
 				busy = false;
 			}
@@ -113,7 +122,7 @@
 
 		busy = true;
 		try {
-			flash((await copyLink()) ? 'copied' : 'error');
+			flash((await copyAndTrack()) ? 'copied' : 'error');
 		} finally {
 			busy = false;
 		}
