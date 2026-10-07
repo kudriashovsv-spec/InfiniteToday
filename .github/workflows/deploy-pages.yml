@@ -1,14 +1,12 @@
-# Phase 8A — GitHub Actions workflow для будущего GitHub Pages deployment.
+# GitHub Actions workflow: production-деплой на GitHub Pages.
 #
-# ЭТО ЛОКАЛЬНАЯ ПОДГОТОВКА. До cutover workflow НЕ выполняется:
-#   • push-trigger отключён (закомментирован), остаётся только ручной запуск;
-#   • GitHub Pages репозитория по-прежнему отдаётся из ветки main (v1.1).
+# Используется как штатный production-деплой проекта:
+#   • сборка статического сайта SvelteKit (adapter-static → build/);
+#   • публикация GitHub Pages через официальный artifact-based flow.
 #
-# Будущий порядок cutover (НЕ входит в Phase 8A):
-#   1) запушить source в отдельную ветку этого же repo (например `svelte-next`);
-#   2) вручную переключить Settings → Pages → Source на «GitHub Actions»;
-#   3) запустить workflow (workflow_dispatch или push в source-ветку);
-#   4) прогнать health-check URL из отчёта Phase 8A.
+# Ветки:
+#   • source: `svelte-next`;
+#   • production: `main`.
 #
 # Модель — официальная artifact-based для GitHub Pages:
 #   configure-pages → checkout → setup-node → npm ci → npm run build
@@ -24,9 +22,9 @@
 name: Deploy to GitHub Pages
 
 on:
-  # Безопасный trigger для подготовки: только ручной запуск.
+  # Ручной запуск production-деплоя.
   workflow_dispatch:
-  # На cutover раскомментировать и указать реальную source-ветку:
+  # Push-триггер source-ветки (при необходимости включить):
   # push:
   #   branches:
   #     - svelte-next

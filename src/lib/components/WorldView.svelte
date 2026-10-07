@@ -10,7 +10,7 @@
 	/**
 	 * Переиспользуемый мир песни (L3) — зародыш будущего `SongWorld`.
 	 * Получает данные и не знает ни одного конкретного мира, трека или текста:
-	 * все 7 миров рисует этот же компонент.
+	 * все миры рисует этот же компонент.
 	 */
 	interface WorldViewProps {
 		world: World;
@@ -19,11 +19,22 @@
 	}
 
 	let { world, tracks, lyrics }: WorldViewProps = $props();
+
+	// Опциональные world-specific настройки заголовка L3 (из data layer):
+	// вертикальный сдвиг на Desktop и ограничение ширины на Mobile.
+	const titleStyle = $derived(
+		[
+			world.titleShift ? `--title-shift:${world.titleShift}` : '',
+			world.titleMobileMaxWidth ? `--title-mobile-max:${world.titleMobileMaxWidth}` : ''
+		]
+			.filter(Boolean)
+			.join(';')
+	);
 </script>
 
 <BackLink href={resolve('/space')} ariaLabel="Вернуться в космос" />
 
-<h1 class="song-title">{world.title}</h1>
+<h1 class="song-title" style={titleStyle || undefined}>{world.title}</h1>
 
 <div class="song-panel" class:is-shifted={world.panelShift}>
 	{#each tracks as track (track.id)}
@@ -48,7 +59,7 @@
 	.song-title {
 		position: absolute;
 		z-index: 2;
-		top: calc(clamp(1rem, 3.6vh, 2.4rem) + env(safe-area-inset-top, 0px));
+		top: calc(clamp(1rem, 3.6vh, 2.4rem) + env(safe-area-inset-top, 0px) + var(--title-shift, 0px));
 		left: 50%;
 		translate: -50% 0;
 		margin: 0;
@@ -106,10 +117,21 @@
 
 	@media (max-width: 640px) {
 		.song-title {
-			top: calc(2.6rem + env(safe-area-inset-top, 0px));
+			/* −2.4px против 2.6rem: двухстрочные заголовки не задевают
+			   верх панели проигрывателя на ~640px. */
+			top: calc(2.4rem + env(safe-area-inset-top, 0px));
 			font-size: clamp(1.4rem, 6.4vw, 2rem);
 			letter-spacing: 0.1em;
-			text-indent: 0.1em;
+			/* Многострочный центрированный заголовок: переносы на всех мирах,
+			   строки выровнены по общему центру. Ширину при необходимости
+			   ограничивает world-specific `titleMobileMaxWidth` из данных. */
+			text-indent: 0;
+			text-align: center;
+			white-space: normal;
+			/* max-content + max-width: переносы задаёт ширина, а не половина
+			   контейнера от `left: 50%`. */
+			width: max-content;
+			max-width: min(94vw, var(--title-mobile-max, 94vw));
 		}
 
 		.song-panel {

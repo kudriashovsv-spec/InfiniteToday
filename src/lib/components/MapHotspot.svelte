@@ -1,17 +1,37 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import type { World } from '#lib/data/worlds.js';
+	import type { World, WorldHotspot } from '#lib/data/worlds.js';
 
 	/**
 	 * Переиспользуемая точка входа на карте L2. Координаты и сторона подписи
-	 * приходят из данных мира, поэтому для 7 миров нет 7 CSS-классов —
+	 * приходят из данных мира, поэтому для миров нет отдельных CSS-классов —
 	 * только одна модель.
+	 *
+	 * Dev-only calibration (см. `space/+page.svelte`): при `calibrating = true`
+	 * hotspot можно тащить мышью, а навигация по нему блокируется. В production
+	 * (по умолчанию `calibrating = false`) поведение не меняется: это обычная
+	 * ссылка из данных `world.hotspot`.
 	 */
 	interface MapHotspotProps {
 		world: World;
+		/** рантайм-оверрайд координат (calibration); иначе world.hotspot */
+		position?: WorldHotspot;
+		calibrating?: boolean;
+		selected?: boolean;
+		onpick?: (slug: string) => void;
+		onmove?: (slug: string, left: number, top: number) => void;
 	}
 
-	let { world }: MapHotspotProps = $props();
+	let {
+		world,
+		position,
+		calibrating = false,
+		selected = false,
+		onpick,
+		onmove
+	}: MapHotspotProps = $props();
+
+	const spot = $derived(position ?? world.hotspot);
 
 	const labelClass = $derived(
 		world.labelSide === 'above'
@@ -20,13 +40,79 @@
 				? 'hotspot--label-left'
 				: ''
 	);
+
+	// Calibration drag state. Живёт только когда calibrating = true; источник
+	// истины — оверрайды на странице L2, сюда приходит только позиция.
+	let dragging = $state(false);
+	let grabDX = 0;
+	let grabDY = 0;
+
+	const clamp = (v: number, min: number, max: number): number => Math.min(Math.max(v, min), max);
+	const num = (value: string): number => parseFloat(value) || 0;
+
+	function sceneRect(el: HTMLElement): DOMRect | null {
+		const parent = el.offsetParent;
+		return parent instanceof HTMLElement ? parent.getBoundingClientRect() : null;
+	}
+
+	function onPointerDown(event: PointerEvent): void {
+		if (!calibrating) return;
+		event.preventDefault();
+		event.stopPropagation();
+		onpick?.(world.slug);
+		const el = event.currentTarget as HTMLElement;
+		const rect = sceneRect(el);
+		if (!rect) return;
+		// Сохраняем смещение точки захвата относительно центра, чтобы вход
+		// не прыгал под курсор.
+		const centerX = rect.left + (num(spot.left) / 100) * rect.width;
+		const centerY = rect.top + (num(spot.top) / 100) * rect.height;
+		grabDX = event.clientX - centerX;
+		grabDY = event.clientY - centerY;
+		dragging = true;
+		try {
+			el.setPointerCapture(event.pointerId);
+		} catch {
+			/* ignore */
+		}
+	}
+
+	function onPointerMove(event: PointerEvent): void {
+		if (!dragging || !calibrating) return;
+		const el = event.currentTarget as HTMLElement;
+		const rect = sceneRect(el);
+		if (!rect) return;
+		const width = num(spot.width);
+		const height = num(spot.height);
+		const cx = ((event.clientX - grabDX - rect.left) / rect.width) * 100;
+		const cy = ((event.clientY - grabDY - rect.top) / rect.height) * 100;
+		// Центр ограничиваем так, чтобы весь вход оставался внутри карты.
+		onmove?.(world.slug, clamp(cx, width / 2, 100 - width / 2), clamp(cy, height / 2, 100 - height / 2));
+	}
+
+	function onPointerUp(event: PointerEvent): void {
+		if (!dragging) return;
+		dragging = false;
+		try {
+			(event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
+		} catch {
+			/* ignore */
+		}
+	}
 </script>
 
 <a
 	class="hotspot {labelClass}"
-	href={resolve('/world/[slug]', { slug: world.slug })}
-	style="--left:{world.hotspot.left};--top:{world.hotspot.top};--w:{world.hotspot.width};--h:{world.hotspot.height}"
+	class:is-calibrating={calibrating}
+	class:is-selected={selected}
+	href={calibrating ? undefined : resolve('/world/[slug]', { slug: world.slug })}
+	style="--left:{spot.left};--top:{spot.top};--w:{spot.width};--h:{spot.height}"
 	aria-label={`Открыть мир песни «${world.title}»`}
+	draggable={calibrating ? false : undefined}
+	onpointerdown={calibrating ? onPointerDown : undefined}
+	onpointermove={calibrating ? onPointerMove : undefined}
+	onpointerup={calibrating ? onPointerUp : undefined}
+	onpointercancel={calibrating ? onPointerUp : undefined}
 >
 	<span class="hotspot__label">{world.title}</span>
 </a>
@@ -45,6 +131,21 @@
 		transition:
 			transform var(--dur-ui) var(--ease-out),
 			filter var(--dur-ui) var(--ease-ui);
+	}
+
+	/* Dev-only calibration: вход становится перетаскиваемым и не уводит
+	   по маршруту. Никак не влияет на production-состояние. */
+	.hotspot.is-calibrating {
+		cursor: grab;
+		touch-action: none;
+		outline: 1px dashed rgba(180, 220, 255, 0.55);
+		outline-offset: 2px;
+	}
+
+	.hotspot.is-calibrating.is-selected {
+		cursor: grabbing;
+		outline: 2px solid rgba(120, 220, 255, 0.95);
+		outline-offset: 4px;
 	}
 
 	.hotspot:focus {

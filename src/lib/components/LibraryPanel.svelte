@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { asset } from '$app/paths';
+	import type { AssetPath } from '$app/types';
 	import { tracks } from '#lib/data/music.js';
 	import {
 		player,
@@ -302,16 +304,29 @@
 
 	<div class="library__list">
 		{#each tracks as item (item.id)}
-			<button
-				class="lib-track"
-				class:is-current={item.id === player.trackId}
-				type="button"
-				onclick={() => selectTrack(item.id, true)}
-			>
-				<span class="lib-track__num">{item.num}</span>
-				<span class="lib-track__name">{item.title}</span>
-				<span class="lib-track__genre">{item.genre}</span>
-			</button>
+			<div class="lib-track" class:is-current={item.id === player.trackId}>
+				<button
+					class="lib-track__play"
+					type="button"
+					onclick={() => selectTrack(item.id, true)}
+				>
+					<span class="lib-track__num">{item.num}</span>
+					<span class="lib-track__name">{item.title}</span>
+					<span class="lib-track__genre">{item.genre}</span>
+				</button>
+				<a
+					class="lib-track__download"
+					href={asset(item.src as AssetPath)}
+					download={`${item.title} — ${item.genre}.mp3`}
+					aria-label={`Скачать ${item.title} — ${item.genre}`}
+				>
+					<svg class="lib-track__download-icon" viewBox="0 0 16 16" aria-hidden="true">
+						<path d="M8 2.6v6.9"></path>
+						<path d="M4.9 6.7 8 9.8l3.1-3.1"></path>
+						<path d="M3.4 12.6h9.2"></path>
+					</svg>
+				</a>
+			</div>
 		{/each}
 	</div>
 </div>
@@ -327,8 +342,40 @@
 		pointer-events: none;
 	}
 
+	/* L1 desktop, уровень 1: большая мягкая glass-поверхность, группирующая
+	   всю библиотеку (текущий трек + player + список) и отделяющая её от
+	   фонового artwork. Псевдоэлемент с отрицательными inset даёт внутренние
+	   отступы без reflow — сам список остаётся на прежнем месте. */
+	.library::before {
+		content: '';
+		position: absolute;
+		z-index: -1;
+		inset: -0.7rem -0.7rem;
+		border: 1px solid rgba(190, 200, 255, 0.1);
+		border-radius: 16px;
+		/* Fallback без backdrop-filter: плотнее, чтобы список читался. */
+		background: rgba(9, 10, 26, 0.5);
+		box-shadow: 0 18px 46px rgba(3, 4, 14, 0.4);
+	}
+
+	/* L1 desktop, уровень 2: текущий трек — более плотная и контрастная
+	   подложка поверх большой панели, чтобы читалось «сейчас играет это».
+	   Поверхность живёт на самом <p>: псевдоэлемент не подходит, потому что
+	   `overflow: hidden` (нужный для ellipsis) обрезал бы его. Вертикальный
+	   padding скомпенсирован отрицательными margin — player и список ниже
+	   почти не сдвигаются. */
 	.library__current {
-		margin: 0 0 0.28rem 0.15rem;
+		width: fit-content;
+		max-width: 100%;
+		margin: -0.3rem 0 -0.08rem 0;
+		padding: 0.3rem 0.7rem;
+		border: 1px solid rgba(200, 208, 255, 0.22);
+		border-radius: 10px;
+		/* Fallback без backdrop-filter: плотнее, чтобы текст читался. */
+		background: rgba(9, 10, 26, 0.72);
+		box-shadow:
+			0 6px 18px rgba(3, 4, 14, 0.34),
+			inset 0 0 20px rgba(180, 139, 255, 0.08);
 		font-family: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 		font-size: clamp(0.8rem, 1.35vw, 1rem);
 		font-weight: 300;
@@ -340,6 +387,22 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+
+	/* Когда blur доступен — обе поверхности становятся настоящим glass:
+	   большая панель мягче, текущий трек — заметнее и плотнее. */
+	@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+		.library::before {
+			background: rgba(9, 10, 26, 0.28);
+			-webkit-backdrop-filter: blur(10px) saturate(1.08);
+			backdrop-filter: blur(10px) saturate(1.08);
+		}
+
+		.library__current {
+			background: rgba(9, 10, 26, 0.52);
+			-webkit-backdrop-filter: blur(8px) saturate(1.1);
+			backdrop-filter: blur(8px) saturate(1.1);
+		}
 	}
 
 	.library__current-genre {
@@ -367,11 +430,10 @@
 
 	.lib-track {
 		display: flex;
-		align-items: baseline;
-		gap: 0.34rem;
+		align-items: center;
+		gap: 0.22rem;
 		width: 100%;
 		padding: 0.11rem 0.28rem;
-		border: 0;
 		border-radius: 5px;
 		background: transparent;
 		color: rgba(240, 237, 252, 0.92);
@@ -379,8 +441,6 @@
 		font-size: clamp(0.58rem, 0.72vw, 0.7rem);
 		font-weight: 300;
 		line-height: 1.25;
-		text-align: left;
-		cursor: pointer;
 		pointer-events: auto;
 		text-shadow:
 			0 1px 2px rgba(2, 4, 12, 1),
@@ -389,17 +449,44 @@
 		-webkit-tap-highlight-color: transparent;
 		transition:
 			color var(--dur-ui) var(--ease-ui),
+			background var(--dur-ui) var(--ease-ui);
+	}
+
+	/* Кликабельная часть строки (непосредственно play), download — отдельная ссылка. */
+	.lib-track__play {
+		flex: 1 1 auto;
+		min-width: 0;
+		display: flex;
+		align-items: baseline;
+		gap: 0.34rem;
+		padding: 0;
+		border: 0;
+		border-radius: 4px;
+		background: transparent;
+		color: inherit;
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+		transition:
+			color var(--dur-ui) var(--ease-ui),
 			background var(--dur-ui) var(--ease-ui),
 			transform var(--dur-fast) var(--ease-out);
 	}
 
-	.lib-track:active {
+	.lib-track__play:active {
 		transform: scale(0.99);
 	}
 
-	.lib-track:focus-visible {
+	.lib-track__play:focus {
+		outline: none;
+	}
+
+	.lib-track__play:focus-visible {
 		color: #ffffff;
 		background: rgba(180, 165, 255, 0.1);
+		outline: 1px solid rgba(216, 198, 255, 0.55);
+		outline-offset: 1px;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
@@ -407,15 +494,6 @@
 			color: #ffffff;
 			background: rgba(180, 165, 255, 0.1);
 		}
-	}
-
-	.lib-track:focus {
-		outline: none;
-	}
-
-	.lib-track:focus-visible {
-		outline: 1px solid rgba(216, 198, 255, 0.55);
-		outline-offset: 1px;
 	}
 
 	.lib-track__num {
@@ -438,6 +516,62 @@
 		flex: none;
 		color: rgba(200, 208, 245, 0.72);
 		white-space: nowrap;
+	}
+
+	/* Скачивание трека: вторичная миниатюрная иконка сразу справа от жанра. */
+	.lib-track__download {
+		position: relative;
+		flex: none;
+		display: grid;
+		place-items: center;
+		width: 1em;
+		height: 1em;
+		border-radius: 50%;
+		color: rgba(200, 208, 245, 0.5);
+		opacity: 0.85;
+		text-decoration: none;
+		-webkit-tap-highlight-color: transparent;
+		transition:
+			color var(--dur-ui) var(--ease-ui),
+			background var(--dur-ui) var(--ease-ui),
+			opacity var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
+	}
+
+	/* Увеличиваем зону нажатия, не увеличивая видимую иконку. */
+	.lib-track__download::after {
+		content: '';
+		position: absolute;
+		inset: -0.4em -0.15em;
+	}
+
+	.lib-track__download-icon {
+		width: 0.8em;
+		height: 0.8em;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.6;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.lib-track__download:active {
+		transform: scale(0.9);
+	}
+
+	.lib-track__download:focus-visible {
+		color: #ffffff;
+		opacity: 1;
+		outline: 1px solid rgba(216, 198, 255, 0.6);
+		outline-offset: 2px;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.lib-track__download:hover {
+			color: #ffffff;
+			background: rgba(180, 165, 255, 0.16);
+			opacity: 1;
+		}
 	}
 
 	.lib-track.is-current {
@@ -929,7 +1063,25 @@
 			);
 		}
 
+		/* Desktop-панель библиотеки на телефоне не нужна: у нижней
+		   панели уже свой фон, mobile visual model сохраняется. */
+		.library::before {
+			display: none;
+		}
+
 		.library__current {
+			/* На телефоне трек живёт в нижней панели со своим фоном —
+			   desktop-подложки здесь не дублируем, layout не меняем. */
+			width: auto;
+			max-width: none;
+			margin: 0 0 0.28rem 0.15rem;
+			padding: 0;
+			border: 0;
+			border-radius: 0;
+			background: transparent;
+			box-shadow: none;
+			-webkit-backdrop-filter: none;
+			backdrop-filter: none;
 			font-size: 0.9rem;
 		}
 
@@ -952,8 +1104,24 @@
 			flex: none;
 			font-size: 0.85rem;
 			padding: 0.34rem 0.4rem;
-			gap: 0.5rem;
+			gap: 0.3rem;
 			overflow: hidden;
+		}
+
+		.lib-track__play {
+			gap: 0.5rem;
+		}
+
+		.lib-track__download {
+			width: 1.5rem;
+			height: 1.5rem;
+			color: rgba(210, 216, 245, 0.72);
+			opacity: 1;
+		}
+
+		.lib-track__download-icon {
+			width: 0.95rem;
+			height: 0.95rem;
 		}
 
 		.player__bar::before {
@@ -972,7 +1140,8 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.lib-track:active,
+		.lib-track__play:active,
+		.lib-track__download:active,
 		.player__skip:active,
 		.player__toggle:active,
 		.player__volume-button:active,

@@ -1,7 +1,7 @@
 # Infinite Today — Бесконечное сегодня
 
 An interactive music laboratory where every song becomes a world: a star map of
-seven musical worlds, audio-reactive visuals, and a living digital gallery.
+musical worlds, audio-reactive visuals, and a living digital gallery.
 
 **Live:** https://kudriashovsv-spec.github.io/InfiniteToday/
 
@@ -20,23 +20,26 @@ pages.
 
 ## Features
 
-### Seven musical worlds
+### Musical worlds
 
-**Поиск · Мечтай · Дети Солнц · Оправданная надежда · Время не торопи · Братья · Поворот туда**
+**Поиск · Мечтай · Дети Солнц · Оправданная надежда · Время не торопи · Братья · Поворот туда · Бешеная · Дота виновата · Здравствуй в первый раз**
 
-All seven are reached from a cosmic map. On narrow screens the map becomes a list
-of world cards.
+All ten are reached from a cosmic map. On narrow screens the map becomes a list
+of world cards in a fixed mobile order.
 
 ### Music
 
 - 40 canonical track versions across the worlds
 - a global player on the entry screen that keeps playing while you navigate
+- an author-curated L1 order for the 40-track library (not alphabetical)
+- a per-track download link next to each library row
 - a per-world player on each world page
 - play / pause, seeking, volume and mute
 - explicit loading, failed and retry states
 - keyboard shortcuts (Space, arrows, `M`, `N`, `P`)
 - only one audible source at a time
-- Media Session metadata and OS media controls
+- Media Session: play/pause and previous/next track controls, with Lock Screen
+  metadata and a single shared artwork
 
 ### Audio visualization
 
@@ -48,7 +51,8 @@ of world cards.
 
 ### Gallery
 
-- 11 categories, 99 works, 291 WebP runtime variants
+- 10 categories, 109 works, 301 WebP runtime files
+- world-mobile artwork is reused from `static/images/worlds/` (no gallery duplicates)
 - masonry layout with lazy loading
 - lightbox with keyboard and touch controls
 - history-aware navigation (browser Back closes the lightbox)
@@ -87,7 +91,7 @@ SvelteKit 3
 
 Highlights:
 
-- **Data-driven worlds.** A single reusable `WorldView` renders all seven worlds
+- **Data-driven worlds.** A single reusable `WorldView` renders all worlds
   from the data layer; there is no per-world page copy.
 - **Dynamic route.** Worlds are served through `/world/[slug]` and prerendered
   for every existing slug.
