@@ -174,3 +174,16 @@ Scope expansion запрещён.
 - следующий этап.
 
 Не объявлять фазу готовой без проверки её критериев.
+
+## 12. Release / deploy workflow
+
+- Разработка ведётся в `svelte-next`; `main` — production-ветка.
+- Перед release: `npm run check`, `npm run build`, `git diff --check`.
+- Commit/push изменений — в `svelte-next`; `main` не менять до отдельного release cutover.
+- Cutover: checkout `main` → обычный merge `svelte-next` в `main` (создаёт merge-commit) → `git push origin main`.
+- **Важно:** у `.github/workflows/deploy-pages.yml` нет активного `push` trigger для `main`;
+  production deploy запускается через `workflow_dispatch` с `main`. Логику workflow не менять
+  без отдельного решения.
+- После запуска workflow убедиться, что deployment успешно опубликован.
+- После release: `main` = опубликованный production-commit, `svelte-next` — ветка следующей
+  разработки, worktree clean.
