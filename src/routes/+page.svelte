@@ -66,6 +66,7 @@
 		<ShareButton
 			variant="ghost"
 			path="/"
+			shareQuery="tg=1"
 			title="Infinite Today — Бесконечное сегодня"
 			text="Музыкальная лаборатория «Бесконечное сегодня»: музыкальные миры и живая визуализация."
 		/>

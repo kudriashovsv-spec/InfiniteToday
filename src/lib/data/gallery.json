@@ -27,16 +27,16 @@
   },
   "stats": {
     "categories": 10,
-    "images": 109,
-    "files": 301,
-    "bytes": 27993212
+    "images": 110,
+    "files": 302,
+    "bytes": 28357032
   },
   "categories": [
     {
       "slug": "koncepty-mirov",
       "title": "Концепты миров",
       "kind": "theme",
-      "count": 15
+      "count": 16
     },
     {
       "slug": "personazhi",
@@ -541,6 +541,34 @@
           "bytes": 46204,
           "cap": 512,
           "quality": 76
+        }
+      }
+    },
+    {
+      "id": "koncepty-mirov-world-spusk",
+      "category": "koncepty-mirov",
+      "title": "СпускMobile",
+      "w": 1086,
+      "h": 1448,
+      "ratio": 0.75,
+      "files": {
+        "sm": {
+          "path": "../images/worlds/spusk.webp",
+          "w": 1086,
+          "h": 1448,
+          "bytes": 363820
+        },
+        "md": {
+          "path": "../images/worlds/spusk.webp",
+          "w": 1086,
+          "h": 1448,
+          "bytes": 363820
+        },
+        "lg": {
+          "path": "../images/worlds/spusk.webp",
+          "w": 1086,
+          "h": 1448,
+          "bytes": 363820
         }
       }
     },

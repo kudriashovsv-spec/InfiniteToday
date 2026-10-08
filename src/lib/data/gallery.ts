@@ -79,3 +79,18 @@ export function worksIn(category: string): GalleryWork[] {
 	if (!category || category === 'all') return works;
 	return works.filter((work) => work.category === category);
 }
+
+/** Категория, в которой лежат концепт-арты миров. */
+export const CONCEPT_ART_CATEGORY = 'koncepty-mirov';
+
+/**
+ * Концепт-арт конкретного мира из категории «Концепты миров».
+ *
+ * id работ этой категории следует шаблону `koncepty-mirov-world-<slug>`.
+ * Возвращает `GalleryWork | undefined` — данные берутся из того же манифеста,
+ * что и галерея, без дублирующего слоя и без хардкода путей в UI.
+ */
+export function conceptArtFor(slug: string): GalleryWork | undefined {
+	const id = `koncepty-mirov-world-${slug}`;
+	return works.find((work) => work.id === id && work.category === CONCEPT_ART_CATEGORY);
+}
