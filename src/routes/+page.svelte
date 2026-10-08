@@ -4,7 +4,7 @@
 	import LibraryPanel from '#lib/components/LibraryPanel.svelte';
 	import Seo from '#lib/components/Seo.svelte';
 	import ShareButton from '#lib/components/ShareButton.svelte';
-	import { absoluteUrl, SITE_NAME } from '#lib/seo.js';
+	import { absoluteUrl, SITE_NAME, PREVIEW_IMAGE, PREVIEW_IMAGE_WIDTH, PREVIEW_IMAGE_HEIGHT } from '#lib/seo.js';
 
 	const description =
 		'Музыкальная лаборатория «Бесконечное сегодня»: музыкальные миры, живые аудиовизуализации и галерея работ.';
@@ -23,8 +23,10 @@
 	title="Infinite Today — Бесконечное сегодня"
 	{description}
 	path="/"
-	image="images/MainPageLvl1.webp"
-	imageAlt="Infinite Today — титульный экран с чёрной дырой"
+	image={PREVIEW_IMAGE}
+	imageAlt="Infinite Today — превью сайта: музыкальные миры и визуализации"
+	imageWidth={PREVIEW_IMAGE_WIDTH}
+	imageHeight={PREVIEW_IMAGE_HEIGHT}
 	{jsonLd}
 />
 

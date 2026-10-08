@@ -2,6 +2,7 @@
 	import {
 		absoluteUrl,
 		absoluteAsset,
+		imageMimeType,
 		DEFAULT_IMAGE,
 		SITE_NAME,
 		SITE_LOCALE
@@ -20,6 +21,9 @@
 		/** изображение относительно static/; по умолчанию — главный экран */
 		image?: string;
 		imageAlt?: string;
+		/** необязательные реальные размеры изображения (для og:image:width/height) */
+		imageWidth?: number;
+		imageHeight?: number;
 		/** Open Graph type; для статического сайта — website */
 		type?: string;
 		/** опциональная JSON-LD структура (рендерится как application/ld+json) */
@@ -32,12 +36,17 @@
 		path,
 		image = DEFAULT_IMAGE,
 		imageAlt = SITE_NAME,
+		imageWidth,
+		imageHeight,
 		type = 'website',
 		jsonLd
 	}: SeoProps = $props();
 
 	const canonical = $derived(absoluteUrl(path));
 	const imageUrl = $derived(absoluteAsset(image));
+	// MIME выводится из фактического расширения: OG-картинки могут быть JPEG или WebP,
+	// и объявленный `og:image:type` должен совпадать с реально отдаваемым файлом.
+	const imageType = $derived(imageMimeType(image));
 </script>
 
 <svelte:head>
@@ -52,7 +61,9 @@
 	<meta property="og:description" content={description} />
 	<meta property="og:url" content={canonical} />
 	<meta property="og:image" content={imageUrl} />
-	<meta property="og:image:type" content="image/webp" />
+	<meta property="og:image:type" content={imageType} />
+	{#if imageWidth}<meta property="og:image:width" content={String(imageWidth)} />{/if}
+	{#if imageHeight}<meta property="og:image:height" content={String(imageHeight)} />{/if}
 	<meta property="og:image:alt" content={imageAlt} />
 
 	<meta name="twitter:card" content="summary_large_image" />
