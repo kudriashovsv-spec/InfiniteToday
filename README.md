@@ -185,6 +185,20 @@ GitHub Pages
 The workflow builds a selected source ref and publishes only the `build/`
 directory as the Pages artifact. Node 24 is used for the build.
 
+### Release workflow
+
+- Development happens on `svelte-next`.
+- Before a release: `npm run check`, `npm run build`, `git diff --check`.
+- Commit and push changes to `svelte-next`. The production branch `main` is not
+touched until a dedicated release cutover.
+- During cutover: check out `main`, merge `svelte-next` into `main` with a regular
+merge commit, then `git push origin main`.
+- Note: `deploy-pages.yml` currently has no active `push` trigger for `main`; the
+production deployment is started with `workflow_dispatch` from `main`.
+- After the workflow finishes, confirm the deployment succeeded.
+- After release: `main` is the published production commit, `svelte-next` remains
+the next development branch, and the worktree must be clean.
+
 ## Migration
 
 Infinite Today started as a single monolithic HTML/CSS/JS site. It was migrated

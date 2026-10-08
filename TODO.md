@@ -120,3 +120,5 @@ and published in production.
 - Production branch: `main`
 - Development / source branch: `svelte-next`
 - Previous static version (v1.1) commit: `09f2a92a733fcad9b86ee424071d83d1f85116c1`
+- Release: cutover `svelte-next` → `main` (merge-commit), затем production deploy через
+  `workflow_dispatch` (у `deploy-pages.yml` нет активного `push` trigger).

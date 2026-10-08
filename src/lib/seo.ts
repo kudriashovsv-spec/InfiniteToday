@@ -13,8 +13,19 @@ export const SITE_NAME = 'Infinite Today';
 export const SITE_LOCALE = 'ru_RU';
 export const SITE_LANG = 'ru';
 
-/** Изображение по умолчанию (относительно static/), если у страницы нет своего. */
-export const DEFAULT_IMAGE = 'images/MainPageLvl1.webp';
+/**
+ * Основное preview-изображение (относительно static/), если у страницы нет своего.
+ *
+ * Намеренно JPEG, а не WebP: Telegram не рендерит WebP в link preview и в этом
+ * случае не показывает превью-карточку.
+ * Размеры должны совпадать с реальным файлом `static/images/og-preview.jpg`.
+ */
+export const PREVIEW_IMAGE = 'images/og-preview.jpg';
+export const PREVIEW_IMAGE_WIDTH = 1733;
+export const PREVIEW_IMAGE_HEIGHT = 907;
+
+/** Изображение Open Graph по умолчанию — то же основное preview-изображение. */
+export const DEFAULT_IMAGE = PREVIEW_IMAGE;
 
 /** Абсолютный URL страницы по root-relative пути без base (`/`, `/space`, …). */
 export function absoluteUrl(path: string): string {
@@ -26,6 +37,15 @@ export function absoluteUrl(path: string): string {
 /** Абсолютный URL ассета по пути относительно static/ (`images/…`). */
 export function absoluteAsset(assetPath: string): string {
 	return absoluteUrl(assetPath.replace(/^\/+/, ''));
+}
+
+/** MIME-тип изображения по расширению (для og:image:type). */
+export function imageMimeType(path: string): string {
+	const ext = path.split('.').pop()?.toLowerCase() ?? '';
+	if (ext === 'jpg' || ext === 'jpeg') return 'image/jpeg';
+	if (ext === 'png') return 'image/png';
+	if (ext === 'webp') return 'image/webp';
+	return 'image/jpeg';
 }
 
 /** Русская форма множественного числа: pluralRu(2, 'версия', 'версии', 'версий'). */
