@@ -14,15 +14,24 @@
 	 */
 	interface TrackPlayerProps {
 		track: Track;
+		/** версия реально начала воспроизводиться (для mobile DNA) */
+		onplaystart?: () => void;
+		/** воспроизведение реально остановлено: pause/ended/error (для mobile DNA) */
+		onplaystop?: () => void;
 	}
 
-	let { track }: TrackPlayerProps = $props();
+	let { track, onplaystart, onplaystop }: TrackPlayerProps = $props();
 
 	let audioEl: HTMLAudioElement | null = $state(null);
 	let playing: boolean = $state(false);
 	let loading: boolean = $state(false);
 	let currentTime: number = $state(0);
-	let duration: number = $state(0);
+	// Длительность известна заранее из data layer (`track.durationSec`, build-time),
+	// поэтому прогресс/seek работают до загрузки MP3 и preload может быть «none».
+	// После реальной загрузки элемент уточняет длительность (`measuredDuration`).
+	const knownDuration = $derived(track.durationSec);
+	let measuredDuration: number = $state(0);
+	const duration = $derived(measuredDuration > 0 ? measuredDuration : knownDuration);
 	let failed: boolean = $state(false);
 	// Аналитика: один track-play на реальный старт (onplaying), не на клик.
 	let playCounted = false;
@@ -39,17 +48,21 @@
 	function syncFromElement(): void {
 		if (!audioEl) return;
 		currentTime = audioEl.currentTime || 0;
-		if (Number.isFinite(audioEl.duration)) duration = audioEl.duration;
+		if (Number.isFinite(audioEl.duration)) measuredDuration = audioEl.duration;
 	}
 
-	// Метаданные могут загрузиться ДО гидратации (серверный HTML сразу содержит
-	// <audio src>). Тогда loadedmetadata уже отгремел и duration остался бы 0:00.
-	// Поэтому после привязки элемента подтягиваем уже загруженное состояние,
-	// а на время жизни компонента регистрируем audio в общем реестре
+	// До Play MP3 не скачивается (preload="none"), а длительность берётся из
+	// build-time `track.durationSec`. После реальной загрузки loadedmetadata/
+	// canplay уточняют duration из самого элемента (syncFromElement).
+	// На время жизни компонента регистрируем audio в общем реестре
 	// (запуск одной версии останавливает другие).
 	$effect(() => {
 		const element = audioEl;
 		if (!element) return;
+		// `src` задаём императивно (property), а не атрибутом: SSR отдаёт `../music/…`,
+		// а клиент вычисляет абсолютный base-путь, и повторное применение атрибута
+		// во время воспроизведения прерывало бы загрузку (особенно при preload="none").
+		if (!element.src) element.src = src;
 		syncFromElement();
 		const unregister = registerAudio(element);
 		return () => {
@@ -70,9 +83,17 @@
 			retry();
 			return;
 		}
+		// Spinner — только на пользовательский запрос воспроизведения, и держится
+		// до реального `playing` (см. обработчики <audio>).
+		loading = true;
 		// Спецификация возвращает Promise, но защищаемся от реализаций без него.
 		const request: Promise<void> | undefined = audioEl.play();
-		if (request && typeof request.catch === 'function') request.catch(() => {});
+		if (request && typeof request.catch === 'function') {
+			// Отклонённый play() не должен оставлять вечный spinner.
+			request.catch(() => {
+				loading = false;
+			});
+		}
 	}
 
 	function toggle(): void {
@@ -203,17 +224,19 @@
 
 <audio
 	bind:this={audioEl}
-	{src}
-	preload="metadata"
+	preload="none"
 	onplay={() => {
-		playing = true;
-		loading = false;
+		// Запрос воспроизведения принят, но реальный старт ещё не начался:
+		// spinner остаётся до `playing`.
 		if (audioEl) {
 			pauseOthers(audioEl);
 			setActiveAudio(audioEl);
 		}
 	}}
 	onplaying={() => {
+		playing = true;
+		loading = false;
+		onplaystart?.();
 		if (!playCounted) {
 			playCounted = true;
 			trackPlay({ id: track.id, world: track.world });
@@ -221,29 +244,33 @@
 	}}
 	onpause={() => {
 		playing = false;
+		loading = false;
 		playCounted = false;
+		onplaystop?.();
 	}}
 	onended={() => {
 		playing = false;
 		loading = false;
 		playCounted = false;
+		onplaystop?.();
 	}}
 	ontimeupdate={syncFromElement}
 	onloadedmetadata={syncFromElement}
 	oncanplay={() => {
-		loading = false;
 		syncFromElement();
 	}}
 	ondurationchange={syncFromElement}
 	onloadstart={() => {
+		// `loadstart` срабатывает и при простом назначении src (в т.ч. на входе
+		// в мир) — это НЕ пользовательский Play, поэтому spinner здесь не включаем.
 		failed = false;
-		loading = true;
 	}}
 	onwaiting={() => (loading = true)}
 	onerror={() => {
 		failed = true;
 		loading = false;
 		playCounted = false;
+		onplaystop?.();
 	}}
 ></audio>
 

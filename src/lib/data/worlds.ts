@@ -40,6 +40,12 @@ export interface World {
 	labelSide: WorldLabelSide;
 	/** сдвиг панели вниз (длинный заголовок мира) */
 	panelShift: boolean;
+	/**
+	 * Дополнительный сдвиг song-panel вниз ТОЛЬКО на desktop (+2 cm).
+	 * Нужен там, где раскрытая DNA иначе заходит в область заголовка мира.
+	 * На mobile не влияет (там своя композиция).
+	 */
+	panelShiftDesktop?: boolean;
 	/** необязательный сдвиг заголовка L3 вниз на Desktop (CSS length) */
 	titleShift?: string;
 	/** необязательное ограничение ширины заголовка L3 на Mobile (CSS length) */
@@ -54,6 +60,7 @@ export const worlds: World[] = [
 		artwork: 'images/worlds/posik.webp',
 		labelSide: 'below',
 		panelShift: false,
+		panelShiftDesktop: true,
 		hotspot: { left: '49.25%', top: '45.47%', width: '4%', height: '7.1%' }
 	},
 	{
@@ -62,6 +69,7 @@ export const worlds: World[] = [
 		artwork: 'images/worlds/dream.webp',
 		labelSide: 'above',
 		panelShift: false,
+		panelShiftDesktop: true,
 		hotspot: { left: '16.05%', top: '51.69%', width: '3%', height: '5.33%' }
 	},
 	{
@@ -70,6 +78,7 @@ export const worlds: World[] = [
 		artwork: 'images/worlds/suns.webp',
 		labelSide: 'below',
 		panelShift: false,
+		panelShiftDesktop: true,
 		hotspot: { left: '17.46%', top: '20.51%', width: '4.3333%', height: '7.7%' }
 	},
 	{
@@ -95,6 +104,7 @@ export const worlds: World[] = [
 		artwork: 'images/worlds/brothers.webp',
 		labelSide: 'below',
 		panelShift: false,
+		panelShiftDesktop: true,
 		hotspot: { left: '21.54%', top: '62.61%', width: '4%', height: '7.1%' }
 	},
 	{
@@ -113,6 +123,7 @@ export const worlds: World[] = [
 		artwork: 'images/worlds/beshenaya.webp',
 		labelSide: 'below',
 		panelShift: false,
+		panelShiftDesktop: true,
 		hotspot: { left: '26.25%', top: '41.39%', width: '4%', height: '7.1%' }
 	},
 	{
@@ -132,6 +143,15 @@ export const worlds: World[] = [
 		titleShift: '19px',
 		titleMobileMaxWidth: '8.55em',
 		hotspot: { left: '53.8%', top: '65.45%', width: '4%', height: '7.1%' }
+	},
+	// «Спуск»: координаты из ручной калибровки desktop L2 (`?calibrate`).
+	{
+		slug: 'spusk',
+		title: 'Спуск',
+		artwork: 'images/worlds/spusk.webp',
+		labelSide: 'below',
+		panelShift: false,
+		hotspot: { left: '40.96%', top: '70.91%', width: '4%', height: '7.1%' }
 	}
 ];
 
@@ -149,6 +169,7 @@ export const mobileWorldOrder: readonly string[] = [
 	'zdravstvuy-v-pervyy-raz',
 	'posik',
 	'dota-vinovata',
+	'spusk',
 	'time',
 	'beshenaya',
 	'brothers',

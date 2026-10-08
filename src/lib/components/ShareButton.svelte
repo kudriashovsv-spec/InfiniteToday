@@ -22,11 +22,27 @@
 		label?: string;
 		/** ghost — компактный текстовый вариант под существующие ссылки */
 		variant?: 'pill' | 'ghost';
+		/**
+		 * Необязательный query string, добавляемый ТОЛЬКО к shared URL
+		 * (navigator.share и Clipboard fallback). Canonical/OG страницы не меняются.
+		 * Пример: 'tg=1' → `https://…/InfiniteToday/?tg=1`.
+		 */
+		shareQuery?: string;
 	}
 
-	let { path, title, text, label = 'Поделиться', variant = 'pill' }: ShareButtonProps = $props();
+	let {
+		path,
+		title,
+		text,
+		label = 'Поделиться',
+		variant = 'pill',
+		shareQuery = ''
+	}: ShareButtonProps = $props();
 
 	const url = $derived(absoluteUrl(path));
+	// Shared URL: канонический URL страницы плюс необязательный shareQuery.
+	// Analytics продолжает использовать канонический `path` без query.
+	const shareUrl = $derived(shareQuery ? `${url}?${shareQuery.replace(/^\?/, '')}` : url);
 
 	type Status = 'idle' | 'copied' | 'error';
 	let busy = $state(false);
@@ -60,7 +76,7 @@
 	async function copyLink(): Promise<boolean> {
 		try {
 			if (navigator.clipboard?.writeText) {
-				await navigator.clipboard.writeText(url);
+				await navigator.clipboard.writeText(shareUrl);
 				return true;
 			}
 		} catch {
@@ -68,7 +84,7 @@
 		}
 		try {
 			const area = document.createElement('textarea');
-			area.value = url;
+			area.value = shareUrl;
 			area.setAttribute('readonly', '');
 			area.style.position = 'fixed';
 			area.style.opacity = '0';
@@ -95,7 +111,7 @@
 		// navigator.share обязан вызываться прямо из обработчика клика,
 		// без await до самого вызова — иначе теряется transient activation.
 		if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
-			const data = { title, text, url };
+			const data = { title, text, url: shareUrl };
 			if (typeof navigator.canShare === 'function' && !navigator.canShare(data)) {
 				busy = true;
 				try {

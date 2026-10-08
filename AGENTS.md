@@ -78,9 +78,17 @@ SvelteKit 3 используется намеренно. Важно:
   `resolve('/world/[slug]', { slug })`;
 - `page.url` — readonly URL и не передаётся в `goto()`; использовать `page.url.href`;
 - shallow-состояние страницы описывать в `src/app.d.ts` (`App.PageState`);
-- Gallery-данные — `src/lib/data/gallery.json` (10 категорий, 109 works); runtime-файлы —
-  `static/gallery/<category-slug>/`; 10 world-mobile работ переиспользуют `static/images/worlds/`
+- Gallery-данные — `src/lib/data/gallery.json` (10 категорий, 110 works); runtime-файлы —
+  `static/gallery/<category-slug>/`; 11 world-mobile работ переиспользуют `static/images/worlds/`
   без физических копий;
+- DNA версий — `src/lib/data/dna.ts` (8 осей + `morphology` на каждый L3 `track.id`; ровно
+  6 морфологий: bloom/star/crystal/pulse/spiral/void). Визуал — `SongDna.svelte` (SVG + CSS,
+  без canvas/WebGL/AudioContext/rAF); `selectedDnaId` (desktop, чья DNA смотрится) независим
+  от `playingId` (что реально играет); на mobile DNA показывается поверх artwork по playback;
+- Visualizer — опциональный режим (`src/lib/visualizer-mode.svelte.ts`): lazy-mount только на
+  desktop, сбрасывается при уходе со `/world/[slug]` и при выборе DNA; на mobile не монтируется;
+- аудио ленивое: `TrackPlayer` использует `preload="none"`, длительность берётся из `durationSec`
+  data layer, `src` назначается императивно — до Play mp3-запросов нет;
 - L2-входы калибруются **dev-only** инструментом `/space?calibrate` (`import.meta.env.DEV`,
   `HotspotCalibrator.svelte`); в production он не рендерится — не удалять.
 

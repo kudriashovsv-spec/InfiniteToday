@@ -41,7 +41,7 @@
 - [x] Phase 5.1 — visualizer exclusivity / restore v1.1 visual model
 - [x] Phase 6 — Gallery
 - [x] Gallery data layer
-- [x] Gallery restructured: 10 categories, 109 works, 301 WebP runtime files
+- [x] Gallery restructured: 10 categories, 110 works, 302 WebP runtime files
 - [x] lazy loading
 - [x] lightbox
 - [x] Gallery navigation/history
@@ -101,6 +101,17 @@
 - [x] Author-curated L1 track order (40 tracks, from `WorkingFiles/Порядок песен`)
 - [x] Per-track download links in the L1 library
 - [x] Media Session — previous/next track controls; single shared Lock Screen artwork
+
+### DNA / L3 visual mode / audio
+
+- [x] Song DNA data layer — 8 axes, manual 0–100 values for the 19 L3 versions
+- [x] 6 morphologies (Bloom/Star/Crystal/Pulse/Spiral/Void) with distinct geometry
+- [x] DNA as the default L3 visual: desktop right slot, mobile DNA on playback
+- [x] `selectedDnaId` (what you watch) independent of `playingId` (what plays)
+- [x] Optional Visualizer mode: lazy mount, auto-off on leaving a world / on DNA select,
+  disabled on mobile
+- [x] New world «Спуск» (+1 work in gallery «Концепты миров» → 110 works)
+- [x] Audio loads lazily: `TrackPlayer` `preload="none"` + `durationSec` in the data layer
 
 ## Next
 

@@ -41,17 +41,34 @@ of world cards in a fixed mobile order.
 - Media Session: play/pause and previous/next track controls, with Lock Screen
   metadata and a single shared artwork
 
-### Audio visualization
+### Song DNA — the main visual language of a world
 
-- **Butterchurn** — the main visualizer, with a shared library of presets
-- **Audio DNA** — an alternative visualizer used as a fallback when Butterchurn
-  (WebGL2) is unavailable
-- both share one audio graph, and the visualizer slot shows exactly one
-  visualizer at a time (Audio DNA is not an overlay on top of Butterchurn)
+- every world version has an author-defined DNA: 8 conceptual axes
+  (Свет, Тепло, Глубина, Воздух, Движение, Напряжение, Интимность, Странность)
+  with manual values 0–100
+- 6 morphologies give the silhouette its character:
+  **Bloom · Star · Crystal · Pulse · Spiral · Void**
+- the values drive the individual shape, the morphology drives the geometric
+  language (petal profile, facets, twist, waves) and the signature glow
+- pure SVG + CSS: no canvas, WebGL, AudioContext, real-time analysis or
+  animation loops — only a gentle CSS breathing animation
+- on desktop the DNA of the selected version is the main visual (right slot);
+  `selectedDnaId` is independent of playback (`playingId`)
+- on mobile the DNA appears over the world artwork while a version is playing
+
+### Visualizer (optional)
+
+- an additional "trance" mode on desktop, switched on manually
+- **Butterchurn** is used when available; **Audio DNA** is the existing fallback
+  when Butterchurn (WebGL2) is unavailable
+- lazy-mounted: while it is off there is no engine, canvas, WebGL context or
+  visualizer AudioContext
+- turns itself off when leaving a world page or when a DNA button is pressed
+- disabled entirely on mobile (there the world artwork is the background)
 
 ### Gallery
 
-- 10 categories, 109 works, 301 WebP runtime files
+- 10 categories, 110 works, 302 WebP runtime files
 - world-mobile artwork is reused from `static/images/worlds/` (no gallery duplicates)
 - masonry layout with lazy loading
 - lightbox with keyboard and touch controls
@@ -82,10 +99,10 @@ SvelteKit 3
     │
     ├── routes            real URLs: /, /space, /world/[slug], /gallery
     ├── components        reusable UI
-    ├── data layer        worlds, music, lyrics, gallery, presets
+    ├── data layer        worlds, music, lyrics, gallery, DNA, presets
     ├── audio layer       one AudioContext, active source, playback coordination
-    ├── Butterchurn       WebGL music visualizer
-    ├── Audio DNA         alternative / fallback visualizer
+    ├── Song DNA          main L3 visual: SVG + CSS, 6 morphologies
+    ├── Visualizer        optional trance mode (Butterchurn → Audio DNA fallback)
     └── Gallery           artwork subsystem
 ```
 
@@ -100,6 +117,11 @@ Highlights:
 - **Persistent global playback.** The global player lives in the app layout, so
   it survives navigation between the entry screen, the map, worlds and the
   gallery.
+- **DNA is the default world visual.** Every L3 version has an author-defined
+  DNA (8 axes + one of 6 morphologies) rendered as SVG + CSS; the optional
+  Butterchurn visualizer is lazy-mounted only when the user switches it on.
+- **Lazy audio.** Audio files are `preload="none"` and durations come from the
+  data layer (`durationSec`), so no MP3 is downloaded before the user presses Play.
 - **Static output.** The whole site is prerendered and deployed as plain static
   files under the `/InfiniteToday` base path.
 - **Metadata and analytics are client-safe.** Per-page SEO metadata is rendered at
@@ -127,9 +149,9 @@ Highlights:
 ```text
 src/
   lib/
-    components/   reusable UI (world view, players, visualizers, gallery, …)
-    data/         worlds, 40-track music registry, lyrics, gallery, presets
-    audio/        shared audio graph, playback coordination, visualizers
+    components/   reusable UI (world view, players, DNA, visualizers, gallery, …)
+    data/         worlds, 40-track music registry, lyrics, gallery, DNA, presets
+    audio/        shared audio graph, playback coordination, visualizer runtimes
   routes/         /, /space, /world/[slug], /gallery
 static/           runtime assets: images, music, gallery WebP, visualizer vendor
 .github/          GitHub Actions deployment workflow
@@ -223,6 +245,9 @@ checker.
 - SvelteKit migration completed; the SvelteKit site is now production
 - TypeScript migration completed (components, routes, data layer, audio core)
 - player UX, Media Session, SEO, Web Share and privacy-friendly analytics shipped
+- Song DNA shipped as the main L3 visual (8 axes, 6 morphologies, SVG + CSS),
+  with the optional lazy Visualizer mode
+- audio loads lazily (`preload="none"` + `durationSec` in the data layer)
 - published to GitHub Pages and served from the `/InfiniteToday` base path
 - validated on desktop and mobile
 

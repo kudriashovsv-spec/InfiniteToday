@@ -5,11 +5,18 @@
 	 */
 	interface LyricsPanelProps {
 		text: string;
+		/** необязательный сигнал об открытии/закрытии (использует mobile DNA) */
+		onopenchange?: (open: boolean) => void;
 	}
 
-	let { text }: LyricsPanelProps = $props();
+	let { text, onopenchange }: LyricsPanelProps = $props();
 
 	let open: boolean = $state(false);
+
+	function toggle(): void {
+		open = !open;
+		onopenchange?.(open);
+	}
 </script>
 
 <button
@@ -18,7 +25,7 @@
 	type="button"
 	aria-expanded={open}
 	aria-controls="lyrics-panel"
-	onclick={() => (open = !open)}
+	onclick={toggle}
 >
 	<span>Текст песни</span>
 	<span class="lyrics-toggle__chevron" aria-hidden="true"></span>
