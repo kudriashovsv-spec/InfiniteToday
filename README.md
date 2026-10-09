@@ -282,6 +282,9 @@ checker.
 - desktop L1 catalog reworked (one column, internal scroll, aligned columns, DNA
   filter) with the filter driving the playback queue
 - cautious next-track prefetch added (one candidate, cancellable)
+- mobile L1 catalog rows keep their content height: the mobile catalog row must not use
+  `overflow: hidden`, because a non-visible overflow lets the height-constrained Grid rows
+  shrink below their content and clip the whole list
 - published to GitHub Pages and served from the `/InfiniteToday` base path
 - validated on desktop and mobile
 
