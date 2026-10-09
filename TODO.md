@@ -131,6 +131,18 @@
 - [x] Cautious next-track prefetch (~12 s before the end, one candidate, cancelled on
       track/filter change, disabled under Save-Data and 2G/slow-2G)
 
+### Hotfix — mobile L1 library rows (svelte-next)
+
+- [x] Mobile L1 catalog no longer collapses: rows keep their content height (~34.875px)
+      instead of shrinking to their padding. Cause: the bottom panel is a height-constrained
+      Grid whose 40 auto rows see negative free space, and `overflow: hidden` on `.lib-track`
+      zeroed the grid item's automatic minimum size, so every row shrank to ~11px and the
+      hidden overflow clipped the 24px content — the list looked empty while staying in the DOM.
+      Fix: removed `overflow: hidden` from the mobile `.lib-track` rule; name/genre ellipsis is
+      handled by their own rules. Subgrid, desktop rules, queue, prefetch and data untouched.
+- [x] Verified at 390×844 / 430×932 / 640×900 and desktop 1280×800 in Chrome and WebKit
+      (real device not tested); `npm run check`, `npm run build`, `git diff --check` pass.
+
 ## Next
 
 No required tasks remain. The migration and all planned product waves are completed

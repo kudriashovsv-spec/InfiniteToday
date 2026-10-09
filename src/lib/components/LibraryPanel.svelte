@@ -1535,7 +1535,12 @@
 		.lib-track {
 			font-size: 0.85rem;
 			padding: 0.34rem 0.4rem;
-			overflow: hidden;
+			/* overflow: hidden здесь НЕ ставить: строка — grid-item списка, и
+			   не-visible overflow обнуляет её automatic minimum size. Тогда auto-ряды
+			   списка (40 строк в нижней панели фиксированной высоты, т.е. при
+			   отрицательном свободном месте) сжимаются до одного padding'а ~11px,
+			   а overflow: hidden обрезает 24px-контент — список выглядит пустым.
+			   Обрезку названия/жанра делают сами .lib-track__name/genre. */
 		}
 
 		.lib-track__play {
