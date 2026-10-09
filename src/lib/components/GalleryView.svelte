@@ -16,6 +16,7 @@
 	 */
 
 	let filter: string = $state('all');
+	let scrollEl: HTMLElement | null = $state(null);
 	let returnFocus: HTMLElement | null = $state(null);
 	// Открывался ли lightbox фактически. Отличает реальное закрытие от
 	// промежуточного состояния async goto при открытии, когда `lightboxId`
@@ -39,6 +40,16 @@
 	const columns = $derived(distributeWorks(filtered, columnCount));
 	const lightboxId = $derived(typeof page.state?.lightbox === 'string' ? page.state.lightbox : null);
 	const lightboxIndex = $derived(lightboxId ? filtered.findIndex((work) => work.id === lightboxId) : -1);
+
+	// Выбор категории: внутренний список всегда открывается сверху.
+	// Позицию сбрасываем сразу в обработчике — контейнер тот же, а 0 валиден
+	// для любой высоты списка, поэтому скачка вниз после перерисовки не будет.
+	// Работает одинаково на desktop и mobile (один скролл-контейнер).
+	function selectFilter(slug: string): void {
+		if (filter === slug) return;
+		filter = slug;
+		if (scrollEl) scrollEl.scrollTop = 0;
+	}
 
 	function openLightbox(id: string, element: HTMLElement): void {
 		returnFocus = element;
@@ -128,7 +139,7 @@
 				class="chip"
 				type="button"
 				aria-pressed={filter === 'all'}
-				onclick={() => (filter = 'all')}
+				onclick={() => selectFilter('all')}
 			>
 				Все<span class="chip__count">{works.length}</span>
 			</button>
@@ -137,7 +148,7 @@
 					class="chip"
 					type="button"
 					aria-pressed={filter === category.slug}
-					onclick={() => (filter = category.slug)}
+					onclick={() => selectFilter(category.slug)}
 				>
 					{category.title}<span class="chip__count">{category.count}</span>
 				</button>
@@ -145,7 +156,7 @@
 		</div>
 	</div>
 
-	<div class="gallery__scroll">
+	<div class="gallery__scroll" bind:this={scrollEl}>
 		<div class="gallery__grid" bind:this={gridEl}>
 			{#each columns as column, index (index)}
 				<div class="gallery__col">

@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { asset } from '$app/paths';
 	import type { AssetPath } from '$app/types';
 	import { tracks } from '#lib/data/music.js';
+	import { MORPHOLOGIES, MORPHOLOGY_ORDER, getMorphologyForTrack } from '#lib/data/dna.js';
 	import {
 		player,
 		formatTime,
@@ -14,7 +15,8 @@
 		retry,
 		seekTo,
 		setVolume,
-		toggleMute
+		toggleMute,
+		libraryFilter
 	} from '#lib/audio/player.svelte.js';
 
 	/**
@@ -31,13 +33,127 @@
 	let volumeOpen: boolean = $state(false);
 	let scrubbing = false;
 
+	// Открыт ли выпадающий список морфологий (кастомный, а не нативный select).
+	let filterOpen: boolean = $state(false);
+
+	// Единственная визуальная подсказка морфологии на всю библиотеку.
+	// position: fixed — её не обрезает скролл списка.
+	let tip = $state<{ text: string; x: number; y: number } | null>(null);
+
+	let filterRoot = $state<HTMLElement | null>(null);
+	let filterButton = $state<HTMLButtonElement | null>(null);
+	let filterMenu = $state<HTMLElement | null>(null);
+
 	const track = $derived(currentTrack());
+
+	// Видимость каталога: треки выбранной морфологии ПЛЮС текущий играющий
+	// трек, даже если он под фильтр не попадает. Дубликата нет — он остаётся на
+	// своём месте в исходном порядке. Сама очередь воспроизведения считается в
+	// player.svelte.ts из того же libraryFilter (единый источник правды).
+	const visibleTracks = $derived.by(() => {
+		const m = libraryFilter.morphology;
+		if (m === 'all') return tracks;
+		const currentId = player.trackId;
+		// Текущий трек добавляется как исключение только после реального старта
+		// прослушивания (player.started). Выбранный по умолчанию, но ещё не
+		// игравший трек исключением не является.
+		return tracks.filter(
+			(item) => getMorphologyForTrack(item.id) === m || (player.started && item.id === currentId)
+		);
+	});
+
+	function showTip(el: Element, text: string): void {
+		const rect = el.getBoundingClientRect();
+		tip = { text, x: rect.left + rect.width / 2, y: rect.top };
+	}
+
+	function hideTip(): void {
+		tip = null;
+	}
+
+	function toggleFilter(): void {
+		if (filterOpen) closeFilter(true);
+		else filterOpen = true;
+	}
+
+	function closeFilter(returnFocus: boolean): void {
+		if (!filterOpen) return;
+		filterOpen = false;
+		if (returnFocus) filterButton?.focus({ preventScroll: true });
+	}
+
+	function selectMorphology(value: string): void {
+		libraryFilter.morphology = value;
+		closeFilter(true);
+	}
+
+	function morphOptions(): HTMLButtonElement[] {
+		if (!filterMenu) return [];
+		return Array.from(filterMenu.querySelectorAll<HTMLButtonElement>('[data-morph-option]'));
+	}
+
+	function focusMorphOption(value: string): void {
+		morphOptions().find((option) => option.dataset.morphOption === value)?.focus();
+	}
+
+	function moveMorphFocus(key: string): void {
+		const options = morphOptions();
+		if (!options.length) return;
+		const current = options.indexOf(document.activeElement as HTMLButtonElement);
+		let index = current === -1 ? 0 : current;
+		if (key === 'ArrowDown') index = (index + 1) % options.length;
+		else if (key === 'ArrowUp') index = (index - 1 + options.length) % options.length;
+		else if (key === 'Home') index = 0;
+		else if (key === 'End') index = options.length - 1;
+		options[index]?.focus();
+	}
+
+	function onFilterButtonKeydown(event: KeyboardEvent): void {
+		const key = event.key;
+		if (key === 'ArrowDown' || key === 'ArrowUp' || key === 'Enter' || key === ' ') {
+			event.preventDefault();
+			event.stopPropagation();
+			if (filterOpen) {
+				focusMorphOption(libraryFilter.morphology);
+			} else {
+				filterOpen = true;
+				tick().then(() => focusMorphOption(libraryFilter.morphology));
+			}
+			return;
+		}
+		if (key === 'Escape') {
+			event.preventDefault();
+			closeFilter(true);
+		}
+	}
+
+	function onFilterMenuKeydown(event: KeyboardEvent): void {
+		const key = event.key;
+		if (key === 'Escape') {
+			event.preventDefault();
+			event.stopPropagation();
+			closeFilter(true);
+			return;
+		}
+		if (key === 'Tab') {
+			closeFilter(false);
+			return;
+		}
+		if (key === 'ArrowDown' || key === 'ArrowUp' || key === 'Home' || key === 'End') {
+			event.preventDefault();
+			event.stopPropagation();
+			moveMorphFocus(key);
+		}
+	}
 
 	onMount(() => {
 		const onDocClick = (event: MouseEvent): void => {
-			if (!volumeOpen) return;
-			if (playerEl && event.target instanceof Node && playerEl.contains(event.target)) return;
-			volumeOpen = false;
+			if (volumeOpen && !(playerEl && event.target instanceof Node && playerEl.contains(event.target))) {
+				volumeOpen = false;
+			}
+			if (filterOpen && !(event.target instanceof Node && filterRoot?.contains(event.target))) {
+				filterOpen = false;
+			}
 		};
 		document.addEventListener('click', onDocClick);
 		window.addEventListener('keydown', onKeydown);
@@ -146,6 +262,10 @@
 		if (event.metaKey || event.ctrlKey || event.altKey) return;
 		if (isTextTarget(event.target)) return;
 
+		// Пока открыт фильтр морфологий, глобальные шорткаты плеера не
+		// перехватывают клавиши, адресованные самому списку.
+		if (filterOpen && event.target instanceof Node && filterRoot?.contains(event.target)) return;
+
 		const el = event.target instanceof HTMLElement ? event.target : null;
 		const activates = !!el && (el.tagName === 'BUTTON' || el.tagName === 'A');
 		const isSlider = !!el && el.getAttribute('role') === 'slider';
@@ -189,10 +309,63 @@
 </script>
 
 <div class="library">
-	<p class="library__current" aria-live="polite">
-		<span class="library__current-title">{track?.title ?? ''}</span>
-		<span class="library__current-genre">{track?.genre ?? ''}</span>
-	</p>
+	<div class="library__head">
+		<p class="library__current" aria-live="polite">
+			<span class="library__current-title">{track?.title ?? ''}</span>
+			<span class="library__current-genre">{track?.genre ?? ''}</span>
+		</p>
+		<div class="library__filter" bind:this={filterRoot}>
+			<button
+				class="library__filter-btn"
+				class:is-open={filterOpen}
+				type="button"
+				aria-haspopup="listbox"
+				aria-expanded={filterOpen}
+				aria-controls="library-morph-menu"
+				aria-label="Фильтр по морфологии"
+				bind:this={filterButton}
+				onclick={toggleFilter}
+				onkeydown={onFilterButtonKeydown}
+			>DNA</button>
+			{#if filterOpen}
+				<div
+					class="library__filter-menu"
+					id="library-morph-menu"
+					role="listbox"
+					tabindex="-1"
+					aria-label="Морфологии"
+					bind:this={filterMenu}
+					onkeydown={onFilterMenuKeydown}
+				>
+					<button
+						class="library__filter-option"
+						type="button"
+						role="option"
+						aria-selected={libraryFilter.morphology === 'all'}
+						data-morph-option="all"
+						onclick={() => selectMorphology('all')}
+					>
+						<span class="library__filter-check" aria-hidden="true">✓</span>
+						<span class="library__filter-name">Все DNA</span>
+					</button>
+					{#each MORPHOLOGY_ORDER as id (id)}
+						<button
+							class="library__filter-option"
+							type="button"
+							role="option"
+							aria-selected={libraryFilter.morphology === id}
+							data-morph-option={id}
+							style={`--morph-color:${MORPHOLOGIES[id].color}`}
+							onclick={() => selectMorphology(id)}
+						>
+							<span class="library__filter-check" aria-hidden="true">✓</span>
+							<span class="library__filter-name">{MORPHOLOGIES[id].name}</span>
+						</button>
+					{/each}
+				</div>
+			{/if}
+		</div>
+	</div>
 
 	<div
 		class="player"
@@ -303,17 +476,32 @@
 	{/if}
 
 	<div class="library__list">
-		{#each tracks as item (item.id)}
+		{#each visibleTracks as item (item.id)}
+			{@const morph = getMorphologyForTrack(item.id)}
+			{@const meta = morph ? MORPHOLOGIES[morph] : undefined}
 			<div class="lib-track" class:is-current={item.id === player.trackId}>
 				<button
 					class="lib-track__play"
 					type="button"
+					aria-label={`Воспроизвести ${item.title} — ${item.genre}`}
 					onclick={() => selectTrack(item.id, true)}
-				>
-					<span class="lib-track__num">{item.num}</span>
-					<span class="lib-track__name">{item.title}</span>
-					<span class="lib-track__genre">{item.genre}</span>
-				</button>
+				></button>
+				<span class="lib-track__num" aria-hidden="true">{item.num}</span>
+				<span class="lib-track__name" aria-hidden="true">{item.title}</span>
+				<span class="lib-track__genre" aria-hidden="true">{item.genre}</span>
+				{#if meta}
+					<button
+						class="lib-track__morph"
+						type="button"
+						style={`color:${meta.color}`}
+						aria-describedby={`lib-morph-desc-${item.id}`}
+						onmouseenter={(event) => showTip(event.currentTarget, meta.description)}
+						onfocus={(event) => showTip(event.currentTarget, meta.description)}
+						onmouseleave={hideTip}
+						onblur={hideTip}
+					>{meta.name}</button>
+					<span class="sr-only" id={`lib-morph-desc-${item.id}`}>{meta.description}</span>
+				{/if}
 				<a
 					class="lib-track__download"
 					href={asset(item.src as AssetPath)}
@@ -329,6 +517,10 @@
 			</div>
 		{/each}
 	</div>
+
+	{#if tip}
+		<div class="lib-tip" style={`left:${tip.x}px;top:${tip.y}px`} aria-hidden="true">{tip.text}</div>
+	{/if}
 </div>
 
 <style>
@@ -339,6 +531,9 @@
 		top: clamp(0.8rem, 2.2vh, 1.5rem);
 		left: clamp(0.9rem, 2.4vw, 1.8rem);
 		width: min(31vw, 520px);
+		max-height: calc(100dvh - clamp(0.8rem, 2.2vh, 1.5rem) - 2rem);
+		display: flex;
+		flex-direction: column;
 		pointer-events: none;
 	}
 
@@ -364,7 +559,18 @@
 	   `overflow: hidden` (нужный для ellipsis) обрезал бы его. Вертикальный
 	   padding скомпенсирован отрицательными margin — player и список ниже
 	   почти не сдвигаются. */
+	/* Строка заголовка: текущий трек слева, фильтр морфологий справа. */
+	.library__head {
+		flex: 0 0 auto;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+	}
+
 	.library__current {
+		flex: 0 1 auto;
+		min-width: 0;
 		width: fit-content;
 		max-width: 100%;
 		margin: -0.3rem 0 -0.08rem 0;
@@ -413,27 +619,176 @@
 		content: ' · ';
 	}
 
-	.library :global(.player) {
+	/* Фильтр морфологий — компактный glass-селект в правой части заголовка.
+	   Только desktop: на mobile он скрыт (см. медиа-блок ниже). */
+	.library__filter {
+		position: relative;
+		flex: 0 0 auto;
 		pointer-events: auto;
 	}
 
-	.library__list {
-		margin-top: 0.5rem;
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		grid-template-rows: repeat(20, minmax(0, auto));
-		grid-auto-flow: column;
-		column-gap: 0.9rem;
-		row-gap: 0;
-		pointer-events: none;
+	/* Кнопка всегда называется DNA; выбранная морфология отмечается в списке. */
+	.library__filter-btn {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.24rem 0.72rem;
+		border: 1px solid rgba(200, 208, 255, 0.22);
+		border-radius: 999px;
+		background: rgba(9, 10, 26, 0.6);
+		color: rgba(240, 237, 252, 0.92);
+		font-family: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+		font-size: 0.62rem;
+		font-weight: 300;
+		letter-spacing: 0.16em;
+		text-indent: 0.16em;
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+		transition:
+			color var(--dur-ui) var(--ease-ui),
+			border-color var(--dur-ui) var(--ease-ui),
+			background var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
 	}
 
-	.lib-track {
+	.library__filter-btn:active {
+		transform: scale(0.96);
+	}
+
+	/* Убираем дефолтную обводку при клике, но сохраняем видимый фокус с клавиатуры. */
+	.library__filter-btn:focus {
+		outline: none;
+	}
+
+	.library__filter-btn:focus-visible {
+		outline: 1px solid rgba(216, 198, 255, 0.75);
+		outline-offset: 3px;
+	}
+
+	.library__filter-btn.is-open {
+		color: #ffffff;
+		border-color: rgba(180, 139, 255, 0.5);
+		background: rgba(9, 10, 26, 0.74);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.library__filter-btn:hover {
+			color: #ffffff;
+			border-color: rgba(216, 198, 255, 0.4);
+		}
+	}
+
+	/* Стеклянный список морфологий. Названия окрашены цветом из MORPHOLOGIES,
+	   «Все DNA» — нейтральный; выбранный пункт отмечен галочкой и фоном. */
+	.library__filter-menu {
+		position: absolute;
+		z-index: 6;
+		top: calc(100% + 0.35rem);
+		right: 0;
+		min-width: 10.5rem;
 		display: flex;
+		flex-direction: column;
+		padding: 0.3rem;
+		border: 1px solid rgba(200, 208, 255, 0.2);
+		border-radius: 12px;
+		background: rgba(9, 10, 26, 0.72);
+		box-shadow: 0 16px 40px rgba(3, 4, 14, 0.5);
+		-webkit-backdrop-filter: blur(12px) saturate(1.1);
+		backdrop-filter: blur(12px) saturate(1.1);
+	}
+
+	.library__filter-option {
+		display: grid;
+		grid-template-columns: 0.9em minmax(0, 1fr);
 		align-items: center;
-		gap: 0.22rem;
+		gap: 0.4rem;
+		padding: 0.34rem 0.5rem;
+		border: 0;
+		border-radius: 8px;
+		background: transparent;
+		color: rgba(238, 232, 255, 0.82);
+		font-family: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+		font-size: 0.68rem;
+		font-weight: 300;
+		letter-spacing: 0.05em;
+		text-align: left;
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+		transition:
+			background var(--dur-fast) var(--ease-out),
+			color var(--dur-fast) var(--ease-out);
+	}
+
+	.library__filter-name {
+		color: var(--morph-color, inherit);
+	}
+
+	.library__filter-check {
+		color: transparent;
+		font-size: 0.72rem;
+		line-height: 1;
+		text-align: center;
+	}
+
+	.library__filter-option[aria-selected='true'] {
+		background: rgba(180, 165, 255, 0.16);
+	}
+
+	.library__filter-option[aria-selected='true'] .library__filter-check {
+		color: #d8c6ff;
+	}
+
+	.library__filter-option:focus {
+		outline: none;
+	}
+
+	.library__filter-option:focus-visible {
+		outline: 1px solid rgba(216, 198, 255, 0.65);
+		outline-offset: -2px;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.library__filter-option:hover {
+			background: rgba(180, 165, 255, 0.1);
+		}
+	}
+
+	.library :global(.player) {
+		pointer-events: auto;
+		flex: 0 0 auto;
+	}
+
+	/* Desktop: одна вертикальная колонка-сетка. Общая сетка колонок живёт на
+	   контейнере, а каждая строка — subgrid, поэтому «Жанр» и «DNA» стоят в
+	   одних и тех же колонках во всех строках независимо от длины текста. */
+	.library__list {
+		flex: 1 1 auto;
+		min-height: 0;
+		margin-top: 0.5rem;
+		display: grid;
+		grid-template-columns: max-content minmax(0, 1fr) minmax(0, max-content) minmax(0, max-content) max-content;
+		align-content: start;
+		column-gap: 0.5rem;
+		row-gap: 0;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		pointer-events: none;
+		scrollbar-width: thin;
+		scrollbar-color: rgba(180, 165, 255, 0.4) transparent;
+		padding-right: 0.25rem;
+	}
+
+	/* Строка каталога — subgrid общей сетки списка: колонки (Номер | Название |
+	   Жанр | DNA | Скачивание) одинаковы во всех строках. Первое значение —
+	   fallback для браузеров без subgrid (строки хотя бы не ломаются). */
+	.lib-track {
+		position: relative;
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: max-content minmax(0, 1fr) max-content max-content max-content;
+		grid-template-columns: subgrid;
+		align-items: center;
 		width: 100%;
-		padding: 0.11rem 0.28rem;
+		padding: 0.13rem 0.28rem;
 		border-radius: 5px;
 		background: transparent;
 		color: rgba(240, 237, 252, 0.92);
@@ -452,30 +807,19 @@
 			background var(--dur-ui) var(--ease-ui);
 	}
 
-	/* Кликабельная часть строки (непосредственно play), download — отдельная ссылка. */
+	/* Клик по строке — невидимая кнопка-оверлей на всю строку. Видимый контент
+	   лежит выше (z-index) и не перехватывает клики, кроме DNA и скачивания. */
 	.lib-track__play {
-		flex: 1 1 auto;
-		min-width: 0;
-		display: flex;
-		align-items: baseline;
-		gap: 0.34rem;
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		margin: 0;
 		padding: 0;
 		border: 0;
-		border-radius: 4px;
+		border-radius: 5px;
 		background: transparent;
-		color: inherit;
-		font: inherit;
-		text-align: left;
 		cursor: pointer;
 		-webkit-tap-highlight-color: transparent;
-		transition:
-			color var(--dur-ui) var(--ease-ui),
-			background var(--dur-ui) var(--ease-ui),
-			transform var(--dur-fast) var(--ease-out);
-	}
-
-	.lib-track__play:active {
-		transform: scale(0.99);
 	}
 
 	.lib-track__play:focus {
@@ -483,10 +827,8 @@
 	}
 
 	.lib-track__play:focus-visible {
-		color: #ffffff;
-		background: rgba(180, 165, 255, 0.1);
 		outline: 1px solid rgba(216, 198, 255, 0.55);
-		outline-offset: 1px;
+		outline-offset: -1px;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
@@ -497,7 +839,9 @@
 	}
 
 	.lib-track__num {
-		flex: none;
+		position: relative;
+		z-index: 1;
+		pointer-events: none;
 		min-width: 1.4em;
 		color: rgba(192, 200, 238, 0.72);
 		font-variant-numeric: tabular-nums;
@@ -505,7 +849,9 @@
 	}
 
 	.lib-track__name {
-		flex: 1 1 auto;
+		position: relative;
+		z-index: 1;
+		pointer-events: none;
 		min-width: 0;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -513,14 +859,48 @@
 	}
 
 	.lib-track__genre {
-		flex: none;
+		position: relative;
+		z-index: 1;
+		pointer-events: none;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		color: rgba(200, 208, 245, 0.72);
 		white-space: nowrap;
+	}
+
+	/* Морфология версии: цветной текст (цвет из MORPHOLOGIES). Кнопка —
+	   только для фокуса/подсказки, действия не выполняет. */
+	.lib-track__morph {
+		position: relative;
+		z-index: 1;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		padding: 0 0.1rem;
+		border: 0;
+		border-radius: 4px;
+		background: transparent;
+		font: inherit;
+		letter-spacing: 0.04em;
+		white-space: nowrap;
+		cursor: help;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.lib-track__morph:focus {
+		outline: none;
+	}
+
+	.lib-track__morph:focus-visible {
+		outline: 1px solid rgba(216, 198, 255, 0.6);
+		outline-offset: 1px;
 	}
 
 	/* Скачивание трека: вторичная миниатюрная иконка сразу справа от жанра. */
 	.lib-track__download {
 		position: relative;
+		z-index: 1;
 		flex: none;
 		display: grid;
 		place-items: center;
@@ -1043,6 +1423,48 @@
 		box-shadow: 0 0 6px rgba(150, 200, 255, 0.55);
 	}
 
+	/* Подсказка морфологии: position: fixed, чтобы её не обрезал скролл списка. */
+	.lib-tip {
+		position: fixed;
+		z-index: 5;
+		translate: -50% calc(-100% - 0.45rem);
+		padding: 0.3rem 0.6rem;
+		border: 1px solid rgba(216, 198, 255, 0.2);
+		border-radius: 8px;
+		background: rgba(9, 10, 26, 0.92);
+		box-shadow: 0 8px 22px rgba(3, 4, 14, 0.55);
+		color: rgba(244, 240, 255, 0.95);
+		font-family: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+		font-size: 0.68rem;
+		font-weight: 300;
+		letter-spacing: 0.04em;
+		white-space: nowrap;
+		pointer-events: none;
+	}
+
+	/* L1 desktop: вертикальная подстройка по замечаниям. Значения заданы от
+	   текущего состояния один раз (без накопления при ре-рендерах):
+	   кнопка DNA — на 0,2 см выше, плеер и всё ниже — на 0,3 см ниже,
+	   нижняя граница списка — на 1 см ниже текущей (библиотека выше на 1 см).
+
+	   Важно: сдвиг кнопки/меню — это translate на них самих, а НЕ на
+	   .library__filter. translate на обёртке-фильтре создавал stacking context
+	   и «запирал» z-index выпадающего меню под строками списка. */
+	@media (min-width: 641px) {
+		.library__filter-btn,
+		.library__filter-menu {
+			translate: 0 -0.2cm;
+		}
+
+		.library :global(.player) {
+			margin-top: 0.3cm;
+		}
+
+		.library {
+			max-height: calc(100dvh - clamp(0.8rem, 2.2vh, 1.5rem) - 2rem - 1.5cm);
+		}
+	}
+
 	/* ==================== МОБИЛЬНАЯ КОМПОЗИЦИЯ (portrait phone) ==================== */
 	@media (max-width: 640px) {
 		.library {
@@ -1069,6 +1491,13 @@
 			display: none;
 		}
 
+		/* Мобильная библиотека сохраняет прежний вид: десктопный фильтр и
+		   колонку морфологии в неё не переносим. */
+		.library__filter,
+		.lib-track__morph {
+			display: none;
+		}
+
 		.library__current {
 			/* На телефоне трек живёт в нижней панели со своим фоном —
 			   desktop-подложки здесь не дублируем, layout не меняем. */
@@ -1089,8 +1518,11 @@
 			flex: 1 1 auto;
 			min-height: 0;
 			margin-top: 0.5rem;
-			display: flex;
-			flex-direction: column;
+			display: grid;
+			grid-template-columns: max-content minmax(0, 1fr) max-content max-content;
+			align-content: start;
+			column-gap: 0.4rem;
+			row-gap: 0;
 			overflow-y: auto;
 			overscroll-behavior: contain;
 			pointer-events: auto;
@@ -1101,10 +1533,8 @@
 		}
 
 		.lib-track {
-			flex: none;
 			font-size: 0.85rem;
 			padding: 0.34rem 0.4rem;
-			gap: 0.3rem;
 			overflow: hidden;
 		}
 
