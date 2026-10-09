@@ -78,17 +78,38 @@ SvelteKit 3 используется намеренно. Важно:
   `resolve('/world/[slug]', { slug })`;
 - `page.url` — readonly URL и не передаётся в `goto()`; использовать `page.url.href`;
 - shallow-состояние страницы описывать в `src/app.d.ts` (`App.PageState`);
-- Gallery-данные — `src/lib/data/gallery.json` (10 категорий, 110 works); runtime-файлы —
-  `static/gallery/<category-slug>/`; 11 world-mobile работ переиспользуют `static/images/worlds/`
+- Gallery-данные — `src/lib/data/gallery.json` (10 категорий, 111 works); runtime-файлы —
+  `static/gallery/<category-slug>/`; 12 world-mobile работ переиспользуют `static/images/worlds/`
   без физических копий;
-- DNA версий — `src/lib/data/dna.ts` (8 осей + `morphology` на каждый L3 `track.id`; ровно
-  6 морфологий: bloom/star/crystal/pulse/spiral/void). Визуал — `SongDna.svelte` (SVG + CSS,
-  без canvas/WebGL/AudioContext/rAF); `selectedDnaId` (desktop, чья DNA смотрится) независим
+- DNA/морфологии — `src/lib/data/dna.ts`: полная 8-осевая DNA для 21 версии (`trackDna`) и
+  авторская морфология для 19 библиотечных версий без полных осей (`libraryMorphology`);
+  резолвер — `getMorphologyForTrack(trackId)`. Ровно 6 морфологий:
+  bloom/star/crystal/pulse/spiral/void. Визуал — `SongDna.svelte` (SVG + CSS, без
+  canvas/WebGL/AudioContext/rAF); `selectedDnaId` (desktop, чья DNA смотрится) независим
   от `playingId` (что реально играет); на mobile DNA показывается поверх artwork по playback;
+- метаданные морфологий — ЕДИНЫЙ источник `MORPHOLOGIES` / `MORPHOLOGY_ORDER` / `getMorphology()`
+  в `dna.ts` (название, цвет, описание). Не дублировать цвета/названия в компонентах; подпись над
+  DNA (`.dna__morph` в `SongDna.svelte`) берёт имя и цвет только оттуда;
+- новые версии/миры: морфологию назначать из авторского `WorkingFiles/ДНК/DNA.txt`, НЕ по жанру
+  или названию; числовые оси не выдумывать (у библиотечных версий их может не быть);
 - Visualizer — опциональный режим (`src/lib/visualizer-mode.svelte.ts`): lazy-mount только на
   desktop, сбрасывается при уходе со `/world/[slug]` и при выборе DNA; на mobile не монтируется;
 - аудио ленивое: `TrackPlayer` использует `preload="none"`, длительность берётся из `durationSec`
   data layer, `src` назначается императивно — до Play mp3-запросов нет;
+- фильтр DNA и очередь — единый источник правды в `player.svelte.ts`: `libraryFilter`
+  (`'all'` или id морфологии) и производная `activeQueue()`. UI (`LibraryPanel`) и переходы
+  `next`/`prev`/`autoAdvance` (через общий `step()`) читают ТОЛЬКО их; второй фильтр/очередь не
+  создавать. Видимость строк каталога — производная, исходный `tracks` не мутируется;
+- `player.started` ставится только на реальном событии `playing`. До первого запуска текущий
+  (по умолчанию) трек НЕ подмешивается в отфильтрованный список; после реального старта текущий
+  трек остаётся видимым даже под чужим фильтром (в т.ч. на паузе). Первый Play под фильтром
+  запускает первый подходящий трек (`ensurePlayableCurrent`);
+- предзагрузка следующего трека — только в `player.svelte.ts`: максимум ОДИН кандидат из
+  `activeQueue()`, окно ~12 с до конца (`PREFETCH_LEAD_SECONDS`), через `fetch()` в HTTP-кеш;
+  отмена при смене трека/фильтра (`AbortController`), отключено при `Save-Data`/2G; НЕ создавать
+  второй `<audio>`/AudioContext и НЕ грузить каталог в фоне;
+- мобильную L1-библиотеку (нижняя панель) не переделывать: десктопный фильтр DNA и колонку
+  морфологии туда не переносить; десктопные изменения — только в их медиа-блоках.
 - L2-входы калибруются **dev-only** инструментом `/space?calibrate` (`import.meta.env.DEV`,
   `HotspotCalibrator.svelte`); в production он не рендерится — не удалять.
 
@@ -148,6 +169,8 @@ Scope expansion запрещён.
 - GitHub Actions
 - deployment
 
+Полный процесс релиза/деплоя — см. §12.
+
 ## 10. Проверки
 
 По возможности автоматизировать:
@@ -185,13 +208,40 @@ Scope expansion запрещён.
 
 ## 12. Release / deploy workflow
 
-- Разработка ведётся в `svelte-next`; `main` — production-ветка.
-- Перед release: `npm run check`, `npm run build`, `git diff --check`.
-- Commit/push изменений — в `svelte-next`; `main` не менять до отдельного release cutover.
-- Cutover: checkout `main` → обычный merge `svelte-next` в `main` (создаёт merge-commit) → `git push origin main`.
-- **Важно:** у `.github/workflows/deploy-pages.yml` нет активного `push` trigger для `main`;
-  production deploy запускается через `workflow_dispatch` с `main`. Логику workflow не менять
-  без отдельного решения.
-- После запуска workflow убедиться, что deployment успешно опубликован.
-- После release: `main` = опубликованный production-commit, `svelte-next` — ветка следующей
-  разработки, worktree clean.
+Фактический процесс (проверен на реальном релизе). Следующий агент: НЕ предполагать, что
+`git push origin main` деплоит Pages — **это НЕ так**.
+
+1. Разработка ведётся в `svelte-next`; `main` — production-ветка.
+2. Внутри крупной фазы изменения накапливаются БЕЗ промежуточных commit/push.
+3. Перед релизом — preflight: `git status`, `git diff --stat`, `npm run check`, `npm run build`,
+   `git diff --check`; убедиться, что `main` не тронут.
+4. Один финальный commit в `svelte-next` (без дробления на мелкие коммиты).
+5. `git push origin svelte-next`.
+6. Cutover: `git checkout main` → `git merge --ff-only origin/main` → обычный merge `svelte-next`
+   в `main` (создаёт merge-commit). Rebase/force push/перезапись истории запрещены. При конфликте —
+   остановиться и показать конфликт, не решать вслепую.
+7. `git push origin main`.
+8. **GitHub Pages НЕ запускается автоматически от push в `main`.**
+9. Существующий `.github/workflows/deploy-pages.yml` использует только `workflow_dispatch`
+   (активного `push` trigger нет).
+10. Production deployment запускается штатным `workflow_dispatch` этого же workflow:
+    ```bash
+    gh workflow run deploy-pages.yml --ref main
+    ```
+11. Workflow и Pages configuration для этого НЕ менять; новые deployment workflows НЕ создавать;
+    ad-hoc deploy-скрипты НЕ писать.
+12. После запуска обязательно проверить успех job'ов `build` и `deploy`:
+    ```bash
+    gh run list --limit 3
+    gh run watch <run-id> --exit-status
+    ```
+13. После релиза: `git status` чистый, `main == origin/main`, production URL отвечает
+    (`/` и ключевые маршруты). `svelte-next` остаётся веткой следующей разработки; не удалять её.
+
+Логику workflow не менять без отдельного решения.
+
+## 13. Текущий production
+
+- URL: `https://kudriashovsv-spec.github.io/InfiniteToday/`
+- После последнего релиза: `main == origin/main == 1ee74d3`, `svelte-next == 5fcc52c`,
+  рабочее дерево чистое, deploy-run `37840057005` завершился успешно (`build` ✓ / `deploy` ✓).

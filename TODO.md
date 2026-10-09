@@ -41,7 +41,7 @@
 - [x] Phase 5.1 — visualizer exclusivity / restore v1.1 visual model
 - [x] Phase 6 — Gallery
 - [x] Gallery data layer
-- [x] Gallery restructured: 10 categories, 110 works, 302 WebP runtime files
+- [x] Gallery restructured: 10 categories, 111 works, 303 WebP runtime files
 - [x] lazy loading
 - [x] lightbox
 - [x] Gallery navigation/history
@@ -104,14 +104,32 @@
 
 ### DNA / L3 visual mode / audio
 
-- [x] Song DNA data layer — 8 axes, manual 0–100 values for the 19 L3 versions
+- [x] Song DNA data layer — 8 axes, manual 0–100 values for the 21 L3 versions
 - [x] 6 morphologies (Bloom/Star/Crystal/Pulse/Spiral/Void) with distinct geometry
 - [x] DNA as the default L3 visual: desktop right slot, mobile DNA on playback
 - [x] `selectedDnaId` (what you watch) independent of `playingId` (what plays)
 - [x] Optional Visualizer mode: lazy mount, auto-off on leaving a world / on DNA select,
   disabled on mobile
 - [x] New world «Спуск» (+1 work in gallery «Концепты миров» → 110 works)
+- [x] New world «Потерять себя» (+1 work in gallery «Концепты миров» → 111 works)
 - [x] Audio loads lazily: `TrackPlayer` `preload="none"` + `durationSec` in the data layer
+
+### Release wave — navigation, worlds, DNA catalog (svelte-next)
+
+- [x] L2 mobile scroll position restored on return from L3 / browser Back (fresh opens unaffected)
+- [x] Gallery inner scroll resets to top on category change
+- [x] Unified morphology metadata (`MORPHOLOGIES` / `MORPHOLOGY_ORDER` / `getMorphology` in `dna.ts`)
+- [x] Morphology name above the DNA, coloured from that shared source
+      (desktop = selected version, mobile = playing version)
+- [x] Desktop-only 1 cm DNA shift on L3 (mobile layout untouched)
+- [x] Author morphology for all 40 tracks (`libraryMorphology` + `getMorphologyForTrack`)
+- [x] Desktop L1 catalog: one column, internal scroll, aligned columns
+      (number | name | genre | DNA | download)
+- [x] DNA filter menu (`Все DNA` + six morphologies), keyboard accessible and layered above the player
+- [x] Filter drives the play queue (`activeQueue`); the playing track stays visible;
+      the first Play under a filter starts the first matching track
+- [x] Cautious next-track prefetch (~12 s before the end, one candidate, cancelled on
+      track/filter change, disabled under Save-Data and 2G/slow-2G)
 
 ## Next
 
@@ -131,5 +149,11 @@ and published in production.
 - Production branch: `main`
 - Development / source branch: `svelte-next`
 - Previous static version (v1.1) commit: `09f2a92a733fcad9b86ee424071d83d1f85116c1`
-- Release: cutover `svelte-next` → `main` (merge-commit), затем production deploy через
-  `workflow_dispatch` (у `deploy-pages.yml` нет активного `push` trigger).
+- Release: один финальный commit в `svelte-next` → `git push origin svelte-next` → merge
+  `svelte-next` в `main` (merge-commit) → `git push origin main` → production deploy через
+  штатный `workflow_dispatch` существующего workflow:
+  `gh workflow run deploy-pages.yml --ref main`.
+  **Важно:** push в `main` Pages НЕ деплоит (у `deploy-pages.yml` нет `push` trigger).
+- Последний релиз: feature-commit `5fcc52c` (`svelte-next`) → merge `1ee74d3` в `main`;
+  deploy-run `37840057005` (`build` ✓ / `deploy` ✓); `main == origin/main == 1ee74d3`,
+  `svelte-next == 5fcc52c`, рабочее дерево чистое.

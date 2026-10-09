@@ -152,6 +152,16 @@ export const worlds: World[] = [
 		labelSide: 'below',
 		panelShift: false,
 		hotspot: { left: '40.96%', top: '70.91%', width: '4%', height: '7.1%' }
+	},
+	// «Потерять себя»: финальные desktop-координаты, заданные Сергеем
+	// (подпись над входом). Не перекалибровывать без отдельного решения.
+	{
+		slug: 'poteryat-sebya',
+		title: 'Потерять себя',
+		artwork: 'images/worlds/poteryat-sebya.webp',
+		labelSide: 'above',
+		panelShift: true,
+		hotspot: { left: '69.52%', top: '76.06%', width: '4%', height: '7.1%' }
 	}
 ];
 
@@ -173,6 +183,7 @@ export const mobileWorldOrder: readonly string[] = [
 	'time',
 	'beshenaya',
 	'brothers',
+	'poteryat-sebya',
 	'turn',
 	'dream',
 	'suns',

@@ -14,6 +14,7 @@
 import { asset } from '$app/paths';
 import type { AssetPath } from '$app/types';
 import { tracks, getTrack, type Track } from '#lib/data/music.js';
+import { getMorphologyForTrack } from '#lib/data/dna.js';
 import { registerAudio, pauseOthers, setActiveAudio } from '#lib/audio/playback.js';
 import { releaseSource } from '#lib/audio/graph.js';
 
@@ -21,6 +22,8 @@ import { releaseSource } from '#lib/audio/graph.js';
 export interface PlayerState {
 	trackId: string;
 	playing: boolean;
+	/** был ли реальный старт воспроизведения в этой сессии (не просто выбор) */
+	started: boolean;
 	loading: boolean;
 	retrying: boolean;
 	failed: boolean;
@@ -34,6 +37,7 @@ export interface PlayerState {
 export const player: PlayerState = $state({
 	trackId: tracks.length ? tracks[0].id : '',
 	playing: false,
+	started: false,
 	loading: false,
 	retrying: false,
 	failed: false,
@@ -42,6 +46,24 @@ export const player: PlayerState = $state({
 	volume: 1,
 	muted: false
 });
+
+/**
+ * Активный фильтр морфологии каталога L1. ЕДИНЫЙ источник правды: и видимость
+ * строк в LibraryPanel, и активная очередь next/prev/autoAdvance читают его.
+ * 'all' — полный каталог.
+ */
+export const libraryFilter = $state({ morphology: 'all' as string });
+
+/**
+ * Активная очередь воспроизведения: полный каталог при 'all', иначе — только
+ * треки выбранной морфологии в исходном порядке каталога. Исходный `tracks`
+ * не мутируется (это производная).
+ */
+export function activeQueue(): Track[] {
+	const m = libraryFilter.morphology;
+	if (m === 'all') return tracks;
+	return tracks.filter((track) => getMorphologyForTrack(track.id) === m);
+}
 
 let audioEl: HTMLAudioElement | null = null;
 /** id, для которого уже назначен src (ленивое назначение, как в v1.1). */
@@ -102,6 +124,9 @@ export function attachGlobalAudio(el: HTMLAudioElement): () => void {
 	};
 	const onPlaying = () => {
 		player.playing = true;
+		// Реальный старт: только с этого момента трек считается активной сессией
+		// (и остаётся видимым в каталоге даже под чужим фильтром, в т.ч. на паузе).
+		player.started = true;
 		player.loading = false;
 		player.retrying = false;
 	};
@@ -115,7 +140,10 @@ export function attachGlobalAudio(el: HTMLAudioElement): () => void {
 		player.retrying = false;
 		autoAdvance();
 	};
-	const onTime = syncProgress;
+	const onTime = () => {
+		syncProgress();
+		maybePrefetch();
+	};
 	const onMeta = () => {
 		if (Number.isFinite(el.duration)) player.duration = el.duration;
 	};
@@ -171,6 +199,7 @@ export function attachGlobalAudio(el: HTMLAudioElement): () => void {
 		el.removeEventListener('error', onError);
 		unregister();
 		releaseSource(el);
+		cancelPrefetch();
 		audioEl = null;
 		assignedId = null;
 	};
@@ -188,6 +217,8 @@ export function selectTrack(id: string, autoplay = true): void {
 		player.loading = false;
 		player.retrying = false;
 		assignedId = null;
+		// Сменился трек — старая предзагрузка больше не нужна (в т.ч. в полёте).
+		cancelPrefetch();
 	}
 	if (autoplay) {
 		requestPlay();
@@ -201,31 +232,163 @@ export function selectIndex(index: number, autoplay = true): void {
 	if (track) selectTrack(track.id, autoplay);
 }
 
-/** Индекс текущего трека в общей библиотеке. */
-function currentIndex(): number {
+/** Индекс текущего трека в полном каталоге. */
+function catalogIndex(): number {
 	return tracks.findIndex((track) => track.id === player.trackId);
 }
 
-/** Автопереход только по естественному окончанию; на последнем — стоп (как v1.1). */
+/**
+ * Переход по активной очереди (next/prev/autoAdvance) — единая логика.
+ *
+ * direction +1 — вперёд, −1 — назад. wrap=false (автопереход) останавливается
+ * на краю очереди, wrap=true (кнопки) зацикливается — как в исходном плеере.
+ *
+ * Если текущий трек в очередь не входит (играет «чужую» морфологию), первый
+ * переход берёт ближайший подходящий по исходному порядку каталога, а если
+ * таких больше нет — крайний трек очереди. Дальше переходы идут уже только
+ * внутри очереди.
+ */
+function step(direction: 1 | -1, wrap: boolean): void {
+	const queue = activeQueue();
+	if (!queue.length) return; // нет подходящих треков — безопасно ничего не делаем
+
+	const index = queue.findIndex((track) => track.id === player.trackId);
+	if (index === -1) {
+		const from = catalogIndex();
+		const candidates = direction === 1 ? queue : [...queue].reverse();
+		const near = candidates.find((track) =>
+			direction === 1 ? tracks.indexOf(track) > from : tracks.indexOf(track) < from
+		);
+		const fallback = direction === 1 ? queue[0] : queue[queue.length - 1];
+		selectTrack((near ?? fallback).id, true);
+		return;
+	}
+
+	const target = index + direction;
+	if (target < 0 || target >= queue.length) {
+		if (!wrap) return; // конец очереди — стоп (поведение как раньше)
+		selectTrack(queue[(target + queue.length) % queue.length].id, true);
+		return;
+	}
+	selectTrack(queue[target].id, true);
+}
+
+/** Автопереход по окончании; внутри фильтра — только его треки, на краю — стоп. */
 function autoAdvance(): void {
-	const index = currentIndex();
-	if (index === -1) return;
-	const next = index + 1;
-	if (next < tracks.length) selectIndex(next, true);
+	step(1, false);
+}
+
+// ============================================================================
+// Предзагрузка следующего трека (эксперимент Фазы 5)
+//
+// Идея: незадолго до конца текущего трека скачать ровно одного следующего
+// кандидата из АКТИВНОЙ очереди через `fetch()`. Данные попадают в HTTP-кеш,
+// а основной <audio> их переиспользует (измерено: ~12 ms против ~1.5 s без
+// предзагрузки под троттлингом 1 МБ/с). Никакого второго аудиоэлемента,
+// AudioContext или запуска звука тут нет.
+//
+// Ограничения: только один кандидат; только в окне PREFETCH_LEAD_SECONDS от
+// конца; отмена при смене трека/фильтра/кандидата; пропуск при Save-Data или
+// очень медленном соединении.
+
+/** Окно предзагрузки до конца трека (гипотеза 10–15 с). */
+const PREFETCH_LEAD_SECONDS = 12;
+
+let prefetchId: string | null = null;
+let prefetchController: AbortController | null = null;
+
+interface NetworkInformationLike {
+	saveData?: boolean;
+	effectiveType?: string;
+}
+interface NavigatorWithConnection extends Navigator {
+	connection?: NetworkInformationLike;
+}
+
+/** Не грузим заранее при экономии трафика или очень медленном соединении. */
+function canPrefetch(): boolean {
+	if (typeof navigator === 'undefined') return false;
+	const conn = (navigator as NavigatorWithConnection).connection;
+	if (conn?.saveData) return false;
+	const type = conn?.effectiveType;
+	return type !== 'slow-2g' && type !== '2g';
+}
+
+/**
+ * Следующий трек для АВТОПЕРЕХОДА — ровно тот, что выберет autoAdvance()
+ * (та же активная очередь, без зацикливания; на краю — нет кандидата).
+ */
+function upcomingTrack(): Track | undefined {
+	const queue = activeQueue();
+	if (!queue.length) return undefined;
+	const index = queue.findIndex((track) => track.id === player.trackId);
+	if (index !== -1) return queue[index + 1];
+	const from = catalogIndex();
+	return queue.find((track) => tracks.indexOf(track) > from);
+}
+
+function cancelPrefetch(): void {
+	if (prefetchController) {
+		try {
+			prefetchController.abort();
+		} catch {
+			/* ignore */
+		}
+		prefetchController = null;
+	}
+	prefetchId = null;
+}
+
+function maybePrefetch(): void {
+	if (!audioEl || audioEl.paused) return;
+	const total = audioEl.duration;
+	if (!Number.isFinite(total) || total <= 0) return;
+	if (total - audioEl.currentTime > PREFETCH_LEAD_SECONDS) return;
+
+	const next = upcomingTrack();
+	if (!next || next.id === prefetchId) return; // этот кандидат уже готов или грузится
+	if (!canPrefetch()) return;
+
+	// Кандидат сменился (трек/фильтр) — отменяем прежнюю подготовку.
+	if (prefetchController) {
+		try {
+			prefetchController.abort();
+		} catch {
+			/* ignore */
+		}
+	}
+	prefetchId = next.id;
+	const controller = new AbortController();
+	prefetchController = controller;
+	// Тело обязательно вычитываем: только тогда ответ полностью попадает в кеш.
+	fetch(asset(next.src as AssetPath), { signal: controller.signal })
+		.then((res) => (res.ok ? res.arrayBuffer() : null))
+		.catch(() => null)
+		.finally(() => {
+			if (prefetchController === controller) prefetchController = null;
+		});
 }
 
 export function next(): void {
-	const count = tracks.length;
-	if (!count) return;
-	const index = currentIndex();
-	selectIndex(((index === -1 ? 0 : index + 1) % count + count) % count, true);
+	step(1, true);
 }
 
 export function prev(): void {
-	const count = tracks.length;
-	if (!count) return;
-	const index = currentIndex();
-	selectIndex(((index === -1 ? 0 : index - 1) % count + count) % count, true);
+	step(-1, true);
+}
+
+/**
+ * Перед запуском: если реальной сессии ещё не было, а текущий (по умолчанию)
+ * трек не входит в активную очередь, Play запускает первый подходящий трек
+ * выбранной морфологии, а не скрытый трек чужой морфологии. Если сессия уже
+ * была (играл/пауза) — ничего не меняем: Play просто возобновляет текущий.
+ */
+function ensurePlayableCurrent(): void {
+	if (player.started) return;
+	const queue = activeQueue();
+	if (!queue.length) return;
+	if (queue.some((track) => track.id === player.trackId)) return;
+	selectTrack(queue[0].id, false);
 }
 
 export function play(): void {
@@ -234,6 +397,7 @@ export function play(): void {
 		retry();
 		return;
 	}
+	ensurePlayableCurrent();
 	if (audioEl.paused) requestPlay();
 }
 
@@ -247,8 +411,12 @@ export function toggle(): void {
 		retry();
 		return;
 	}
-	if (audioEl.paused) requestPlay();
-	else audioEl.pause();
+	if (audioEl.paused) {
+		ensurePlayableCurrent();
+		requestPlay();
+	} else {
+		audioEl.pause();
+	}
 }
 
 /**

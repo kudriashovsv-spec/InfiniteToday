@@ -22,14 +22,14 @@ pages.
 
 ### Musical worlds
 
-**Поиск · Мечтай · Дети Солнц · Оправданная надежда · Время не торопи · Братья · Поворот туда · Бешеная · Дота виновата · Здравствуй в первый раз**
+**Поиск · Мечтай · Дети Солнц · Оправданная надежда · Время не торопи · Братья · Поворот туда · Бешеная · Дота виновата · Здравствуй в первый раз · Спуск · Потерять себя**
 
-All ten are reached from a cosmic map. On narrow screens the map becomes a list
+All twelve are reached from a cosmic map. On narrow screens the map becomes a list
 of world cards in a fixed mobile order.
 
 ### Music
 
-- 40 canonical track versions across the worlds
+- 40 canonical track versions across the worlds (12 worlds)
 - a global player on the entry screen that keeps playing while you navigate
 - an author-curated L1 order for the 40-track library (not alphabetical)
 - a per-track download link next to each library row
@@ -40,6 +40,15 @@ of world cards in a fixed mobile order.
 - only one audible source at a time
 - Media Session: play/pause and previous/next track controls, with Lock Screen
   metadata and a single shared artwork
+- a desktop DNA filter in the L1 library (`Все DNA` plus the six morphologies)
+- the filter also drives the play queue: next / previous / auto-advance stay
+  inside the selected morphology
+- before any playback the filter shows only matching tracks; the first Play starts
+  the first matching track (the selected default track is not silently played)
+- a played or paused track stays visible in the list even if it does not match
+- a cautious next-track prefetch: about 12 s before the end of the current track
+  one candidate is fetched into the HTTP cache (cancelled when the track or the
+  filter changes, disabled under Save-Data and 2G/slow-2G)
 
 ### Song DNA — the main visual language of a world
 
@@ -48,6 +57,12 @@ of world cards in a fixed mobile order.
   with manual values 0–100
 - 6 morphologies give the silhouette its character:
   **Bloom · Star · Crystal · Pulse · Spiral · Void**
+- morphology metadata (name, colour, description) has a single source in
+  `src/lib/data/dna.ts` (`MORPHOLOGIES` · `MORPHOLOGY_ORDER` · `getMorphology()`)
+- 21 versions have a full 8-axis DNA; the other 19 library-only versions have an
+  author-assigned morphology (from the author's `DNA.txt`) with no invented axes
+- the morphology name is shown above the DNA and coloured from that same source:
+  on desktop it follows `selectedDnaId`, on mobile the currently playing version
 - the values drive the individual shape, the morphology drives the geometric
   language (petal profile, facets, twist, waves) and the signature glow
 - pure SVG + CSS: no canvas, WebGL, AudioContext, real-time analysis or
@@ -68,7 +83,7 @@ of world cards in a fixed mobile order.
 
 ### Gallery
 
-- 10 categories, 110 works, 302 WebP runtime files
+- 10 categories, 111 works, 303 WebP runtime files
 - world-mobile artwork is reused from `static/images/worlds/` (no gallery duplicates)
 - masonry layout with lazy loading
 - lightbox with keyboard and touch controls
@@ -117,9 +132,11 @@ Highlights:
 - **Persistent global playback.** The global player lives in the app layout, so
   it survives navigation between the entry screen, the map, worlds and the
   gallery.
-- **DNA is the default world visual.** Every L3 version has an author-defined
-  DNA (8 axes + one of 6 morphologies) rendered as SVG + CSS; the optional
-  Butterchurn visualizer is lazy-mounted only when the user switches it on.
+- **DNA is the default world visual.** 21 versions have an author-defined
+  8-axis DNA and all 40 library versions have an author-assigned morphology;
+  morphology metadata and per-version DNA live in `src/lib/data/dna.ts` and render
+  as SVG + CSS. The optional Butterchurn visualizer is lazy-mounted only when the
+  user switches it on.
 - **Lazy audio.** Audio files are `preload="none"` and durations come from the
   data layer (`durationSec`), so no MP3 is downloaded before the user presses Play.
 - **Static output.** The whole site is prerendered and deployed as plain static
@@ -209,17 +226,28 @@ directory as the Pages artifact. Node 24 is used for the build.
 
 ### Release workflow
 
-- Development happens on `svelte-next`.
-- Before a release: `npm run check`, `npm run build`, `git diff --check`.
-- Commit and push changes to `svelte-next`. The production branch `main` is not
-touched until a dedicated release cutover.
-- During cutover: check out `main`, merge `svelte-next` into `main` with a regular
-merge commit, then `git push origin main`.
-- Note: `deploy-pages.yml` currently has no active `push` trigger for `main`; the
-production deployment is started with `workflow_dispatch` from `main`.
-- After the workflow finishes, confirm the deployment succeeded.
-- After release: `main` is the published production commit, `svelte-next` remains
-the next development branch, and the worktree must be clean.
+- Development happens on `svelte-next`; `main` is the production branch.
+- Within a large phase, changes accumulate without intermediate commits.
+- Before a release: preflight — `git status`, `git diff --stat`, `npm run check`,
+`npm run build`, `git diff --check`; make sure `main` is untouched.
+- Make one final commit in `svelte-next`, then `git push origin svelte-next`.
+- Cutover: check out `main`, merge `svelte-next` into `main` with a regular merge
+commit, then `git push origin main`. No rebase, no force push; on a conflict, stop
+and surface it instead of resolving it blindly.
+- **`git push origin main` does NOT deploy GitHub Pages.** The existing
+`.github/workflows/deploy-pages.yml` has only a `workflow_dispatch` trigger.
+- Start the production deployment with the existing workflow's standard entrypoint:
+
+```bash
+gh workflow run deploy-pages.yml --ref main
+```
+
+- Do not change the workflow or the Pages configuration, and do not create new
+deployment workflows or ad-hoc deploy scripts.
+- After the run finishes, confirm the `build` and `deploy` jobs succeeded
+(`gh run list --limit 3`, `gh run watch <run-id> --exit-status`).
+- After release: `git status` is clean, `main == origin/main`, the production URL
+responds, and `svelte-next` remains the next development branch.
 
 ## Migration
 
@@ -248,6 +276,12 @@ checker.
 - Song DNA shipped as the main L3 visual (8 axes, 6 morphologies, SVG + CSS),
   with the optional lazy Visualizer mode
 - audio loads lazily (`preload="none"` + `durationSec` in the data layer)
+- L2 mobile scroll restoration and gallery scroll reset on category change
+- world «Потерять себя» added (12 worlds, 111 gallery works, 303 WebP files)
+- DNA morphology metadata unified (name/colour/description) with a label above the DNA
+- desktop L1 catalog reworked (one column, internal scroll, aligned columns, DNA
+  filter) with the filter driving the playback queue
+- cautious next-track prefetch added (one candidate, cancellable)
 - published to GitHub Pages and served from the `/InfiniteToday` base path
 - validated on desktop and mobile
 

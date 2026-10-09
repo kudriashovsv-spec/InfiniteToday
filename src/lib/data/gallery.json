@@ -27,16 +27,16 @@
   },
   "stats": {
     "categories": 10,
-    "images": 110,
-    "files": 302,
-    "bytes": 28357032
+    "images": 111,
+    "files": 303,
+    "bytes": 28702248
   },
   "categories": [
     {
       "slug": "koncepty-mirov",
       "title": "Концепты миров",
       "kind": "theme",
-      "count": 16
+      "count": 17
     },
     {
       "slug": "personazhi",
@@ -569,6 +569,34 @@
           "w": 1086,
           "h": 1448,
           "bytes": 363820
+        }
+      }
+    },
+    {
+      "id": "koncepty-mirov-world-poteryat-sebya",
+      "category": "koncepty-mirov",
+      "title": "ПотерятьСебяMobile",
+      "w": 1086,
+      "h": 1448,
+      "ratio": 0.75,
+      "files": {
+        "sm": {
+          "path": "../images/worlds/poteryat-sebya.webp",
+          "w": 1086,
+          "h": 1448,
+          "bytes": 345216
+        },
+        "md": {
+          "path": "../images/worlds/poteryat-sebya.webp",
+          "w": 1086,
+          "h": 1448,
+          "bytes": 345216
+        },
+        "lg": {
+          "path": "../images/worlds/poteryat-sebya.webp",
+          "w": 1086,
+          "h": 1448,
+          "bytes": 345216
         }
       }
     },

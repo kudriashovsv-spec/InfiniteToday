@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { afterNavigate } from '$app/navigation';
 	import { onMount, type Component } from 'svelte';
 	import Scene from '#lib/components/Scene.svelte';
 	import MapHotspot from '#lib/components/MapHotspot.svelte';
@@ -40,6 +41,74 @@
 	let selectedSlug = $state('');
 	let entries = $state<Record<string, CalibrationEntry>>({});
 	let Calibrator = $state<CalibratorComponent | null>(null);
+
+	// Внутренний скролл mobile-списка миров — отдельный контейнер (не окно),
+	// поэтому браузер сам его не восстанавливает. Позицию запоминаем в
+	// sessionStorage, а возвращаем ТОЛЬКО при реальном возврате в L2: из мира
+	// (L3, в том числе по «← Назад») или по browser Back/Forward. При обычном
+	// входе в L2 из L1 или по прямому URL сохранённая позиция игнорируется,
+	// поэтому устаревшая позиция не «прыгает» при новом открытии уровня.
+	const SPACE_SCROLL_KEY = 'space:mobile-scroll';
+	let mobileListEl = $state<HTMLElement | null>(null);
+
+	function persistScroll(): void {
+		if (!mobileListEl) return;
+		try {
+			sessionStorage.setItem(SPACE_SCROLL_KEY, String(mobileListEl.scrollTop));
+		} catch {
+			/* sessionStorage может быть недоступен (private mode) — позиция просто не сохраняется */
+		}
+	}
+
+	// `page.url.pathname` включает base path, поэтому сравниваем маршрут без него.
+	// Base выводим из resolve('/space'), т.к. этот путь уже учитывает его.
+	function routePathOf(pathname: string): string {
+		const spaceHref = resolve('/space');
+		const prefix = spaceHref.slice(0, spaceHref.length - '/space'.length);
+		return prefix && pathname.startsWith(prefix) ? pathname.slice(prefix.length) || '/' : pathname;
+	}
+
+	afterNavigate(({ from, to, type }) => {
+		if (!to) return;
+		if (routePathOf(to.url.pathname) !== '/space') return;
+		const returningFromWorld = from ? routePathOf(from.url.pathname).startsWith('/world/') : false;
+		const isHistoryNav = type === 'popstate';
+		if (!returningFromWorld && !isHistoryNav) return;
+
+		let saved = 0;
+		try {
+			saved = Number(sessionStorage.getItem(SPACE_SCROLL_KEY)) || 0;
+		} catch {
+			saved = 0;
+		}
+		if (saved <= 0) return;
+
+		// Список после перехода рендерится заново: ставим позицию после
+		// обновления DOM, иначе scrollTop сбросится к началу.
+		requestAnimationFrame(() => {
+			if (mobileListEl) mobileListEl.scrollTop = saved;
+		});
+	});
+
+	// Позицию mobile-списка пишем по ходу скролла (rAF-троттлинг), чтобы
+	// к моменту ухода на L3 последнее значение уже было сохранено.
+	// Слушатель вешаем в $effect, а не в onMount: `bind:this` проставляется
+	// уже после onMount, поэтому там элемент ещё null.
+	$effect(() => {
+		const el = mobileListEl;
+		if (!el) return;
+		let saveScheduled = false;
+		const onListScroll = (): void => {
+			if (saveScheduled) return;
+			saveScheduled = true;
+			requestAnimationFrame(() => {
+				saveScheduled = false;
+				persistScroll();
+			});
+		};
+		el.addEventListener('scroll', onListScroll, { passive: true });
+		return () => el.removeEventListener('scroll', onListScroll);
+	});
 
 	const calibrate = $derived(calibrateRequested && isDesktop);
 
@@ -126,6 +195,7 @@
 			isDesktop = event.matches;
 		};
 		mq.addEventListener('change', onMediaChange);
+
 		return () => {
 			cancelled = true;
 			mq.removeEventListener('change', onMediaChange);
@@ -177,7 +247,7 @@
 	{/if}
 
 	<!-- На телефоне карта заменяется вертикальным списком миров (≤ 640px). -->
-	<div class="mobile-worlds" aria-label="Миры песен">
+	<div class="mobile-worlds" aria-label="Миры песен" bind:this={mobileListEl}>
 		{#each mobileWorlds as world (world.slug)}
 			<WorldCard {world} />
 		{/each}

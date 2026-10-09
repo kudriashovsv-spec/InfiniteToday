@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DNA_AXES, type DnaMorphology, type DnaValues } from '#lib/data/dna.js';
+	import { DNA_AXES, MORPHOLOGIES, type DnaMorphology, type DnaValues } from '#lib/data/dna.js';
 
 	/**
 	 * «Цветок ДНК» — авторский визуальный отпечаток версии песни.
@@ -29,22 +29,23 @@
 		scale: number;
 		/** базовая полуширина лепестка, градусы */
 		hw: number;
-		/** signature color (свечение формы, не сплошная заливка) */
-		color: string;
 		/** период дыхания */
 		breath: string;
 	}
 
+	// Здесь только геометрия силуэта. Название и цвет — из единого источника
+	// метаданных (`MORPHOLOGIES` в dna.ts), чтобы подпись и форма не расходились.
 	const MORPH: Record<DnaMorphology, MorphConfig> = {
-		bloom: { scale: 1.0, hw: 26, color: '#FFC98A', breath: '6s' },
-		star: { scale: 1.02, hw: 16, color: '#9EDBFF', breath: '4.8s' },
-		crystal: { scale: 0.95, hw: 20, color: '#C7BCFF', breath: '7s' },
-		pulse: { scale: 0.98, hw: 24, color: '#FF719C', breath: '3s' },
-		spiral: { scale: 1.03, hw: 24, color: '#73E6D5', breath: '6.5s' },
-		void: { scale: 1.04, hw: 16, color: '#8C72FF', breath: '8s' }
+		bloom: { scale: 1.0, hw: 26, breath: '6s' },
+		star: { scale: 1.02, hw: 16, breath: '4.8s' },
+		crystal: { scale: 0.95, hw: 20, breath: '7s' },
+		pulse: { scale: 0.98, hw: 24, breath: '3s' },
+		spiral: { scale: 1.03, hw: 24, breath: '6.5s' },
+		void: { scale: 1.04, hw: 16, breath: '8s' }
 	};
 
 	const cfg = $derived(MORPH[morphology]);
+	const meta = $derived(MORPHOLOGIES[morphology]);
 
 	/** Детерминированный псевдослучайный [0,1) из набора значений и seed. */
 	function hash(seed: number): number {
@@ -273,14 +274,15 @@
 
 <div
 	class="dna"
-	style={`--dna-color:${cfg.color};--dna-glow:${rgba(cfg.color, 0.4)};--dna-breath:${cfg.breath};--dna-stroke:${rgba(cfg.color, 0.82)};`}
+	style={`--dna-color:${meta.color};--dna-glow:${rgba(meta.color, 0.4)};--dna-breath:${cfg.breath};--dna-stroke:${rgba(meta.color, 0.82)};`}
 >
-	<svg class="dna__svg" viewBox="-152 -152 304 304" role="img" aria-label="ДНК песни">
+	<p class="dna__morph">{meta.name}</p>
+	<svg class="dna__svg" viewBox="-152 -152 304 304" role="img" aria-label={`ДНК песни — ${meta.name}`}>
 		<defs>
 			<radialGradient id={gradId} gradientUnits="userSpaceOnUse" cx="0" cy="0" r="105">
-				<stop offset="0%" stop-color={rgba(cfg.color, 0.66)} />
-				<stop offset="52%" stop-color={rgba(cfg.color, 0.34)} />
-				<stop offset="100%" stop-color={rgba(cfg.color, 0.1)} />
+				<stop offset="0%" stop-color={rgba(meta.color, 0.66)} />
+				<stop offset="52%" stop-color={rgba(meta.color, 0.34)} />
+				<stop offset="100%" stop-color={rgba(meta.color, 0.1)} />
 			</radialGradient>
 		</defs>
 
@@ -332,6 +334,23 @@
 	.dna {
 		position: relative;
 		width: 100%;
+	}
+
+	/* Название морфологии над DNA. Цвет берётся из --dna-color (единый источник
+	   метаданных), поэтому подпись всегда совпадает с цветом силуэта. */
+	.dna__morph {
+		margin: 0 0 0.2rem;
+		text-align: center;
+		font-family: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+		font-size: clamp(0.72rem, 1.05vw, 0.95rem);
+		font-weight: 300;
+		letter-spacing: 0.28em;
+		text-indent: 0.28em;
+		text-transform: uppercase;
+		color: var(--dna-color);
+		text-shadow: 0 1px 6px rgba(3, 4, 14, 0.85);
+		pointer-events: none;
+		user-select: none;
 	}
 
 	.dna__svg {
