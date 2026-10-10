@@ -143,6 +143,93 @@
 - [x] Verified at 390×844 / 430×932 / 640×900 and desktop 1280×800 in Chrome and WebKit
       (real device not tested); `npm run check`, `npm run build`, `git diff --check` pass.
 
+### Phase — shuffle mode (svelte-next)
+
+- [x] Shuffle for the active queue: `playbackQueue()` permutes only the ORDER (composition still
+      comes from `activeQueue()` and the catalog `tracks` is never mutated); the playing track
+      stays first and is never restarted, one cycle plays every track exactly once and stops at
+      the end, re-enabling builds a new order and disabling returns to the normal order
+- [x] Player button between the time readout and the volume control (`player.shuffle`,
+      `setShuffle` / `toggleShuffle`) with an explicit active state, `aria-pressed` and a compact
+      narrow-desktop band so the panel never overflows
+- [x] Prefetch follows the actual next track of the shuffled order (cancelled on a mode/filter
+      change and absent at the end of a cycle)
+
+### Phase — DNA multi-filter (svelte-next, desktop)
+
+- [x] `libraryFilter` now holds the array of selected morphology ids (empty = no filter); several
+      morphologies combine by OR inside the single `activeQueue()` / `playbackQueue()` source
+- [x] Desktop-only DNA filter reworked: the `Фильтр DNA` button shows a selected count, the six
+      morphologies are `menuitemcheckbox` toggles (multi-select — the menu stays open), and a
+      `menuitem` reset entry «Все DNA» clears the selection and closes the menu with focus back
+      on the button
+- [x] Russian filter labels added as a separate `filterLabel` field in `MORPHOLOGIES`; the English
+      `name`, ids, colours and DNA data are unchanged and L3 keeps the English label
+- [x] Changing the selection rebuilds the queue, re-shuffles it when shuffle is on and cancels a
+      stale prefetch, without interrupting the playing track
+- [x] Mobile L1 library untouched (the filter stays hidden at ≤640px)
+
+### Phase — world «Антисага» (svelte-next)
+
+- [x] 13th world added through the existing data layer only (no parallel architecture):
+      `worlds.ts` entry + `mobileWorldOrder`, `music.ts` track promoted from the L1 library
+      (`world: 'antisaga'`, `worldOrder: 1`), `lyrics.ts` text added verbatim, portrait artwork
+      copied to `static/images/worlds/antisaga.webp` (1086×1448)
+- [x] Full 8-axis DNA moved from `libraryMorphology` to `trackDna` (values from the author's
+      `DNA.txt`: [32, 28, 83, 31, 22, 86, 17, 71], morphology Void) — every world version has a
+      full DNA, so L3 can render it
+- [x] Gallery «Концепты миров» got the artwork as its last work (`koncepty-mirov-world-antisaga`),
+      reusing `../images/worlds/antisaga.webp` with no physical copies (112 works, 13 world-mobile
+      works, gallery files/bytes unchanged)
+- [x] L2 desktop entry placed in the «Спуск» column ~2 cm above it (40.96% / 62.51%), label above;
+      coordinates are preliminary and await calibration in `/space?calibrate`
+- [x] Mobile world order: «Антисага» sits between «Поворот туда» and «Мечтай»
+
+### Phase — favorites ❤️ (svelte-next)
+
+- [x] Single favorites state per track VERSION id (`src/lib/favorites.svelte.ts`), persisted in
+      `localStorage` (`infinite-today:favorites`), shared by the L1 catalog (desktop + mobile) and
+      by every L3 version player; invalid/unknown stored ids are dropped
+- [x] Client-only init from the layout (`initFavorites()`), so SSR markup and the first client
+      render match — no hydration errors
+- [x] Reusable `FavoriteButton.svelte`: rightmost cell of each catalog row (download stays
+      immediately to its left), same 24px size as the download on mobile (taken from the NAME
+      column, genre untouched), last control of each version player on L3; clicking never starts
+      or switches playback, ARIA names include the concrete version (title + genre)
+- [x] Desktop-only «Избранное» filter mode: last item of the DNA filter menu
+      (`menuitemcheckbox`, red heart marker), mutually exclusive with the morphology selection and
+      with «Все DNA»; it feeds the same `activeQueue()`/`playbackQueue()` (queue, shuffle,
+      prefetch), and shows «Пока нет избранных версий, Нажми ❤️ напротив трека» when empty
+- [x] Mobile keeps hearts but hides the filter entirely (`display: none`, out of the tab order)
+
+### Phase — mobile DNA filter (svelte-next)
+
+- [x] The existing DNA filter (same `libraryFilter`, same menu, same handlers) is now available on
+      mobile as a compact button in the panel head — directly above the player, right side, roughly
+      above the volume control; it never overlaps the player, volume, controls or the track list
+- [x] Same labels, colours and checkbox markers; multi-select and «Все DNA» reset behave exactly
+      as on desktop, and the count is shown on the button; the menu stays inside the viewport
+      (320/390/430 px) and closing commands return focus to the button
+- [x] «Избранное» stays desktop-only: the menu item is `display: none` on mobile and `menuItems()`
+      drops non-rendered entries, so arrow navigation never lands on a hidden item
+- [x] Per-row morphology column stays desktop-only; queue, shuffle, prefetch, favorites and
+      playback logic untouched
+
+### Phase — mobile favorites filter + stable player position (svelte-next)
+
+- [x] The «Избранное» menu entry is now available on mobile too (last item, red heart, divider
+      before it, `aria-checked`, arrow/Home/End navigation, Escape returns focus); the mobile menu
+      is height-limited with its own scroll so the last item stays reachable and unclipped
+- [x] Mobile favorites mode behaves exactly like the desktop one: enabling it clears the DNA
+      selection, choosing a DNA morphology or «Все DNA» turns it off, the button reads
+      «Фильтр · Избранное» (no false morphology count), and the empty state hint appears when
+      nothing is favorited; a heart click updates the list immediately through the shared state
+- [x] Player position fix: the mobile library panel used `max-height`, so with a bottom-anchored
+      panel (`bottom: 0`) its content height moved the head and the player down when filtering left
+      few rows (measured: player top 520.7px at 40 rows vs 710.5px at 2 vs 734.8px when empty).
+      The panel now has a definite `height: min(44dvh, 360px)`, so only the scrolling list area
+      changes — player top is 520.7px for 40 / 2 / 1 / 0 rows at 320, 390 and 430 px
+
 ## Next
 
 No required tasks remain. The migration and all planned product waves are completed
@@ -166,6 +253,7 @@ and published in production.
   штатный `workflow_dispatch` существующего workflow:
   `gh workflow run deploy-pages.yml --ref main`.
   **Важно:** push в `main` Pages НЕ деплоит (у `deploy-pages.yml` нет `push` trigger).
-- Последний релиз: feature-commit `5fcc52c` (`svelte-next`) → merge `1ee74d3` в `main`;
-  deploy-run `37840057005` (`build` ✓ / `deploy` ✓); `main == origin/main == 1ee74d3`,
-  `svelte-next == 5fcc52c`, рабочее дерево чистое.
+- Последний релиз на момент этого документа: feature-commit `7ac8470` (`svelte-next`, hotfix
+  схлопывания строк мобильного каталога) → merge `d7eec9d` в `main`; deploy-run `37975419332`
+  (`build` ✓ / `deploy` ✓). Актуальные SHA и run проверять командами: `git log main -1`,
+  `gh run list --limit 3` (запись обновляется при следующем релизе).

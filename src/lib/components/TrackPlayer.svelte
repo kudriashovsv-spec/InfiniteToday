@@ -5,6 +5,7 @@
 	import { registerAudio, pauseOthers, setActiveAudio } from '#lib/audio/playback.js';
 	import { releaseSource } from '#lib/audio/graph.js';
 	import { trackPlay } from '#lib/analytics.js';
+	import FavoriteButton from './FavoriteButton.svelte';
 
 	/**
 	 * Переиспользуемый проигрыватель одной музыкальной версии.
@@ -213,6 +214,10 @@
 	</div>
 
 	<span class="player__time">{formatTime(currentTime)} / {formatTime(duration)}</span>
+
+	<!-- Сердечко конкретной версии: справа в области её плеера. Клик не трогает
+	     воспроизведение и выбор версии (см. FavoriteButton). -->
+	<FavoriteButton trackId={track.id} title={track.title} genre={track.genre} />
 </div>
 
 {#if failed}
@@ -287,6 +292,9 @@
 		box-shadow: 0 6px 26px rgba(3, 4, 14, 0.35);
 		backdrop-filter: blur(9px) saturate(1.1);
 		-webkit-backdrop-filter: blur(9px) saturate(1.1);
+		/* Габарит сердечка избранного — под масштаб плеера версии. */
+		--fav-size: 1.35rem;
+		--fav-icon: 1rem;
 	}
 
 	.player__toggle {

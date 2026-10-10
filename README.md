@@ -22,14 +22,23 @@ pages.
 
 ### Musical worlds
 
-**Поиск · Мечтай · Дети Солнц · Оправданная надежда · Время не торопи · Братья · Поворот туда · Бешеная · Дота виновата · Здравствуй в первый раз · Спуск · Потерять себя**
+**Поиск · Мечтай · Дети Солнц · Оправданная надежда · Время не торопи · Братья · Поворот туда · Бешеная · Дота виновата · Здравствуй в первый раз · Спуск · Потерять себя · Антисага**
 
-All twelve are reached from a cosmic map. On narrow screens the map becomes a list
+All thirteen are reached from a cosmic map. On narrow screens the map becomes a list
 of world cards in a fixed mobile order.
 
 ### Music
 
-- 40 canonical track versions across the worlds (12 worlds)
+- 40 canonical track versions across the worlds (13 worlds)
+- favorites: a heart on every track VERSION — in the desktop and mobile L1 catalog (rightmost
+  column, next to the download button) and in the version player on L3 — stored in
+  `localStorage` (survives reloads) and shared by every view
+- a «Избранное» filter mode in the DNA filter menu (last entry, red heart marker, available on
+  desktop and on mobile): it replaces the morphology selection, lists only favorites, drives the
+  play queue, shuffle and prefetch, and shows a hint when nothing is favorited yet
+- a shuffle mode on the L1 player (button between the time readout and the volume control): it
+  permutes the active queue (filter-aware), keeps the playing track first so it never restarts,
+  plays every track once and stops at the end of the cycle
 - a global player on the entry screen that keeps playing while you navigate
 - an author-curated L1 order for the 40-track library (not alphabetical)
 - a per-track download link next to each library row
@@ -40,9 +49,13 @@ of world cards in a fixed mobile order.
 - only one audible source at a time
 - Media Session: play/pause and previous/next track controls, with Lock Screen
   metadata and a single shared artwork
-- a desktop DNA filter in the L1 library (`Все DNA` plus the six morphologies)
+- a DNA filter in the L1 library, on desktop and on mobile (one state, one menu): multi-select
+  of the six morphologies (union / OR) with a selected count on the `Фильтр DNA` button, plus an
+  «Все DNA» reset command; the mobile button is the compact variant of the same control in the
+  panel head above the player; the filter labels are Russian and come from the shared morphology
+  metadata; the «Избранное» entry is last and available on both platforms
 - the filter also drives the play queue: next / previous / auto-advance stay
-  inside the selected morphology
+  inside the selected morphologies
 - before any playback the filter shows only matching tracks; the first Play starts
   the first matching track (the selected default track is not silently played)
 - a played or paused track stays visible in the list even if it does not match
@@ -58,9 +71,11 @@ of world cards in a fixed mobile order.
 - 6 morphologies give the silhouette its character:
   **Bloom · Star · Crystal · Pulse · Spiral · Void**
 - morphology metadata (name, colour, description) has a single source in
-  `src/lib/data/dna.ts` (`MORPHOLOGIES` · `MORPHOLOGY_ORDER` · `getMorphology()`)
-- 21 versions have a full 8-axis DNA; the other 19 library-only versions have an
-  author-assigned morphology (from the author's `DNA.txt`) with no invented axes
+  `src/lib/data/dna.ts` (`MORPHOLOGIES` · `MORPHOLOGY_ORDER` · `getMorphology()`);
+  the Russian `filterLabel` used by the L1 DNA filter lives in that same source
+- 22 versions have a full 8-axis DNA; the other 18 library-only versions have an
+  author-assigned morphology (from the author's `DNA.txt`) with no invented axes; every
+  world version has a full DNA, because L3 renders the DNA from those axes
 - the morphology name is shown above the DNA and coloured from that same source:
   on desktop it follows `selectedDnaId`, on mobile the currently playing version
 - the values drive the individual shape, the morphology drives the geometric
@@ -83,7 +98,7 @@ of world cards in a fixed mobile order.
 
 ### Gallery
 
-- 10 categories, 111 works, 303 WebP runtime files
+- 10 categories, 112 works, 303 WebP runtime files
 - world-mobile artwork is reused from `static/images/worlds/` (no gallery duplicates)
 - masonry layout with lazy loading
 - lightbox with keyboard and touch controls
@@ -132,7 +147,7 @@ Highlights:
 - **Persistent global playback.** The global player lives in the app layout, so
   it survives navigation between the entry screen, the map, worlds and the
   gallery.
-- **DNA is the default world visual.** 21 versions have an author-defined
+- **DNA is the default world visual.** 22 versions have an author-defined
   8-axis DNA and all 40 library versions have an author-assigned morphology;
   morphology metadata and per-version DNA live in `src/lib/data/dna.ts` and render
   as SVG + CSS. The optional Butterchurn visualizer is lazy-mounted only when the
@@ -278,10 +293,16 @@ checker.
 - audio loads lazily (`preload="none"` + `durationSec` in the data layer)
 - L2 mobile scroll restoration and gallery scroll reset on category change
 - world «Потерять себя» added (12 worlds, 111 gallery works, 303 WebP files)
+- world «Антисага» added (13 worlds, 112 gallery works, 303 WebP files): track promoted from
+  the L1 library into a full world, portrait artwork reused by «Концепты миров», and its
+  author DNA (8 axes, Void) taken from `DNA.txt`
 - DNA morphology metadata unified (name/colour/description) with a label above the DNA
 - desktop L1 catalog reworked (one column, internal scroll, aligned columns, DNA
   filter) with the filter driving the playback queue
 - cautious next-track prefetch added (one candidate, cancellable)
+- favorites: per-version hearts in the L1 catalog (desktop + mobile) and in every L3 version
+  player, persisted in `localStorage`; «Избранное» filter mode (last menu entry, both platforms)
+  driving the queue
 - mobile L1 catalog rows keep their content height: the mobile catalog row must not use
   `overflow: hidden`, because a non-visible overflow lets the height-constrained Grid rows
   shrink below their content and clip the whole list
