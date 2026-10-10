@@ -27,16 +27,16 @@
   },
   "stats": {
     "categories": 10,
-    "images": 112,
-    "files": 303,
-    "bytes": 28702248
+    "images": 108,
+    "files": 290,
+    "bytes": 26187920
   },
   "categories": [
     {
       "slug": "koncepty-mirov",
       "title": "Концепты миров",
       "kind": "theme",
-      "count": 18
+      "count": 14
     },
     {
       "slug": "personazhi",
@@ -263,40 +263,6 @@
       }
     },
     {
-      "id": "deti-solnc-07",
-      "category": "koncepty-mirov",
-      "title": "ChildrenOfTheSunsPageLvl3",
-      "w": 1672,
-      "h": 941,
-      "ratio": 1.7768,
-      "files": {
-        "lg": {
-          "path": "koncepty-mirov/deti-solnc-07-lg.webp",
-          "w": 1672,
-          "h": 942,
-          "bytes": 435794,
-          "cap": 1920,
-          "quality": 84
-        },
-        "md": {
-          "path": "koncepty-mirov/deti-solnc-07-md.webp",
-          "w": 1024,
-          "h": 576,
-          "bytes": 185532,
-          "cap": 1024,
-          "quality": 80
-        },
-        "sm": {
-          "path": "koncepty-mirov/deti-solnc-07-sm.webp",
-          "w": 512,
-          "h": 288,
-          "bytes": 47870,
-          "cap": 512,
-          "quality": 76
-        }
-      }
-    },
-    {
       "id": "koncepty-mirov-world-dream",
       "category": "koncepty-mirov",
       "title": "DreamSongMobile",
@@ -321,40 +287,6 @@
           "w": 1086,
           "h": 1448,
           "bytes": 356940
-        }
-      }
-    },
-    {
-      "id": "mechtay-03",
-      "category": "koncepty-mirov",
-      "title": "DreamSongPageLvl3",
-      "w": 1672,
-      "h": 941,
-      "ratio": 1.7768,
-      "files": {
-        "lg": {
-          "path": "koncepty-mirov/mechtay-03-lg.webp",
-          "w": 1672,
-          "h": 942,
-          "bytes": 376244,
-          "cap": 1920,
-          "quality": 84
-        },
-        "md": {
-          "path": "koncepty-mirov/mechtay-03-md.webp",
-          "w": 1024,
-          "h": 576,
-          "bytes": 162180,
-          "cap": 1024,
-          "quality": 80
-        },
-        "sm": {
-          "path": "koncepty-mirov/mechtay-03-sm.webp",
-          "w": 512,
-          "h": 288,
-          "bytes": 41958,
-          "cap": 512,
-          "quality": 76
         }
       }
     },
@@ -387,40 +319,6 @@
       }
     },
     {
-      "id": "opravdannaya-nadezhda-01",
-      "category": "koncepty-mirov",
-      "title": "HopePageLvl3",
-      "w": 1672,
-      "h": 941,
-      "ratio": 1.7768,
-      "files": {
-        "lg": {
-          "path": "koncepty-mirov/opravdannaya-nadezhda-01-lg.webp",
-          "w": 1672,
-          "h": 942,
-          "bytes": 388526,
-          "cap": 1920,
-          "quality": 84
-        },
-        "md": {
-          "path": "koncepty-mirov/opravdannaya-nadezhda-01-md.webp",
-          "w": 1024,
-          "h": 576,
-          "bytes": 162066,
-          "cap": 1024,
-          "quality": 80
-        },
-        "sm": {
-          "path": "koncepty-mirov/opravdannaya-nadezhda-01-sm.webp",
-          "w": 512,
-          "h": 288,
-          "bytes": 40806,
-          "cap": 512,
-          "quality": 76
-        }
-      }
-    },
-    {
       "id": "koncepty-mirov-world-posik",
       "category": "koncepty-mirov",
       "title": "PosikSongMobile",
@@ -449,40 +347,6 @@
       }
     },
     {
-      "id": "poisk-10",
-      "category": "koncepty-mirov",
-      "title": "PosikSongPageLvl3",
-      "w": 1672,
-      "h": 941,
-      "ratio": 1.7768,
-      "files": {
-        "lg": {
-          "path": "koncepty-mirov/poisk-10-lg.webp",
-          "w": 1672,
-          "h": 942,
-          "bytes": 319476,
-          "cap": 1920,
-          "quality": 84
-        },
-        "md": {
-          "path": "koncepty-mirov/poisk-10-md.webp",
-          "w": 1024,
-          "h": 576,
-          "bytes": 132014,
-          "cap": 1024,
-          "quality": 80
-        },
-        "sm": {
-          "path": "koncepty-mirov/poisk-10-sm.webp",
-          "w": 512,
-          "h": 288,
-          "bytes": 32056,
-          "cap": 512,
-          "quality": 76
-        }
-      }
-    },
-    {
       "id": "koncepty-mirov-world-time",
       "category": "koncepty-mirov",
       "title": "TimeMobile",
@@ -507,40 +371,6 @@
           "w": 1086,
           "h": 1448,
           "bytes": 330656
-        }
-      }
-    },
-    {
-      "id": "vremya-ne-toropi-01",
-      "category": "koncepty-mirov",
-      "title": "TimePageLvl3",
-      "w": 1671,
-      "h": 941,
-      "ratio": 1.7758,
-      "files": {
-        "lg": {
-          "path": "koncepty-mirov/vremya-ne-toropi-01-lg.webp",
-          "w": 1671,
-          "h": 942,
-          "bytes": 445120,
-          "cap": 1920,
-          "quality": 84
-        },
-        "md": {
-          "path": "koncepty-mirov/vremya-ne-toropi-01-md.webp",
-          "w": 1024,
-          "h": 576,
-          "bytes": 186474,
-          "cap": 1024,
-          "quality": 80
-        },
-        "sm": {
-          "path": "koncepty-mirov/vremya-ne-toropi-01-sm.webp",
-          "w": 512,
-          "h": 288,
-          "bytes": 46204,
-          "cap": 512,
-          "quality": 76
         }
       }
     },
@@ -3821,6 +3651,34 @@
           "w": 1086,
           "h": 1448,
           "bytes": 238740
+        }
+      }
+    },
+    {
+      "id": "koncepty-mirov-world-teoriya-vsego",
+      "category": "koncepty-mirov",
+      "title": "Теория всегоMobile",
+      "w": 1086,
+      "h": 1448,
+      "ratio": 0.75,
+      "files": {
+        "sm": {
+          "path": "../images/worlds/teoriya-vsego.webp",
+          "w": 1086,
+          "h": 1448,
+          "bytes": 249252
+        },
+        "md": {
+          "path": "../images/worlds/teoriya-vsego.webp",
+          "w": 1086,
+          "h": 1448,
+          "bytes": 249252
+        },
+        "lg": {
+          "path": "../images/worlds/teoriya-vsego.webp",
+          "w": 1086,
+          "h": 1448,
+          "bytes": 249252
         }
       }
     }

@@ -4,7 +4,8 @@
 	import AudioDNA from '#lib/components/AudioDNA.svelte';
 	import ButterchurnCanvas from '#lib/components/ButterchurnCanvas.svelte';
 	import WorldView from '#lib/components/WorldView.svelte';
-	import SongDna from '#lib/components/SongDna.svelte';
+	import DnaMorph from '#lib/components/DnaMorph.svelte';
+	import AtmosphereScene from '#lib/components/AtmosphereScene.svelte';
 	import Seo from '#lib/components/Seo.svelte';
 	import { absoluteUrl, pluralRu } from '#lib/seo.js';
 	import { isSupported } from '#lib/audio/butterchurn.js';
@@ -26,6 +27,8 @@
 	// DNA-слот присутствует в разметке (мгновенно виден на desktop), а на mobile
 	// он просто скрыт CSS — никакой visualizer-логики он не запускает.
 	let isMobile = $state(false);
+	// Атмосфера — desktop-only; подтверждаем desktop ДО монтирования canvas.
+	let isDesktop = $state(false);
 	/** @type {'butterchurn' | 'dna'} */
 	let vizKind = $state('butterchurn');
 
@@ -43,12 +46,17 @@
 
 	onMount(() => {
 		const mq = window.matchMedia('(max-width: 640px)');
-		const apply = () => (isMobile = mq.matches);
+		const apply = () => {
+			isMobile = mq.matches;
+			isDesktop = !mq.matches && Math.min(window.innerWidth, window.innerHeight) >= 520;
+		};
 		apply();
 		vizKind = isSupported() ? 'butterchurn' : 'dna';
 		mq.addEventListener('change', apply);
+		window.addEventListener('resize', apply);
 		return () => {
 			mq.removeEventListener('change', apply);
+			window.removeEventListener('resize', apply);
 			// Любой уход с world-страницы выключает Visualizer: режим не переносится
 			// на следующую страницу/world. DNA снова обычный основной визуал.
 			visualizerMode.open = false;
@@ -72,6 +80,14 @@
 />
 
 <div class="screen screen--world">
+	{#if isDesktop && selectedDna}
+		<!-- Процедурная атмосфера по морфологии выбранной версии (desktop-only).
+		     При открытом визуализаторе сцена на паузе, но не удаляется. -->
+		<div class="atmosphere-layer" aria-hidden="true">
+			<AtmosphereScene morphology={selectedDna.morphology} active={!visualizerMode.open} />
+		</div>
+	{/if}
+
 	{#if isMobile}
 		<!-- Mobile L3: portrait artwork мира вместо визуализатора. -->
 		<div class="world-art" aria-hidden="true">
@@ -88,16 +104,15 @@
 		{/if}
 	{/if}
 
-	<!-- Главный визуальный слот DNA (desktop). На mobile скрыт CSS. -->
+	<!-- Главный визуальный слот DNA (desktop). На mobile скрыт CSS.
+	     Переход между версиями (морфинг + cross-dissolve fallback) — в DnaMorph. -->
 	{#if !visualizerMode.open}
 		<div class="main-dna">
-			{#key selectedDnaId}
+			{#if selectedDna}
 				<div class="main-dna__inner">
-					{#if selectedDna}
-						<SongDna values={selectedDna.values} morphology={selectedDna.morphology} />
-					{/if}
+					<DnaMorph values={selectedDna.values} morphology={selectedDna.morphology} />
 				</div>
-			{/key}
+			{/if}
 		</div>
 	{/if}
 
@@ -164,6 +179,31 @@
 		pointer-events: none;
 	}
 
+	/* Процедурная атмосфера L3 (desktop-only): под всем интерфейсом. */
+	.atmosphere-layer {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		overflow: hidden;
+		pointer-events: none;
+		animation: atmosphere-in 700ms var(--ease-out) both;
+	}
+
+	@keyframes atmosphere-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.atmosphere-layer {
+			animation-duration: 1ms;
+		}
+	}
+
 	/* Правый визуальный слот: DNA — главный художественный объект, без карточки
 	   и рамки. Слот прозрачный и не перехватывает события, кроме самой формы. */
 	.main-dna {
@@ -183,18 +223,6 @@
 		width: min(100%, 70vh);
 		max-width: 620px;
 		pointer-events: auto;
-		animation: dna-slot-enter 480ms var(--ease-out) both;
-	}
-
-	@keyframes dna-slot-enter {
-		from {
-			opacity: 0;
-			transform: scale(0.9);
-		}
-		to {
-			opacity: 1;
-			transform: scale(1);
-		}
 	}
 
 	/* Кнопка режима: компактная glass-пилюля в левом нижнем углу world-страницы,
@@ -280,10 +308,6 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.main-dna__inner {
-			animation-duration: 1ms;
-		}
-
 		.viz-toggle {
 			transition: none;
 		}

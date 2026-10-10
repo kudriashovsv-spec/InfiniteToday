@@ -80,20 +80,33 @@ SvelteKit 3 используется намеренно. Важно:
   `resolve('/world/[slug]', { slug })`;
 - `page.url` — readonly URL и не передаётся в `goto()`; использовать `page.url.href`;
 - shallow-состояние страницы описывать в `src/app.d.ts` (`App.PageState`);
-- Gallery-данные — `src/lib/data/gallery.json` (10 категорий, 112 works); runtime-файлы —
-  `static/gallery/<category-slug>/`; 13 world-mobile работ переиспользуют `static/images/worlds/`
+- Gallery-данные — `src/lib/data/gallery.json` (10 категорий, 108 works); runtime-файлы —
+  `static/gallery/<category-slug>/`; 14 world-mobile работ переиспользуют `static/images/worlds/`
   без физических копий;
-- DNA/морфологии — `src/lib/data/dna.ts`: полная 8-осевая DNA для 22 версий (`trackDna`) и
-  авторская морфология для 18 библиотечных версий без полных осей (`libraryMorphology`);
+- DNA/морфологии — `src/lib/data/dna.ts`: полная 8-осевая DNA для 23 версий (`trackDna`) и
+  авторская морфология для 17 библиотечных версий без полных осей (`libraryMorphology`);
   версия мира ВСЕГДА имеет полную DNA (без значений L3 её не рисует) — при добавлении мира
   оси брать из авторского `DNA.txt`;
   резолвер — `getMorphologyForTrack(trackId)`. Ровно 6 морфологий:
-  bloom/star/crystal/pulse/spiral/void. Визуал — `SongDna.svelte` (SVG + CSS, без
-  canvas/WebGL/AudioContext/rAF); `selectedDnaId` (desktop, чья DNA смотрится) независим
+  bloom/star/crystal/pulse/spiral/void. Геометрия — `dna-geometry.ts`, каркас —
+  `DnaFigure.svelte` (SVG + CSS, без canvas/WebGL/AudioContext), статичный рендер —
+  `SongDna.svelte`, desktop-морфинг — `DnaMorph.svelte`; `selectedDnaId` (desktop, чья DNA
+  смотрится) независим
   от `playingId` (что реально играет); на mobile DNA показывается поверх artwork по playback;
+- L3-атмосфера (desktop) — `src/lib/atmosphere/atmosphere.ts` + `AtmosphereScene.svelte`:
+  процедурный фон по морфологии ВЫБРАННОЙ версии; ОДИН Canvas 2D и один управляемый rAF,
+  ~30 FPS, DPR ≤ 1.5; desktop-only (на mobile компонент не монтируется, движок сам защищён);
+  переход между морфологиями — snapshot-crossfade; при открытом Visualizer атмосфера на паузе
+  (фон и состояние сохраняются), при скрытой вкладке цикл останавливается, `prefers-reduced-motion`
+  — статичный кадр. Музыкальные метрики — `src/lib/audio/metrics.ts` на ОБЩЕМ `AnalyserNode`
+  (`graph.ts`), без второго AudioContext; одновременно работает только один тяжёлый цикл
+  (атмосфера ИЛИ визуализатор);
+- dev-лаборатории DNA/атмосфер (`/dna-lab`, `/atmosphere-lab`) — ТОЛЬКО для разработки
+  (`import.meta.env.DEV` + ленивый динамический import): в production рендерится заглушка,
+  код лабораторий вырезан из бандла и не попадает в sitemap/навигацию;
 - метаданные морфологий — ЕДИНЫЙ источник `MORPHOLOGIES` / `MORPHOLOGY_ORDER` / `getMorphology()`
   в `dna.ts` (название, подпись фильтра `filterLabel`, цвет, описание). Не дублировать цвета/
-  названия в компонентах; подпись над DNA (`.dna__morph` в `SongDna.svelte`) берёт имя и цвет
+  названия в компонентах; подпись над DNA (`.dna__morph` в `DnaFigure.svelte`) берёт имя и цвет
   только оттуда. `name` (Bloom … Void) — подпись DNA на L3, `filterLabel` (русские) —
   ТОЛЬКО пункты DNA-фильтра L1; менять их местами нельзя;
 - новые версии/миры: морфологию назначать из авторского `WorkingFiles/ДНК/DNA.txt`, НЕ по жанру

@@ -234,6 +234,81 @@
       The panel now has a definite `height: min(44dvh, 360px)`, so only the scrolling list area
       changes — player top is 520.7px for 40 / 2 / 1 / 0 rows at 320, 390 and 430 px
 
+### Phase — DNA shape transitions (svelte-next, desktop)
+
+- [x] Desktop DNA slot cross-dissolves between versions instead of swapping instantly:
+      `{#key selectedDnaId}` keeps both silhouettes mounted briefly, and overlapping
+      `in:`/`out:` CSS transitions (`css`-form, no JS-rAF loop) fade + gently scale one
+      into the other. The six morphology builders in `SongDna.svelte` stay untouched, so
+      every morphology keeps its own character and colour
+- [x] Desktop only: `.main-dna` stays `display: none` at ≤640px and the transitions are
+      duration 0 on mobile; the mobile DNA path (`WorldView` `.mobile-dna` +
+      `mobile-dna-reveal`) is unchanged
+- [x] `prefers-reduced-motion: reduce` → instant swap (duration 0)
+- [x] `gradId` in `SongDna.svelte` is derived from `morphology` + `values`, so two
+      silhouettes that coexist during a transition can never share a gradient id
+- [x] Verified: same and different morphologies, rapid repeated switching, switching while
+      audio plays, return from the Visualizer
+
+### Phase — DNA true morphing (svelte-next, desktop)
+
+- [x] Stage 0 — extract the pure geometry (builders, petal paths, labels, spokes) into
+      `dna-geometry.ts`; `SongDna` consumes it; parity of all 22 versions' `d` verified
+- [x] Stage 1 — shared presentational `DnaFigure.svelte`; `SongDna` becomes a static render
+- [x] Stage 2 — desktop `DnaMorph.svelte`: bounded morph timeline, reduced-motion, cancel on
+      interrupt; the current cross-dissolve is kept as the fallback mode
+- [x] Stage 3 — compatibility criteria FINALISED: manual fallback list (pulse↔spiral →
+      cross-dissolve) plus a finite-geometry safety fallback; no automatic self-intersection
+      classifier (the metric proved unreliable); final suitability confirmed visually
+- [x] Stage 4 — verification: Star→Bloom, Star→Void, Bloom→Void; Spiral→Pulse as the fallback
+      case; mobile path byte-identical
+
+### Phase — DNA Morph Lab + Spiral winding fix (svelte-next, dev-only)
+
+- [x] Dev-only `/dna-lab` (`DnaMorphLab.svelte`): all 30 directed transitions + 6 self-checks,
+      source/target previews, mode indicator (morph / cross-dissolve), re-run, direction swap,
+      auto-run; reuses `SongDna` + `DnaMorph`; gated by `import.meta.env.DEV` (production build
+      ships only a non-interactive stub, no lab code, no sitemap/nav entry)
+- [x] Compatibility criterion moved to `dna-geometry.ts` (`dnaMorphFallbackPair`) — single source
+      for `DnaMorph` and the lab; `DnaMorph` gained a dev-only `forceMode` override
+- [x] Audit of all 30 transitions: every Spiral-involving pair collapsed the contour (opposite
+      winding → area crossed zero). Fixed by normalising ring orientation in `petalRings`
+      (morph-only; static geometry untouched). After the fix all 30 show no flips / no collapse;
+      Star→Bloom and Star→Void unchanged
+- [x] Spiral↔Pulse: the winding fix made the candidate real morph measure as clean as
+      Star→Bloom; the pair was visually confirmed (both directions, force morph in the lab) and
+      then REMOVED from the fallback list (`MORPH_FALLBACK_PAIRS` is now empty) — both directions
+      use real morph in the normal UI; the mechanism stays as a safety net for future pairs
+
+### Phase — L3 living atmosphere + music reactivity (svelte-next, desktop)
+
+- [x] Procedural L3 background (`src/lib/atmosphere/atmosphere.ts` + `AtmosphereScene.svelte`):
+      six morphologies (Star/Bloom/Crystal/Pulse/Spiral/Void), one Canvas 2D layer, one managed
+      rAF, ~30 FPS, DPR ≤ 1.5; snapshot-crossfade between morphologies
+- [x] Desktop-only integration on `/world/[slug]` behind the UI (z-index 0), driven by
+      `selectedDna.morphology`; on mobile the component is never mounted (no canvas/loop)
+- [x] Coordination with the Visualizer: the atmosphere pauses while it is open (background and
+      state kept) and resumes on close; hidden tab halts the loop; unmount releases resources
+- [x] Subtle music reactivity (`src/lib/audio/metrics.ts`) on the shared `AnalyserNode`
+      (no second AudioContext): smoothed envelopes + soft onset, small per-morphology modulation
+- [x] Dev-only `/atmosphere-lab` for visual review (stub in production, code tree-shaken)
+
+### Phase — world «Теория всего» + gallery cleanup (svelte-next)
+
+- [x] 14th world added through the existing data layer only: `worlds.ts` entry (artwork
+      `static/images/worlds/teoriya-vsego.webp`, 1086×1448) + `mobileWorldOrder` slot between
+      «Дети Солнц» and «Оправданная надежда»; `music.ts` track promoted from the L1 library
+      (`world: 'teoriya-vsego'`, `worldOrder: 1`); `lyrics.ts` text added verbatim
+- [x] Full 8-axis DNA moved from `libraryMorphology` to `trackDna` (author values
+      [77, 89, 82, 93, 43, 12, 68, 88], morphology Spiral) — the world version has a full DNA
+- [x] Desktop L2 entry placed PRELIMINARILY 2 cm up / 2 cm right of «Дота виновата»
+      (`left: '39.33%'`, `top: '29.34%'`); awaits manual calibration via `/space?calibrate`
+- [x] Gallery «Концепты миров»: added `koncepty-mirov-world-teoriya-vsego` (reuses
+      `../images/worlds/teoriya-vsego.webp`, no physical copy); removed all five 16:9 works
+      (`deti-solnc-07`, `mechtay-03`, `opravdannaya-nadezhda-01`, `poisk-10`,
+      `vremya-ne-toropi-01`) from this category only — the files stay on disk, other categories
+      untouched; manifest count/stats recomputed (14 works, 108 images, 290 files)
+
 ## Next
 
 No required tasks remain. The migration and all planned product waves are completed

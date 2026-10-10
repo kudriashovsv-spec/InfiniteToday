@@ -43,7 +43,7 @@ export type DnaMorphology = 'bloom' | 'star' | 'crystal' | 'pulse' | 'spiral' | 
  *
  * Название и цвет использует UI (подпись над DNA на L3, дальше — фильтр L1);
  * описание зарезервировано для подсказок фильтра. Геометрия силуэта
- * (scale/hw/breath) живёт в `SongDna.svelte` и сюда не переносится.
+ * (scale/hw/breath) живёт в `dna-geometry.ts` и сюда не переносится.
  */
 export interface MorphologyMeta {
 	id: DnaMorphology;
@@ -115,7 +115,8 @@ export const trackDna: Record<string, TrackDna> = {
 	'zdravstvuy-v-pervyy-raz-ethno-hop': { values: [89, 77, 84, 79, 66, 39, 68, 79], morphology: 'bloom' },
 	'poteryat-sebya-rock-infused-dnb': { values: [61, 62, 86, 33, 86, 89, 44, 66], morphology: 'star' },
 	'poteryat-sebya-indietronica': { values: [84, 82, 86, 74, 22, 17, 44, 48], morphology: 'bloom' },
-	'antisaga-electronic': { values: [32, 28, 83, 31, 22, 86, 17, 71], morphology: 'void' }
+	'antisaga-electronic': { values: [32, 28, 83, 31, 22, 86, 17, 71], morphology: 'void' },
+	'teoriya-vsego-trip-hop': { values: [77, 89, 82, 93, 43, 12, 68, 88], morphology: 'spiral' }
 };
 
 /** ДНК версии по её `track.id` (или undefined, если для версии её ещё нет). */
@@ -144,7 +145,6 @@ export const libraryMorphology: Record<string, DnaMorphology> = {
 	'zhzl-lofi': 'spiral',
 	'yunost-indietronica': 'spiral',
 	'parabola-indietronica': 'void',
-	'teoriya-vsego-trip-hop': 'spiral',
 	'ya-geroy-nashego-vremeni-trap': 'star',
 	'bronya-trap': 'star'
 };
