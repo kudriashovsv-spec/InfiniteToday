@@ -162,6 +162,17 @@ export const worlds: World[] = [
 		labelSide: 'above',
 		panelShift: true,
 		hotspot: { left: '69.52%', top: '76.06%', width: '4%', height: '7.1%' }
+	},
+	// «Антисага»: финальные desktop-координаты, заданные Сергеем через
+	// `/space?calibrate` (подпись над входом). Не перекалибровывать без
+	// отдельного решения.
+	{
+		slug: 'antisaga',
+		title: 'Антисага',
+		artwork: 'images/worlds/antisaga.webp',
+		labelSide: 'above',
+		panelShift: false,
+		hotspot: { left: '42.42%', top: '58.62%', width: '4%', height: '7.1%' }
 	}
 ];
 
@@ -185,6 +196,7 @@ export const mobileWorldOrder: readonly string[] = [
 	'brothers',
 	'poteryat-sebya',
 	'turn',
+	'antisaga',
 	'dream',
 	'suns',
 	'hope'

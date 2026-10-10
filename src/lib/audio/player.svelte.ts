@@ -15,6 +15,7 @@ import { asset } from '$app/paths';
 import type { AssetPath } from '$app/types';
 import { tracks, getTrack, type Track } from '#lib/data/music.js';
 import { getMorphologyForTrack } from '#lib/data/dna.js';
+import { isFavorite, registerFavoritesListener } from '#lib/favorites.svelte.js';
 import { registerAudio, pauseOthers, setActiveAudio } from '#lib/audio/playback.js';
 import { releaseSource } from '#lib/audio/graph.js';
 
@@ -31,6 +32,8 @@ export interface PlayerState {
 	duration: number;
 	volume: number;
 	muted: boolean;
+	/** режим случайного порядка воспроизведения активной очереди */
+	shuffle: boolean;
 }
 
 /** Глобальное реактивное состояние библиотеки L1. */
@@ -44,25 +47,171 @@ export const player: PlayerState = $state({
 	currentTime: 0,
 	duration: 0,
 	volume: 1,
-	muted: false
+	muted: false,
+	shuffle: false
 });
 
 /**
- * Активный фильтр морфологии каталога L1. ЕДИНЫЙ источник правды: и видимость
- * строк в LibraryPanel, и активная очередь next/prev/autoAdvance читают его.
- * 'all' — полный каталог.
+ * Активный фильтр каталога L1. ЕДИНЫЙ источник правды: и видимость строк
+ * в LibraryPanel, и активная очередь next/prev/autoAdvance читают только его.
+ *
+ * `morphologies` — МАССИВ выбранных морфологий (несколько значений
+ * объединяются по ИЛИ); пустой массив — фильтра по морфологиям нет.
+ * `favorites` — режим «Избранное» (только избранные версии). Режимы
+ * взаимоисключающие: включение одного снимает другой.
+ * Фильтр — desktop-only по UI: на mobile его меню скрыто, но значение всё равно
+ * остаётся источником правды для очереди.
  */
-export const libraryFilter = $state({ morphology: 'all' as string });
+export const libraryFilter = $state({ morphologies: [] as string[], favorites: false });
+
+/** Сравнение выбора по содержимому (повторный клик не должен ничего пересобирать). */
+function sameSelection(a: string[], b: string[]): boolean {
+	return a.length === b.length && a.every((id) => b.includes(id));
+}
+
+/** Сигнатура активного фильтра — ключ для порядка перемешивания. */
+function filterSignature(): string {
+	const morphs = [...libraryFilter.morphologies].sort().join(',');
+	return `${libraryFilter.favorites ? 'favorites' : ''}|${morphs}`;
+}
 
 /**
- * Активная очередь воспроизведения: полный каталог при 'all', иначе — только
- * треки выбранной морфологии в исходном порядке каталога. Исходный `tracks`
- * не мутируется (это производная).
+ * Активная очередь воспроизведения: весь каталог при пустом фильтре, иначе —
+ * треки ВЫБРАННЫХ морфологий (объединение по ИЛИ) в исходном порядке каталога.
+ * Исходный `tracks` не мутируется (это производная).
+ *
+ * Это состав очереди и её КАНОНИЧЕСКИЙ порядок. Режим перемешивания меняет
+ * только порядок воспроизведения (см. `playbackQueue()` ниже), не состав.
  */
 export function activeQueue(): Track[] {
-	const m = libraryFilter.morphology;
-	if (m === 'all') return tracks;
-	return tracks.filter((track) => getMorphologyForTrack(track.id) === m);
+	// Режим «Избранное» — отдельный состав: только избранные версии.
+	if (libraryFilter.favorites) return tracks.filter((track) => isFavorite(track.id));
+	const selected = libraryFilter.morphologies;
+	if (!selected.length) return tracks;
+	return tracks.filter((track) => {
+		const morph = getMorphologyForTrack(track.id);
+		return !!morph && selected.includes(morph);
+	});
+}
+
+// ============================================================================
+// Случайный порядок воспроизведения (shuffle)
+//
+// Перемешивается только ПОРЯДОК активной очереди: состав по-прежнему считает
+// `activeQueue()` (единственный источник правды для фильтра), а исходный каталог
+// `tracks` не мутируется. Порядок строится один раз на включение режима (и заново
+// при смене фильтра), поэтому внутри одного цикла треки не повторяются.
+// Цикл линейный: дойдя до последнего трека, автопереход останавливается, а не
+// начинает очередь заново.
+// ============================================================================
+
+/** Порядок id перемешанной очереди; пусто, пока порядок не построен. */
+let shuffleIds: string[] = [];
+/** Фильтр, для которого построен текущий порядок; null — порядка нет. */
+let shuffleKey: string | null = null;
+
+/**
+ * Текущий трек — первым в цикле (он не должен перезапускаться при включении),
+ * остальные треки активной очереди — в случайном порядке (Fisher–Yates).
+ * Если текущий трек в очередь не входит, он в цикле не участвует.
+ */
+function buildShuffleOrder(base: Track[]): string[] {
+	const ids = base.map((track) => track.id);
+	const current = player.trackId;
+	const rest = ids.filter((id) => id !== current);
+	for (let i = rest.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[rest[i], rest[j]] = [rest[j], rest[i]];
+	}
+	return ids.includes(current) ? [current, ...rest] : rest;
+}
+
+/** Сбросить порядок: следующий `playbackQueue()` пересоберёт его заново. */
+function invalidateShuffleOrder(): void {
+	shuffleIds = [];
+	shuffleKey = null;
+}
+
+/**
+ * Порядок воспроизведения: активная очередь как есть либо её перемешанная
+ * версия. Построенный порядок хранится до смены фильтра или режима, поэтому
+ * переходы next/prev/autoAdvance и предзагрузка всегда идут по одному и тому же
+ * циклу, а не перемешиваются заново на каждом шаге.
+ */
+export function playbackQueue(): Track[] {
+	const base = activeQueue();
+	if (!player.shuffle) return base;
+	const key = filterSignature();
+	if (shuffleKey !== key || !shuffleIds.length) {
+		shuffleKey = key;
+		shuffleIds = buildShuffleOrder(base);
+	}
+	const byId = new Map(base.map((track) => [track.id, track]));
+	return shuffleIds.map((id) => byId.get(id)).filter((track): track is Track => !!track);
+}
+
+/**
+ * Включение/выключение случайного порядка. Текущий трек не трогается: он не
+ * перезапускается и не меняется, режим влияет только на порядок будущих
+ * переходов. При включении порядок строится заново — случайный.
+ */
+export function setShuffle(enabled: boolean): void {
+	if (player.shuffle === enabled) return;
+	player.shuffle = enabled;
+	invalidateShuffleOrder();
+	// Следующий кандидат мог измениться — старая предзагрузка больше не нужна.
+	cancelPrefetch();
+}
+
+export function toggleShuffle(): void {
+	setShuffle(!player.shuffle);
+}
+
+/**
+ * Смена DNA-фильтра целиком. Очередь и (при включённом перемешивании) её порядок
+ * пересобираются, но текущий трек не прерывается: он доигрывает как есть и
+ * только потом уступает место трекам, подходящим под новый набор. Пустой
+ * массив — фильтра нет (весь каталог).
+ */
+export function setLibraryFilter(morphologies: string[]): void {
+	const next = [...morphologies];
+	// Ничего не меняется, если набор тот же и «Избранное» и так выключено
+	// (при непустом наборе оно выключено по определению режимов).
+	if (sameSelection(next, libraryFilter.morphologies) && (next.length > 0 || !libraryFilter.favorites))
+		return;
+	libraryFilter.morphologies = next;
+	// Режимы взаимоисключающие: смена DNA-набора снимает «Избранное».
+	libraryFilter.favorites = false;
+	invalidateShuffleOrder();
+	cancelPrefetch();
+}
+
+/**
+ * Режим «Избранное» в фильтре каталога (desktop-only UI). Включается ВМЕСТО
+ * DNA-набора, поэтому при включении выбранные морфологии сбрасываются.
+ */
+export function setFavoritesFilter(enabled: boolean): void {
+	if (libraryFilter.favorites === enabled) return;
+	libraryFilter.favorites = enabled;
+	if (enabled) libraryFilter.morphologies = [];
+	invalidateShuffleOrder();
+	cancelPrefetch();
+}
+
+// Избранное меняет СОСТАВ очереди только в режиме фильтра «Избранное»: там
+// снимаем устаревший порядок перемешивания и предзагрузку — точно так же, как
+// при смене фильтра. В обычном режиме избранное на очередь не влияет, поэтому
+// порядок не сбрасывается (иначе он перемешивался бы от каждого сердечка).
+registerFavoritesListener(() => {
+	if (!libraryFilter.favorites) return;
+	invalidateShuffleOrder();
+	cancelPrefetch();
+});
+
+/** Добавить/убрать одну морфологию — мультивыбор в DNA-фильтре L1. */
+export function toggleMorphology(id: string): void {
+	const current = libraryFilter.morphologies;
+	setLibraryFilter(current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
 }
 
 let audioEl: HTMLAudioElement | null = null;
@@ -245,15 +394,22 @@ function catalogIndex(): number {
  *
  * Если текущий трек в очередь не входит (играет «чужую» морфологию), первый
  * переход берёт ближайший подходящий по исходному порядку каталога, а если
- * таких больше нет — крайний трек очереди. Дальше переходы идут уже только
- * внутри очереди.
+ * таких больше нет — крайний трек очереди. В режиме перемешивания «ближайший»
+ * не имеет смысла — берётся начало (вперёд) или конец (назад) перемешанного
+ * цикла. Дальше переходы идут уже только внутри очереди.
  */
 function step(direction: 1 | -1, wrap: boolean): void {
-	const queue = activeQueue();
+	const queue = playbackQueue();
 	if (!queue.length) return; // нет подходящих треков — безопасно ничего не делаем
 
 	const index = queue.findIndex((track) => track.id === player.trackId);
 	if (index === -1) {
+		// В перемешанном порядке «ближайший по каталогу» смысла не имеет:
+		// выходим на начало (или конец) уже перемешанного цикла.
+		if (player.shuffle) {
+			selectTrack(direction === 1 ? queue[0].id : queue[queue.length - 1].id, true);
+			return;
+		}
 		const from = catalogIndex();
 		const candidates = direction === 1 ? queue : [...queue].reverse();
 		const near = candidates.find((track) =>
@@ -266,7 +422,8 @@ function step(direction: 1 | -1, wrap: boolean): void {
 
 	const target = index + direction;
 	if (target < 0 || target >= queue.length) {
-		if (!wrap) return; // конец очереди — стоп (поведение как раньше)
+		// Конец очереди/цикла — стоп для автоперехода (для кнопок — зацикливание).
+		if (!wrap) return;
 		selectTrack(queue[(target + queue.length) % queue.length].id, true);
 		return;
 	}
@@ -282,14 +439,15 @@ function autoAdvance(): void {
 // Предзагрузка следующего трека (эксперимент Фазы 5)
 //
 // Идея: незадолго до конца текущего трека скачать ровно одного следующего
-// кандидата из АКТИВНОЙ очереди через `fetch()`. Данные попадают в HTTP-кеш,
+// кандидата из ДЕЙСТВУЮЩЕЙ очереди (с учётом фильтра и перемешивания) через
+// `fetch()`. Данные попадают в HTTP-кеш,
 // а основной <audio> их переиспользует (измерено: ~12 ms против ~1.5 s без
 // предзагрузки под троттлингом 1 МБ/с). Никакого второго аудиоэлемента,
 // AudioContext или запуска звука тут нет.
 //
 // Ограничения: только один кандидат; только в окне PREFETCH_LEAD_SECONDS от
-// конца; отмена при смене трека/фильтра/кандидата; пропуск при Save-Data или
-// очень медленном соединении.
+// конца; отмена при смене трека/фильтра/кандидата или режима перемешивания;
+// пропуск при Save-Data или очень медленном соединении.
 
 /** Окно предзагрузки до конца трека (гипотеза 10–15 с). */
 const PREFETCH_LEAD_SECONDS = 12;
@@ -316,13 +474,15 @@ function canPrefetch(): boolean {
 
 /**
  * Следующий трек для АВТОПЕРЕХОДА — ровно тот, что выберет autoAdvance()
- * (та же активная очередь, без зацикливания; на краю — нет кандидата).
+ * (та же текущая очередь, без зацикливания; на краю — нет кандидата).
  */
 function upcomingTrack(): Track | undefined {
-	const queue = activeQueue();
+	const queue = playbackQueue();
 	if (!queue.length) return undefined;
 	const index = queue.findIndex((track) => track.id === player.trackId);
 	if (index !== -1) return queue[index + 1];
+	// Текущего трека в очереди нет: в перемешанном режиме кандидат — начало цикла.
+	if (player.shuffle) return queue[0];
 	const from = catalogIndex();
 	return queue.find((track) => tracks.indexOf(track) > from);
 }
@@ -385,7 +545,7 @@ export function prev(): void {
  */
 function ensurePlayableCurrent(): void {
 	if (player.started) return;
-	const queue = activeQueue();
+	const queue = playbackQueue();
 	if (!queue.length) return;
 	if (queue.some((track) => track.id === player.trackId)) return;
 	selectTrack(queue[0].id, false);

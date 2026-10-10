@@ -1,5 +1,5 @@
 // Данные галереи. ЕДИНЫЙ источник правды — production gallery.json
-// (schema gallery-v1): 10 категорий, 111 работ, 303 файла (sm/md/lg).
+// (schema gallery-v1): 10 категорий, 112 работ, 303 файла (sm/md/lg).
 //
 // Манифест импортируется как модуль (он небольшой и нужен только на /gallery,
 // поэтому Vite выносит его в чанк галереи, а не в initial bundle L1).
@@ -8,7 +8,7 @@
 //
 // Оригиналы-архивы в production bundle не входят — только WebP.
 //
-// 12 world-mobile работ из «Концептов миров» переиспользуют артефакты
+// 13 world-mobile работ из «Концептов миров» переиспользуют артефакты
 // `static/images/worlds/<slug>.webp` (без дублирования): их `path` начинается
 // с `../images/worlds/...`, поэтому `${galleryDir}/${path}` выходит за пределы
 // `static/gallery`, а браузер нормализует такой URL.
@@ -59,7 +59,7 @@ export interface GalleryStats {
 /** 10 категорий в авторском порядке (порядок задан явно, не сортируем). */
 export const categories: GalleryCategory[] = manifest.categories;
 
-/** 111 работ в порядке манифеста. */
+/** 112 работ в порядке манифеста. */
 export const works: GalleryWork[] = manifest.images;
 
 /** Статистика из манифеста (categories/images/files/bytes). */

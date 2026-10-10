@@ -27,7 +27,7 @@
   },
   "stats": {
     "categories": 10,
-    "images": 111,
+    "images": 112,
     "files": 303,
     "bytes": 28702248
   },
@@ -36,7 +36,7 @@
       "slug": "koncepty-mirov",
       "title": "Концепты миров",
       "kind": "theme",
-      "count": 17
+      "count": 18
     },
     {
       "slug": "personazhi",
@@ -3793,6 +3793,34 @@
           "bytes": 21368,
           "cap": 512,
           "quality": 76
+        }
+      }
+    },
+    {
+      "id": "koncepty-mirov-world-antisaga",
+      "category": "koncepty-mirov",
+      "title": "АнтисагаMobile",
+      "w": 1086,
+      "h": 1448,
+      "ratio": 0.75,
+      "files": {
+        "sm": {
+          "path": "../images/worlds/antisaga.webp",
+          "w": 1086,
+          "h": 1448,
+          "bytes": 238740
+        },
+        "md": {
+          "path": "../images/worlds/antisaga.webp",
+          "w": 1086,
+          "h": 1448,
+          "bytes": 238740
+        },
+        "lg": {
+          "path": "../images/worlds/antisaga.webp",
+          "w": 1086,
+          "h": 1448,
+          "bytes": 238740
         }
       }
     }

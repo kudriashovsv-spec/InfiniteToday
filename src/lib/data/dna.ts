@@ -47,8 +47,14 @@ export type DnaMorphology = 'bloom' | 'star' | 'crystal' | 'pulse' | 'spiral' | 
  */
 export interface MorphologyMeta {
 	id: DnaMorphology;
-	/** отображаемое название (Bloom … Void) */
+	/** отображаемое название (Bloom … Void) — подпись DNA на L3 */
 	name: string;
+	/**
+	 * Отображаемое название ТОЛЬКО для DNA-фильтра L1 (русское).
+	 * Отдельное поле, чтобы `name` остался английской подписью DNA и чтобы
+	 * подписи не дублировались в компонентах.
+	 */
+	filterLabel: string;
 	/** фирменный цвет сигнатуры */
 	color: string;
 	/** краткое описание для UI-подсказок */
@@ -67,12 +73,12 @@ export const MORPHOLOGY_ORDER: readonly DnaMorphology[] = [
 
 /** Метаданные шести морфологий по их id. */
 export const MORPHOLOGIES: Record<DnaMorphology, MorphologyMeta> = {
-	bloom: { id: 'bloom', name: 'Bloom', color: '#FFC98A', description: 'светлые' },
-	star: { id: 'star', name: 'Star', color: '#9EDBFF', description: 'яркие, эпические' },
-	crystal: { id: 'crystal', name: 'Crystal', color: '#C7BCFF', description: 'загадочные' },
-	pulse: { id: 'pulse', name: 'Pulse', color: '#FF719C', description: 'быстрые, напряжённые' },
-	spiral: { id: 'spiral', name: 'Spiral', color: '#73E6D5', description: 'текучие' },
-	void: { id: 'void', name: 'Void', color: '#8C72FF', description: 'глубокие' }
+	bloom: { id: 'bloom', name: 'Bloom', filterLabel: 'Светлые', color: '#FFC98A', description: 'светлые' },
+	star: { id: 'star', name: 'Star', filterLabel: 'Яркие', color: '#9EDBFF', description: 'яркие, эпические' },
+	crystal: { id: 'crystal', name: 'Crystal', filterLabel: 'Загадочные', color: '#C7BCFF', description: 'загадочные' },
+	pulse: { id: 'pulse', name: 'Pulse', filterLabel: 'Энергичные', color: '#FF719C', description: 'быстрые, напряжённые' },
+	spiral: { id: 'spiral', name: 'Spiral', filterLabel: 'Текучие', color: '#73E6D5', description: 'текучие' },
+	void: { id: 'void', name: 'Void', filterLabel: 'Глубокие', color: '#8C72FF', description: 'глубокие' }
 };
 
 /** Метаданные морфологии по её id. */
@@ -108,7 +114,8 @@ export const trackDna: Record<string, TrackDna> = {
 	'suns-indietronica': { values: [88, 87, 89, 74, 35, 38, 87, 71], morphology: 'void' },
 	'zdravstvuy-v-pervyy-raz-ethno-hop': { values: [89, 77, 84, 79, 66, 39, 68, 79], morphology: 'bloom' },
 	'poteryat-sebya-rock-infused-dnb': { values: [61, 62, 86, 33, 86, 89, 44, 66], morphology: 'star' },
-	'poteryat-sebya-indietronica': { values: [84, 82, 86, 74, 22, 17, 44, 48], morphology: 'bloom' }
+	'poteryat-sebya-indietronica': { values: [84, 82, 86, 74, 22, 17, 44, 48], morphology: 'bloom' },
+	'antisaga-electronic': { values: [32, 28, 83, 31, 22, 86, 17, 71], morphology: 'void' }
 };
 
 /** ДНК версии по её `track.id` (или undefined, если для версии её ещё нет). */
@@ -133,7 +140,6 @@ export const libraryMorphology: Record<string, DnaMorphology> = {
 	'zhzl-post-punk': 'void',
 	'igra-rock-infused-electropop': 'pulse',
 	'vse-vperedi-electropop': 'pulse',
-	'antisaga-electronic': 'void',
 	'dar-lofi': 'spiral',
 	'zhzl-lofi': 'spiral',
 	'yunost-indietronica': 'spiral',

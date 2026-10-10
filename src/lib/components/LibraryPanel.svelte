@@ -4,6 +4,8 @@
 	import type { AssetPath } from '$app/types';
 	import { tracks } from '#lib/data/music.js';
 	import { MORPHOLOGIES, MORPHOLOGY_ORDER, getMorphologyForTrack } from '#lib/data/dna.js';
+	import { isFavorite } from '#lib/favorites.svelte.js';
+	import FavoriteButton from './FavoriteButton.svelte';
 	import {
 		player,
 		formatTime,
@@ -16,6 +18,10 @@
 		seekTo,
 		setVolume,
 		toggleMute,
+		toggleShuffle,
+		toggleMorphology,
+		setLibraryFilter,
+		setFavoritesFilter,
 		libraryFilter
 	} from '#lib/audio/player.svelte.js';
 
@@ -46,21 +52,52 @@
 
 	const track = $derived(currentTrack());
 
-	// Видимость каталога: треки выбранной морфологии ПЛЮС текущий играющий
-	// трек, даже если он под фильтр не попадает. Дубликата нет — он остаётся на
-	// своём месте в исходном порядке. Сама очередь воспроизведения считается в
-	// player.svelte.ts из того же libraryFilter (единый источник правды).
+	// Сколько морфологий выбрано в DNA-фильтре (0 — фильтра нет, весь каталог).
+	const selectedCount = $derived(libraryFilter.morphologies.length);
+	// Видимый текст и доступное имя (содержит видимый текст — label-in-name).
+	const filterButtonText = $derived(
+		libraryFilter.favorites
+			? 'Фильтр · Избранное'
+			: selectedCount
+				? `Фильтр DNA · ${selectedCount}`
+				: 'Фильтр DNA'
+	);
+	const filterButtonLabel = $derived(
+		libraryFilter.favorites
+			? 'Фильтр · Избранное: показаны только избранные версии'
+			: selectedCount
+				? `Фильтр DNA, выбрано морфологий: ${selectedCount}`
+				: 'Фильтр DNA'
+	);
+
+	// Видимость каталога: треки активного фильтра (выбранные морфологии по ИЛИ
+	// либо избранные версии) ПЛЮС текущий играющий трек, даже если он под фильтр
+	// не попадает. Дубликата нет — он остаётся на своём месте в исходном порядке.
+	// Сама очередь воспроизведения считается в player.svelte.ts из того же
+	// libraryFilter (единый источник правды).
 	const visibleTracks = $derived.by(() => {
-		const m = libraryFilter.morphology;
-		if (m === 'all') return tracks;
 		const currentId = player.trackId;
 		// Текущий трек добавляется как исключение только после реального старта
 		// прослушивания (player.started). Выбранный по умолчанию, но ещё не
 		// игравший трек исключением не является.
-		return tracks.filter(
-			(item) => getMorphologyForTrack(item.id) === m || (player.started && item.id === currentId)
-		);
+		const keepCurrent = (id: string): boolean => player.started && id === currentId;
+
+		if (libraryFilter.favorites) {
+			return tracks.filter((item) => isFavorite(item.id) || keepCurrent(item.id));
+		}
+		const selected = libraryFilter.morphologies;
+		if (!selected.length) return tracks;
+		return tracks.filter((item) => {
+			const morph = getMorphologyForTrack(item.id);
+			return (!!morph && selected.includes(morph)) || keepCurrent(item.id);
+		});
 	});
+
+	// Фильтр избранного включён, но добавлять пока нечего — показываем подсказку
+	// вместо пустого списка.
+	const favoritesEmpty = $derived(
+		libraryFilter.favorites && visibleTracks.length === 0
+	);
 
 	function showTip(el: Element, text: string): void {
 		const rect = el.getBoundingClientRect();
@@ -82,22 +119,45 @@
 		if (returnFocus) filterButton?.focus({ preventScroll: true });
 	}
 
-	function selectMorphology(value: string): void {
-		libraryFilter.morphology = value;
+	/**
+	 * «Все DNA» — не морфология, а команда сброса: очищает выбор (тем самым
+	 * возвращает весь каталог) и закрывает меню с возвратом фокуса на кнопку.
+	 * Выбор меняется через setLibraryFilter, поэтому порядок очереди и
+	 * предзагрузка пересобираются там же, а текущий трек не прерывается.
+	 */
+	function resetFilter(): void {
+		setLibraryFilter([]);
 		closeFilter(true);
 	}
 
-	function morphOptions(): HTMLButtonElement[] {
+	/**
+	 * Пункты меню в порядке навигации: команда сброса, шесть морфологий и избранное.
+	 * Скрытые пункты отбрасываются (на mobile «Избранное» не показывается) —
+	 * иначе стрелки уводили бы фокус в невидимый пункт.
+	 */
+	function menuItems(): HTMLButtonElement[] {
 		if (!filterMenu) return [];
-		return Array.from(filterMenu.querySelectorAll<HTMLButtonElement>('[data-morph-option]'));
+		return Array.from(
+			filterMenu.querySelectorAll<HTMLButtonElement>(
+				'[data-dna-reset], [data-morph-option], [data-fav-filter]'
+			)
+		).filter((item) => item.getClientRects().length > 0);
 	}
 
-	function focusMorphOption(value: string): void {
-		morphOptions().find((option) => option.dataset.morphOption === value)?.focus();
+	/**
+	 * Фокус при открытии меню с клавиатуры: первый ВКЛЮЧЁННЫЙ пункт (морфология
+	 * или «Избранное»), иначе первый пункт (при пустом фильтре — команда сброса).
+	 */
+	function focusFirstSelected(): void {
+		const items = menuItems();
+		if (!items.length) return;
+		const target =
+			items.find((item) => item.getAttribute('aria-checked') === 'true') ?? items[0];
+		target.focus();
 	}
 
 	function moveMorphFocus(key: string): void {
-		const options = morphOptions();
+		const options = menuItems();
 		if (!options.length) return;
 		const current = options.indexOf(document.activeElement as HTMLButtonElement);
 		let index = current === -1 ? 0 : current;
@@ -114,10 +174,10 @@
 			event.preventDefault();
 			event.stopPropagation();
 			if (filterOpen) {
-				focusMorphOption(libraryFilter.morphology);
+				focusFirstSelected();
 			} else {
 				filterOpen = true;
-				tick().then(() => focusMorphOption(libraryFilter.morphology));
+				tick().then(() => focusFirstSelected());
 			}
 			return;
 		}
@@ -314,54 +374,71 @@
 			<span class="library__current-title">{track?.title ?? ''}</span>
 			<span class="library__current-genre">{track?.genre ?? ''}</span>
 		</p>
+		<!-- DNA-фильтр: на desktop — полная подпись в шапке панели, на mobile —
+		     компактная кнопка там же (над плеером, справа). Состояние, меню и
+		     обработчики — одни и те же. -->
 		<div class="library__filter" bind:this={filterRoot}>
 			<button
 				class="library__filter-btn"
 				class:is-open={filterOpen}
 				type="button"
-				aria-haspopup="listbox"
+				aria-haspopup="menu"
 				aria-expanded={filterOpen}
 				aria-controls="library-morph-menu"
-				aria-label="Фильтр по морфологии"
+				aria-label={filterButtonLabel}
 				bind:this={filterButton}
 				onclick={toggleFilter}
 				onkeydown={onFilterButtonKeydown}
-			>DNA</button>
+			>{filterButtonText}</button>
 			{#if filterOpen}
 				<div
 					class="library__filter-menu"
 					id="library-morph-menu"
-					role="listbox"
+					role="menu"
 					tabindex="-1"
-					aria-label="Морфологии"
+					aria-label="Фильтр DNA"
 					bind:this={filterMenu}
 					onkeydown={onFilterMenuKeydown}
 				>
+					<!-- «Все DNA» — команда сброса, а не морфология: очищает выбор и закрывает меню. -->
 					<button
 						class="library__filter-option"
 						type="button"
-						role="option"
-						aria-selected={libraryFilter.morphology === 'all'}
-						data-morph-option="all"
-						onclick={() => selectMorphology('all')}
+						role="menuitem"
+						data-dna-reset
+						onclick={resetFilter}
 					>
-						<span class="library__filter-check" aria-hidden="true">✓</span>
+						<span class="library__filter-check" aria-hidden="true"></span>
 						<span class="library__filter-name">Все DNA</span>
 					</button>
 					{#each MORPHOLOGY_ORDER as id (id)}
 						<button
 							class="library__filter-option"
 							type="button"
-							role="option"
-							aria-selected={libraryFilter.morphology === id}
+							role="menuitemcheckbox"
+							aria-checked={libraryFilter.morphologies.includes(id)}
 							data-morph-option={id}
 							style={`--morph-color:${MORPHOLOGIES[id].color}`}
-							onclick={() => selectMorphology(id)}
+							onclick={() => toggleMorphology(id)}
 						>
 							<span class="library__filter-check" aria-hidden="true">✓</span>
-							<span class="library__filter-name">{MORPHOLOGIES[id].name}</span>
+							<span class="library__filter-name">{MORPHOLOGIES[id].filterLabel}</span>
 						</button>
 					{/each}
+					<!-- «Избранное» — отдельный режим фильтра (не морфология), всегда последним. -->
+					<button
+						class="library__filter-option"
+						type="button"
+						role="menuitemcheckbox"
+						aria-checked={libraryFilter.favorites}
+						data-fav-filter
+						onclick={() => setFavoritesFilter(!libraryFilter.favorites)}
+					>
+						<span class="library__filter-check library__filter-check--fav" aria-hidden="true"
+							>♥</span
+						>
+						<span class="library__filter-name">Избранное</span>
+					</button>
 				</div>
 			{/if}
 		</div>
@@ -420,7 +497,27 @@
 			<span class="player__fill" style="width:{progress * 100}%"></span>
 		</div>
 
-		<span class="player__time">{formatTime(player.currentTime)} / {formatTime(player.duration)}</span>
+		<!-- Позиция и общая длительность. Общая часть скрывается только там, где
+		     панели физически не хватает места (узкий desktop), см. медиа-блок ниже. -->
+		<span class="player__time"
+			>{formatTime(player.currentTime)}<span class="player__time-total">&nbsp;/&nbsp;{formatTime(player.duration)}</span></span
+		>
+
+		<button
+			class="player__shuffle"
+			class:is-active={player.shuffle}
+			type="button"
+			aria-label="Случайный порядок"
+			aria-pressed={player.shuffle}
+			onclick={() => toggleShuffle()}
+		>
+			<svg class="player__shuffle-icon" viewBox="0 0 16 16" aria-hidden="true">
+				<path d="M2 11.4h2.4l7.2-6.8H14"></path>
+				<path d="M2 4.6h2.4l7.2 6.8H14"></path>
+				<path d="M12.3 2.9 14 4.6l-1.7 1.7"></path>
+				<path d="M12.3 9.7 14 11.4l-1.7 1.7"></path>
+			</svg>
+		</button>
 
 		<div class="player__volume">
 			<button
@@ -476,6 +573,9 @@
 	{/if}
 
 	<div class="library__list">
+		{#if favoritesEmpty}
+			<p class="library__empty">Пока нет избранных версий, Нажми ❤️ напротив трека</p>
+		{/if}
 		{#each visibleTracks as item (item.id)}
 			{@const morph = getMorphologyForTrack(item.id)}
 			{@const meta = morph ? MORPHOLOGIES[morph] : undefined}
@@ -514,6 +614,8 @@
 						<path d="M3.4 12.6h9.2"></path>
 					</svg>
 				</a>
+				<!-- Сердечко — крайнее справа, сразу после скачивания. -->
+				<FavoriteButton trackId={item.id} title={item.title} genre={item.genre} />
 			</div>
 		{/each}
 	</div>
@@ -627,7 +729,7 @@
 		pointer-events: auto;
 	}
 
-	/* Кнопка всегда называется DNA; выбранная морфология отмечается в списке. */
+	/* Кнопка показывает название фильтра и число выбранных морфологий. */
 	.library__filter-btn {
 		display: inline-flex;
 		align-items: center;
@@ -641,6 +743,7 @@
 		font-weight: 300;
 		letter-spacing: 0.16em;
 		text-indent: 0.16em;
+		white-space: nowrap;
 		cursor: pointer;
 		-webkit-tap-highlight-color: transparent;
 		transition:
@@ -677,8 +780,9 @@
 		}
 	}
 
-	/* Стеклянный список морфологий. Названия окрашены цветом из MORPHOLOGIES,
-	   «Все DNA» — нейтральный; выбранный пункт отмечен галочкой и фоном. */
+	/* Стеклянное меню DNA-фильтра: команда сброса «Все DNA» плюс шесть морфологий.
+	   Названия окрашены цветом из MORPHOLOGIES; состояние читается по чекбоксу:
+	   выбранные (aria-checked) — заливка цветом морфологии и фон строки. */
 	.library__filter-menu {
 		position: absolute;
 		z-index: 6;
@@ -698,7 +802,7 @@
 
 	.library__filter-option {
 		display: grid;
-		grid-template-columns: 0.9em minmax(0, 1fr);
+		grid-template-columns: 1rem minmax(0, 1fr);
 		align-items: center;
 		gap: 0.4rem;
 		padding: 0.34rem 0.5rem;
@@ -722,19 +826,81 @@
 		color: var(--morph-color, inherit);
 	}
 
+	/* Маркер выбора — квадратный чекбокс, видимый ВСЕГДА (не только у выбранных):
+	   невыбранный — пустая рамка, выбранный — заливка цветом морфологии и тёмная
+	   галочка. Идёт в той же колонке сетки, поэтому названия остаются выровнены. */
 	.library__filter-check {
+		display: grid;
+		place-items: center;
+		width: 0.85rem;
+		height: 0.85rem;
+		border: 1px solid rgba(200, 208, 255, 0.4);
+		border-radius: 3px;
+		background: rgba(9, 10, 26, 0.5);
 		color: transparent;
-		font-size: 0.72rem;
+		font-size: 0.6rem;
 		line-height: 1;
-		text-align: center;
+		transition:
+			color var(--dur-fast) var(--ease-out),
+			background var(--dur-fast) var(--ease-out),
+			border-color var(--dur-fast) var(--ease-out);
 	}
 
-	.library__filter-option[aria-selected='true'] {
+	.library__filter-option[aria-checked='true'] {
 		background: rgba(180, 165, 255, 0.16);
 	}
 
-	.library__filter-option[aria-selected='true'] .library__filter-check {
-		color: #d8c6ff;
+	.library__filter-option[aria-checked='true'] .library__filter-check {
+		color: var(--bg-base);
+		border-color: transparent;
+		background: var(--morph-color, var(--accent-a));
+	}
+
+	/* У команды сброса маркера состояния нет (ячейка остаётся для выравнивания). */
+	.library__filter-option[data-dna-reset] .library__filter-check {
+		visibility: hidden;
+	}
+
+	/* Пустое избранное: понятное сообщение вместо пустого списка. */
+	.library__empty {
+		grid-column: 1 / -1;
+		margin: 0.4rem 0 0;
+		padding: 0.7rem 0.4rem;
+		color: rgba(238, 232, 255, 0.62);
+		font-family: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+		font-size: 0.72rem;
+		font-weight: 300;
+		line-height: 1.45;
+		letter-spacing: 0.03em;
+		text-align: center;
+		pointer-events: auto;
+		text-shadow: 0 1px 2px rgba(2, 4, 12, 0.9);
+	}
+
+	/* «Все DNA» — команда сброса, а не состояние: отделяем её от переключателей. */
+	.library__filter-option[data-dna-reset] {
+		margin-bottom: 0.25rem;
+		border-bottom: 1px solid rgba(200, 208, 255, 0.14);
+	}
+
+	/* «Избранное» — отдельный режим фильтра: отделяем его от списка морфологий. */
+	.library__filter-option[data-fav-filter] {
+		margin-top: 0.25rem;
+		border-top: 1px solid rgba(200, 208, 255, 0.14);
+	}
+
+	/* Маркер режима — красное сердечко, без рамки-чекбокса: у морфологий
+	   квадратик с галочкой, у избранного — сердце (тусклее / в полную силу). */
+	.library__filter-option[data-fav-filter] .library__filter-check,
+	.library__filter-option[data-fav-filter][aria-checked='true'] .library__filter-check {
+		border-color: transparent;
+		background: transparent;
+		color: rgba(255, 77, 109, 0.45);
+		font-size: 0.8rem;
+	}
+
+	.library__filter-option[data-fav-filter][aria-checked='true'] .library__filter-check {
+		color: var(--fav);
 	}
 
 	.library__filter-option:focus {
@@ -765,7 +931,7 @@
 		min-height: 0;
 		margin-top: 0.5rem;
 		display: grid;
-		grid-template-columns: max-content minmax(0, 1fr) minmax(0, max-content) minmax(0, max-content) max-content;
+		grid-template-columns: max-content minmax(0, 1fr) minmax(0, max-content) minmax(0, max-content) max-content max-content;
 		align-content: start;
 		column-gap: 0.5rem;
 		row-gap: 0;
@@ -784,7 +950,7 @@
 		position: relative;
 		grid-column: 1 / -1;
 		display: grid;
-		grid-template-columns: max-content minmax(0, 1fr) max-content max-content max-content;
+		grid-template-columns: max-content minmax(0, 1fr) max-content max-content max-content max-content;
 		grid-template-columns: subgrid;
 		align-items: center;
 		width: 100%;
@@ -1260,6 +1426,73 @@
 		white-space: nowrap;
 	}
 
+	/* Перемешивание очереди: вторичная иконочная кнопка между позицией и
+	   громкостью. Габарит — как у skip-кнопок, чтобы ряд вторичных контролов
+	   оставался единым; это же даёт нормальную зону нажатия на телефоне. */
+	.player__shuffle {
+		flex: none;
+		display: grid;
+		place-items: center;
+		width: 1.5rem;
+		height: 1.5rem;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: transparent;
+		color: rgba(244, 240, 255, 0.55);
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+		transition:
+			color var(--dur-ui) var(--ease-ui),
+			background var(--dur-ui) var(--ease-ui),
+			transform var(--dur-fast) var(--ease-out);
+	}
+
+	.player__shuffle:active {
+		transform: scale(0.92);
+	}
+
+	.player__shuffle:focus {
+		outline: none;
+	}
+
+	.player__shuffle:focus-visible {
+		color: #ffffff;
+		background: rgba(180, 165, 255, 0.22);
+		outline: 1px solid rgba(216, 198, 255, 0.7);
+		outline-offset: 2px;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.player__shuffle:hover {
+			color: #f4f0ff;
+			background: rgba(180, 165, 255, 0.24);
+		}
+	}
+
+	/* Включённый режим читается без hover: тёплая акцентная иконка на своей
+	   подложке. Цвет — из палитры проекта (--accent-b), как у «текущего» трека. */
+	.player__shuffle.is-active {
+		color: var(--accent-b);
+		background: rgba(255, 138, 92, 0.16);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.player__shuffle.is-active:hover {
+			background: rgba(255, 138, 92, 0.26);
+		}
+	}
+
+	.player__shuffle-icon {
+		width: 0.95rem;
+		height: 0.95rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.5;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
 	.player__volume {
 		position: relative;
 		flex: none;
@@ -1465,6 +1698,23 @@
 		}
 	}
 
+	/* Узкий desktop (641–860px): панель здесь — это всего ~31vw (≈200–265px), и
+	   семь элементов плеера в неё не влезают: ползунок схлопывается, а громкость
+	   выдавливается за таблетку. Уплотняем ТОЛЬКО этот диапазон — интервалы и
+	   подпись времени (позиция остаётся; полное время и его aria — в
+	   aria-valuetext ползунка). Состав, порядок и размеры элементов не меняются,
+	   на mobile и на широком desktop — как было. */
+	@media (min-width: 641px) and (max-width: 860px) {
+		.player {
+			gap: 0.3rem;
+			padding-right: 0.5rem;
+		}
+
+		.player__time-total {
+			display: none;
+		}
+	}
+
 	/* ==================== МОБИЛЬНАЯ КОМПОЗИЦИЯ (portrait phone) ==================== */
 	@media (max-width: 640px) {
 		.library {
@@ -1473,7 +1723,12 @@
 			left: 0;
 			right: 0;
 			width: 100%;
-			max-height: min(44dvh, 360px);
+			/* ФИКСИРОВАННАЯ высота панели, а не max-height: панель прижата к низу
+			   (`bottom: 0`), поэтому при контентной высоте её верх (а с ним шапка и
+			   плеер) уезжает вниз, когда после фильтра остаётся мало строк. Теперь
+			   панель всегда занимает тот же вертикальный слот, а меняется только
+			   высота списка (он прокручивается; `min-height: 0`). */
+			height: min(44dvh, 360px);
 			display: flex;
 			flex-direction: column;
 			padding: 0.7rem 0.8rem calc(0.7rem + env(safe-area-inset-bottom, 0px));
@@ -1491,11 +1746,31 @@
 			display: none;
 		}
 
-		/* Мобильная библиотека сохраняет прежний вид: десктопный фильтр и
-		   колонку морфологии в неё не переносим. */
-		.library__filter,
+		/* DNA-фильтр на телефоне: та же кнопка и то же меню, компактнее текст.
+		   Колонка морфологии в строках остаётся desktop-only. */
 		.lib-track__morph {
 			display: none;
+		}
+
+		.library__filter-btn {
+			min-height: 1.5rem;
+			padding: 0.22rem 0.62rem;
+			font-size: 0.6rem;
+			letter-spacing: 0.07em;
+			text-indent: 0.07em;
+		}
+
+		/* «Избранное» — последний пункт меню (как на desktop), с разделителем: этот
+		   режим доступен и на телефоне (см. library__filter-option[data-fav-filter]). */
+
+		/* Меню не должно выходить за экран даже на самом узком телефоне. */
+		.library__filter-menu {
+			max-width: calc(100vw - 2rem);
+			/* 8 пунктов на коротком экране: ограничиваем высоту и даём прокрутку —
+			   последний пункт достижим, ничего не обрезается. */
+			max-height: min(60dvh, 330px);
+			overflow-y: auto;
+			overscroll-behavior: contain;
 		}
 
 		.library__current {
@@ -1519,11 +1794,17 @@
 			min-height: 0;
 			margin-top: 0.5rem;
 			display: grid;
-			grid-template-columns: max-content minmax(0, 1fr) max-content max-content;
+			/* Колонка жанра — фиксированная: раньше max-content отдавал ей ~146.5px
+			   (по самому длинному жанру), из-за чего названию оставалось ~139px
+			   на 390px. 6.1rem ≈ 97.6px — примерно на треть уже прежней; разницу
+			   забирает колонка названия (1fr). Длинные жанры и названия обрезаются
+			   многоточием (min-width: 0 + overflow: hidden в самих ячейках). */
+			grid-template-columns: max-content minmax(0, 1fr) 6.1rem max-content max-content;
 			align-content: start;
 			column-gap: 0.4rem;
 			row-gap: 0;
 			overflow-y: auto;
+			overflow-x: hidden;
 			overscroll-behavior: contain;
 			pointer-events: auto;
 			-webkit-overflow-scrolling: touch;
@@ -1535,6 +1816,10 @@
 		.lib-track {
 			font-size: 0.85rem;
 			padding: 0.34rem 0.4rem;
+			/* Сердечко — как кнопка скачивания на телефоне (24px, иконка 15.2px).
+			   Место берётся у колонки названия (1fr): жанр не сужается. */
+			--fav-size: 1.5rem;
+			--fav-icon: 0.95rem;
 			/* overflow: hidden здесь НЕ ставить: строка — grid-item списка, и
 			   не-visible overflow обнуляет её automatic minimum size. Тогда auto-ряды
 			   списка (40 строк в нижней панели фиксированной высоты, т.е. при
@@ -1578,6 +1863,7 @@
 		.lib-track__play:active,
 		.lib-track__download:active,
 		.player__skip:active,
+		.player__shuffle:active,
 		.player__toggle:active,
 		.player__volume-button:active,
 		.player__mute:active,
