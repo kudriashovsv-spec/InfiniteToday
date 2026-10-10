@@ -181,8 +181,10 @@
 - [x] Gallery «Концепты миров» got the artwork as its last work (`koncepty-mirov-world-antisaga`),
       reusing `../images/worlds/antisaga.webp` with no physical copies (112 works, 13 world-mobile
       works, gallery files/bytes unchanged)
-- [x] L2 desktop entry placed in the «Спуск» column ~2 cm above it (40.96% / 62.51%), label above;
-      coordinates are preliminary and await calibration in `/space?calibrate`
+- [x] L2 desktop entry placed in the «Спуск» column ~2 cm above it at first (40.96% / 62.51%),
+      label above; the coordinates were then FINALISED by the author through `/space?calibrate` —
+      the released values are `left: '42.42%'`, `top: '58.62%'`, `width: '4%'`, `height: '7.1%'`
+      (`worlds.ts`; не перекалибровывать без отдельного решения)
 - [x] Mobile world order: «Антисага» sits between «Поворот туда» and «Мечтай»
 
 ### Phase — favorites ❤️ (svelte-next)
@@ -210,8 +212,10 @@
 - [x] Same labels, colours and checkbox markers; multi-select and «Все DNA» reset behave exactly
       as on desktop, and the count is shown on the button; the menu stays inside the viewport
       (320/390/430 px) and closing commands return focus to the button
-- [x] «Избранное» stays desktop-only: the menu item is `display: none` on mobile and `menuItems()`
-      drops non-rendered entries, so arrow navigation never lands on a hidden item
+- [x] At that moment «Избранное» stayed desktop-only (`display: none` on mobile and
+      `menuItems()` dropping non-rendered entries so arrows never landed on a hidden item) —
+      superseded by the next phase: the entry is now part of the mobile menu too
+      (see «mobile favorites filter + stable player position»)
 - [x] Per-row morphology column stays desktop-only; queue, shuffle, prefetch, favorites and
       playback logic untouched
 
@@ -253,7 +257,8 @@ and published in production.
   штатный `workflow_dispatch` существующего workflow:
   `gh workflow run deploy-pages.yml --ref main`.
   **Важно:** push в `main` Pages НЕ деплоит (у `deploy-pages.yml` нет `push` trigger).
-- Последний релиз на момент этого документа: feature-commit `7ac8470` (`svelte-next`, hotfix
-  схлопывания строк мобильного каталога) → merge `d7eec9d` в `main`; deploy-run `37975419332`
+- Последний релиз: feature-commit `fb17c009ddefa4ea5e8b42fc509f15428e1d762e` (`svelte-next`,
+  shuffle + DNA-фильтры + избранное + мир «Антисага») → merge-коммит
+  `30bcba4601e1f065a667d97d9a077fd6578cb319` в `main`; deploy-run `38043436508`
   (`build` ✓ / `deploy` ✓). Актуальные SHA и run проверять командами: `git log main -1`,
-  `gh run list --limit 3` (запись обновляется при следующем релизе).
+  `gh run list --limit 3` (журнал релиза, обновляется при следующем релизе).

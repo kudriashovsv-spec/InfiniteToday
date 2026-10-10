@@ -291,11 +291,14 @@ Scope expansion запрещён.
 
 ## 13. Текущий production
 
+Это **исторический снимок** состояния на момент последнего релиза, а не источник истины.
+Актуальное состояние всегда проверяется командами:
+`git rev-parse main origin/main svelte-next origin/svelte-next`, `gh run list --limit 3`,
+`git status` (после релиза дерево должно быть чистым).
+
 - URL: `https://kudriashovsv-spec.github.io/InfiniteToday/`
 - Ветки: `main` — production (деплой только штатным `workflow_dispatch`, см. §12),
   `svelte-next` — ветка следующей разработки (не удалять).
-- На момент обновления этой записи: `main == origin/main == d7eec9d`, последний успешный
-  production-deploy — run `37975419332` (`build` ✓ / `deploy` ✓).
-- Фактическое состояние проверять командами, а не по этой записи:
-  `git rev-parse main origin/main svelte-next origin/svelte-next` и `gh run list --limit 3`;
-  после релиза рабочее дерево должно быть чистым (`git status`).
+- Снимок последнего релиза: feature-коммит `fb17c00`, merge-коммит `30bcba4`
+  (`main == origin/main == 30bcba4`), успешный production-deploy — run `38043436508`
+  (`build` ✓ / `deploy` ✓). Журнал релиза — в `TODO.md` (References).
