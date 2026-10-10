@@ -173,6 +173,16 @@ export const worlds: World[] = [
 		labelSide: 'above',
 		panelShift: false,
 		hotspot: { left: '42.42%', top: '58.62%', width: '4%', height: '7.1%' }
+	},
+	// «Теория всего»: финальные desktop-координаты, заданные Сергеем.
+	// Не перекалибровывать без отдельного решения.
+	{
+		slug: 'teoriya-vsego',
+		title: 'Теория всего',
+		artwork: 'images/worlds/teoriya-vsego.webp',
+		labelSide: 'above',
+		panelShift: true,
+		hotspot: { left: '41.36%', top: '23.6%', width: '4%', height: '7.1%' }
 	}
 ];
 
@@ -199,6 +209,7 @@ export const mobileWorldOrder: readonly string[] = [
 	'antisaga',
 	'dream',
 	'suns',
+	'teoriya-vsego',
 	'hope'
 ];
 

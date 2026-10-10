@@ -22,14 +22,14 @@ pages.
 
 ### Musical worlds
 
-**Поиск · Мечтай · Дети Солнц · Оправданная надежда · Время не торопи · Братья · Поворот туда · Бешеная · Дота виновата · Здравствуй в первый раз · Спуск · Потерять себя · Антисага**
+**Поиск · Мечтай · Дети Солнц · Оправданная надежда · Время не торопи · Братья · Поворот туда · Бешеная · Дота виновата · Здравствуй в первый раз · Спуск · Потерять себя · Антисага · Теория всего**
 
-All thirteen are reached from a cosmic map. On narrow screens the map becomes a list
+All fourteen are reached from a cosmic map. On narrow screens the map becomes a list
 of world cards in a fixed mobile order.
 
 ### Music
 
-- 40 canonical track versions across the worlds (13 worlds)
+- 40 canonical track versions across the worlds (14 worlds)
 - favorites: a heart on every track VERSION — in the desktop and mobile L1 catalog (rightmost
   column, next to the download button) and in the version player on L3 — stored in
   `localStorage` (survives reloads) and shared by every view
@@ -73,18 +73,35 @@ of world cards in a fixed mobile order.
 - morphology metadata (name, colour, description) has a single source in
   `src/lib/data/dna.ts` (`MORPHOLOGIES` · `MORPHOLOGY_ORDER` · `getMorphology()`);
   the Russian `filterLabel` used by the L1 DNA filter lives in that same source
-- 22 versions have a full 8-axis DNA; the other 18 library-only versions have an
+- 23 versions have a full 8-axis DNA; the other 17 library-only versions have an
   author-assigned morphology (from the author's `DNA.txt`) with no invented axes; every
   world version has a full DNA, because L3 renders the DNA from those axes
 - the morphology name is shown above the DNA and coloured from that same source:
   on desktop it follows `selectedDnaId`, on mobile the currently playing version
 - the values drive the individual shape, the morphology drives the geometric
   language (petal profile, facets, twist, waves) and the signature glow
-- pure SVG + CSS: no canvas, WebGL, AudioContext, real-time analysis or
-  animation loops — only a gentle CSS breathing animation
+- the DNA is pure SVG + CSS (no canvas, WebGL or AudioContext); on desktop the slot
+  **cross-morphs the contours** between versions (one bounded, cancellable timeline),
+  on mobile the gentle CSS breathing animation is unchanged
 - on desktop the DNA of the selected version is the main visual (right slot);
   `selectedDnaId` is independent of playback (`playingId`)
 - on mobile the DNA appears over the world artwork while a version is playing
+- geometry lives in `src/lib/components/dna-geometry.ts`, the shell in `DnaFigure.svelte`,
+  the static render in `SongDna.svelte`, the desktop transition in `DnaMorph.svelte`
+
+### Living L3 atmosphere (desktop)
+
+- each world page has a procedural cosmic background that follows the selected version's
+  Song DNA morphology (**Star · Bloom · Crystal · Pulse · Spiral · Void**), each with its own
+  light, colour, forms and motion
+- one Canvas 2D layer and one managed animation loop, ~30 FPS, DPR capped at 1.5; desktop only
+- smooth **snapshot-crossfade** between morphologies when the watched version changes
+- subtle **music reactivity** reusing the shared audio graph (the same `AnalyserNode`,
+  no second `AudioContext`): smoothed envelopes and a soft onset drive small per-morphology
+  modulation (core glow, petals, facet glints, rings, streams, void pulses)
+- pauses while the Visualizer is open (background and state kept) and resumes on close;
+  stops on a hidden tab and on unmount; `prefers-reduced-motion` shows a static frame
+- engine: `src/lib/atmosphere/atmosphere.ts`; metrics: `src/lib/audio/metrics.ts`
 
 ### Visualizer (optional)
 
@@ -98,7 +115,7 @@ of world cards in a fixed mobile order.
 
 ### Gallery
 
-- 10 categories, 112 works, 303 WebP runtime files
+- 10 categories, 108 works, 290 WebP runtime files
 - world-mobile artwork is reused from `static/images/worlds/` (no gallery duplicates)
 - masonry layout with lazy loading
 - lightbox with keyboard and touch controls
@@ -131,7 +148,8 @@ SvelteKit 3
     ├── components        reusable UI
     ├── data layer        worlds, music, lyrics, gallery, DNA, presets
     ├── audio layer       one AudioContext, active source, playback coordination
-    ├── Song DNA          main L3 visual: SVG + CSS, 6 morphologies
+    ├── Song DNA          main L3 visual: SVG + CSS, 6 morphologies (desktop morphing)
+    ├── Atmosphere        procedural desktop L3 background, 6 morphologies, audio-reactive
     ├── Visualizer        optional trance mode (Butterchurn → Audio DNA fallback)
     └── Gallery           artwork subsystem
 ```
@@ -147,11 +165,14 @@ Highlights:
 - **Persistent global playback.** The global player lives in the app layout, so
   it survives navigation between the entry screen, the map, worlds and the
   gallery.
-- **DNA is the default world visual.** 22 versions have an author-defined
-  8-axis DNA and all 40 library versions have an author-assigned morphology;
+- **DNA is the default world visual.** 23 versions have an author-defined
+  8-axis DNA and the other 17 library-only versions have an author-assigned morphology;
   morphology metadata and per-version DNA live in `src/lib/data/dna.ts` and render
   as SVG + CSS. The optional Butterchurn visualizer is lazy-mounted only when the
   user switches it on.
+- **Living L3 atmosphere.** A single Canvas 2D layer per world draws a procedural
+  background for the selected morphology and reacts subtly to the music through the
+  shared analyser; it pauses while the Visualizer is open and stays desktop-only.
 - **Lazy audio.** Audio files are `preload="none"` and durations come from the
   data layer (`durationSec`), so no MP3 is downloaded before the user presses Play.
 - **Static output.** The whole site is prerendered and deployed as plain static
@@ -290,6 +311,13 @@ checker.
 - player UX, Media Session, SEO, Web Share and privacy-friendly analytics shipped
 - Song DNA shipped as the main L3 visual (8 axes, 6 morphologies, SVG + CSS),
   with the optional lazy Visualizer mode
+- DNA true morphing: the desktop slot cross-morphs contours between versions
+  (`dna-geometry.ts` + `DnaFigure.svelte` + `DnaMorph.svelte`), with a cross-dissolve fallback
+- living L3 atmosphere: six procedural desktop backgrounds (one per DNA morphology),
+  one Canvas 2D layer, smooth transitions and subtle music reactivity on the shared analyser
+- dev-only DNA / atmosphere labs (`/dna-lab`, `/atmosphere-lab`) — stubs in production
+- world «Теория всего» added (14 worlds): full Spiral DNA, portrait artwork, gallery concept
+- gallery «Концепты миров» curated: the 16:9 duplicates removed from that category only
 - audio loads lazily (`preload="none"` + `durationSec` in the data layer)
 - L2 mobile scroll restoration and gallery scroll reset on category change
 - world «Потерять себя» added (12 worlds, 111 gallery works, 303 WebP files)

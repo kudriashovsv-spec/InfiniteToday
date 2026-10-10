@@ -68,7 +68,7 @@ export const tracks: Track[] = [
 	{ id: 'posik-alternative-electronic', world: 'posik', title: "Поиск", genre: "Alternative Electronic", src: 'music/posik-alternative-electronic.mp3', num: 34, durationSec: 335, worldOrder: 2 },
 	{ id: 'suns-indietronica', world: 'suns', title: "Дети Солнц", genre: "Indietronica", src: 'music/suns-indietronica.mp3', num: 35, durationSec: 272, worldOrder: 2 },
 	{ id: 'parabola-indietronica', world: null, title: "Парабола", genre: "Indietronica", src: 'music/parabola-indietronica.mp3', num: 36, durationSec: 325, worldOrder: null },
-	{ id: 'teoriya-vsego-trip-hop', world: null, title: "Теория всего", genre: "Trip-Hop", src: 'music/teoriya-vsego-trip-hop.mp3', num: 37, durationSec: 269, worldOrder: null },
+	{ id: 'teoriya-vsego-trip-hop', world: 'teoriya-vsego', title: "Теория всего", genre: "Trip-Hop", src: 'music/teoriya-vsego-trip-hop.mp3', num: 37, durationSec: 269, worldOrder: 1 },
 	{ id: 'zdravstvuy-v-pervyy-raz-ethno-hop', world: 'zdravstvuy-v-pervyy-raz', title: "Здравствуй в первый раз", genre: "Ethno-hop", src: 'music/zdravstvuy-v-pervyy-raz-ethno-hop.mp3', num: 38, durationSec: 228, worldOrder: 2 },
 	{ id: 'ya-geroy-nashego-vremeni-trap', world: null, title: "Я герой нашего времени", genre: "Trap", src: 'music/ya-geroy-nashego-vremeni-trap.mp3', num: 39, durationSec: 123, worldOrder: null },
 	{ id: 'bronya-trap', world: null, title: "Броня", genre: "Trap", src: 'music/bronya-trap.mp3', num: 40, durationSec: 130, worldOrder: null },
